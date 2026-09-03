@@ -1,5 +1,5 @@
 {
-  "name": "patch-battle-game",
+  "name": "core-defense-3d",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,16 +12,18 @@
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.3",
+    "three": "^0.180.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^6.1.0",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
     "vite": "^8.2.2"
-  }
+  },
+  "description": "四方から押し寄せる敵からエナジーコアを守る 3D タワーディフェンスシューター"
 }

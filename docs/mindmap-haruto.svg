@@ -1,37 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 1106" width="1536" height="1106" font-family="Hiragino Sans, Yu Gothic, Noto Sans JP, sans-serif">
-<rect x="0" y="0" width="1536" height="1106" fill="#ffffff"/>
-<path d="M 771.5 417.3 Q 736.5 204.4 631.5 133.5" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M 771.5 417.3 Q 876.5 391.7 911.5 315.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M 871.5 461.3 Q 866.0 434.1 849.5 425.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M 871.5 461.3 Q 870.2 557.8 866.5 590.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M 771.5 505.3 Q 736.5 775.1 631.5 865.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 692" width="1536" height="692" font-family="Hiragino Sans, Yu Gothic, Noto Sans JP, sans-serif">
+<rect x="0" y="0" width="1536" height="692" fill="#ffffff"/>
+<path d="M 771.5 302.0 Q 736.5 175.6 631.5 133.5" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 671.5 346.0 Q 672.8 441.2 676.5 473.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 771.5 302.0 Q 806.5 194.8 911.5 159.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 871.5 346.0 Q 866.0 324.2 849.5 317.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M 771.5 390.0 Q 876.5 419.5 911.5 508.0" fill="none" stroke="#000000" stroke-width="2.5" stroke-linecap="round"/>
 <path d="M 586.5 111.5 Q 515.2 99.1 491.5 62.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M 586.5 111.5 Q 515.2 123.9 491.5 161.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M 401.5 62.0 Q 323.9 62.0 298.0 62.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M 401.5 161.0 Q 319.0 152.8 291.5 128.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
 <path d="M 401.5 161.0 Q 323.9 169.2 298.0 194.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 963.0 293.0 Q 1029.4 293.0 1051.5 293.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 1141.5 293.0 Q 1212.8 284.8 1236.5 260.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 1141.5 293.0 Q 1212.8 301.2 1236.5 326.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 1326.5 260.0 Q 1409.0 260.0 1436.5 260.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 1326.5 326.0 Q 1409.0 326.0 1436.5 326.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 973.5 425.0 Q 1043.2 416.8 1066.5 392.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 973.5 425.0 Q 1043.2 433.2 1066.5 458.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 956.5 590.0 Q 1039.0 573.5 1066.5 524.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 956.5 590.0 Q 1039.0 590.0 1066.5 590.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 956.5 590.0 Q 1039.0 606.5 1066.5 656.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 586.5 887.0 Q 564.4 788.0 498.0 755.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 586.5 887.0 Q 515.2 887.0 491.5 887.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 586.5 887.0 Q 562.8 986.0 491.5 1019.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 395.0 755.0 Q 333.5 746.8 313.0 722.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 395.0 755.0 Q 329.4 763.2 307.5 788.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 210.0 722.0 Q 137.2 722.0 113.0 722.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 401.5 887.0 Q 323.9 878.8 298.0 854.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 401.5 887.0 Q 319.0 895.2 291.5 920.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 401.5 1019.0 Q 345.2 1010.8 326.5 986.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<path d="M 401.5 1019.0 Q 323.9 1027.2 298.0 1052.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
-<rect x="671.5" y="417.3" width="200.0" height="88.0" rx="44.0" fill="#ffffff" stroke="#000000" stroke-width="2"/>
-<text x="771.5" y="461.3" font-size="26" font-weight="bold" fill="#000000" text-anchor="middle" dominant-baseline="central">はると</text>
+<path d="M 586.5 473.0 Q 564.4 374.0 498.0 341.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 586.5 473.0 Q 515.2 473.0 491.5 473.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 586.5 473.0 Q 562.8 572.0 491.5 605.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 395.0 341.0 Q 333.5 332.8 313.0 308.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 395.0 341.0 Q 329.4 349.2 307.5 374.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 210.0 308.0 Q 137.2 308.0 113.0 308.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 401.5 473.0 Q 323.9 464.8 298.0 440.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 401.5 473.0 Q 319.0 481.2 291.5 506.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 401.5 605.0 Q 345.2 596.8 326.5 572.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 401.5 605.0 Q 323.9 613.2 298.0 638.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 963.0 137.0 Q 1029.4 137.0 1051.5 137.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 1141.5 137.0 Q 1212.8 128.8 1236.5 104.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 1141.5 137.0 Q 1212.8 145.2 1236.5 170.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 1326.5 104.0 Q 1409.0 104.0 1436.5 104.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 1326.5 170.0 Q 1409.0 170.0 1436.5 170.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 973.5 317.0 Q 1043.2 308.8 1066.5 284.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 973.5 317.0 Q 1043.2 325.2 1066.5 350.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 956.5 530.0 Q 1039.0 513.5 1066.5 464.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 956.5 530.0 Q 1039.0 530.0 1066.5 530.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M 956.5 530.0 Q 1039.0 546.5 1066.5 596.0" fill="none" stroke="#000000" stroke-width="1.5" stroke-linecap="round"/>
+<rect x="671.5" y="302.0" width="200.0" height="88.0" rx="44.0" fill="#ffffff" stroke="#000000" stroke-width="2"/>
+<text x="771.5" y="346.0" font-size="26" font-weight="bold" fill="#000000" text-anchor="middle" dominant-baseline="central">はると</text>
 <rect x="586.5" y="89.5" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
 <text x="631.5" y="111.5" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">食</text>
 <rect x="401.5" y="40.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
@@ -41,39 +41,39 @@
 <text x="446.5" y="161.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">洋食</text>
 <text x="261.5" y="128.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">ピザ</text>
 <text x="261.5" y="194.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">パスタ</text>
-<rect x="860.0" y="271.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="911.5" y="293.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">バイト</text>
-<rect x="1051.5" y="271.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="1096.5" y="293.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">塾</text>
-<rect x="1236.5" y="238.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="1281.5" y="260.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">数学</text>
-<text x="1466.5" y="260.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">得意</text>
-<rect x="1236.5" y="304.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="1281.5" y="326.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">英語</text>
-<text x="1466.5" y="326.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">苦手</text>
-<rect x="849.5" y="403.0" width="124.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="911.5" y="425.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">スポーツ</text>
-<text x="1096.5" y="392.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">卓球</text>
-<text x="1096.5" y="458.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">水泳</text>
-<rect x="866.5" y="568.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="911.5" y="590.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">家族</text>
-<text x="1096.5" y="524.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">両親</text>
-<text x="1096.5" y="590.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">弟</text>
-<text x="1096.5" y="656.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">犬</text>
-<rect x="586.5" y="865.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="631.5" y="887.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">趣味</text>
-<rect x="395.0" y="733.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="446.5" y="755.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">ゲーム</text>
-<rect x="210.0" y="700.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="261.5" y="722.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">TPS</text>
-<text x="76.5" y="722.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">スプラ</text>
-<text x="261.5" y="788.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">マイクラ</text>
-<rect x="401.5" y="865.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="446.5" y="887.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">本</text>
-<text x="261.5" y="854.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">マンガ</text>
-<text x="261.5" y="920.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">小説</text>
-<rect x="401.5" y="997.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
-<text x="446.5" y="1019.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">音楽</text>
-<text x="261.5" y="986.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">オーケストラ</text>
-<text x="261.5" y="1052.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">ボカロ</text>
+<rect x="586.5" y="451.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="631.5" y="473.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">趣味</text>
+<rect x="395.0" y="319.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="446.5" y="341.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">ゲーム</text>
+<rect x="210.0" y="286.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="261.5" y="308.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">TPS</text>
+<text x="76.5" y="308.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">スプラ</text>
+<text x="261.5" y="374.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">マイクラ</text>
+<rect x="401.5" y="451.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="446.5" y="473.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">本</text>
+<text x="261.5" y="440.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">マンガ</text>
+<text x="261.5" y="506.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">小説</text>
+<rect x="401.5" y="583.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="446.5" y="605.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">音楽</text>
+<text x="261.5" y="572.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">オーケストラ</text>
+<text x="261.5" y="638.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">ボカロ</text>
+<rect x="860.0" y="115.0" width="103.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="911.5" y="137.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">バイト</text>
+<rect x="1051.5" y="115.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="1096.5" y="137.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">塾</text>
+<rect x="1236.5" y="82.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="1281.5" y="104.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">数学</text>
+<text x="1466.5" y="104.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">得意</text>
+<rect x="1236.5" y="148.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="1281.5" y="170.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">英語</text>
+<text x="1466.5" y="170.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">苦手</text>
+<rect x="849.5" y="295.0" width="124.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="911.5" y="317.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">スポーツ</text>
+<text x="1096.5" y="284.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">卓球</text>
+<text x="1096.5" y="350.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">水泳</text>
+<rect x="866.5" y="508.0" width="90.0" height="44.0" rx="22.0" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+<text x="911.5" y="530.0" font-size="16" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">家族</text>
+<text x="1096.5" y="464.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">両親</text>
+<text x="1096.5" y="530.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">弟</text>
+<text x="1096.5" y="596.0" font-size="14" font-weight="normal" fill="#000000" text-anchor="middle" dominant-baseline="central">犬</text>
 </svg>

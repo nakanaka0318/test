@@ -1,115 +1,124 @@
 <mxfile host="app.diagrams.net" type="device">
   <diagram name="はると マインドマップ" id="haruto-mindmap">
-    <mxGraphModel dx="1600" dy="1100" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1600" dy="1100" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1536" pageHeight="1106" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="root" value="はると" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=2;fontSize=26;fontStyle=1;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="620" y="505" width="200" height="90" as="geometry" />
+          <mxGeometry x="671.5" y="417.3" width="200.0" height="88.0" as="geometry" />
         </mxCell>
         <mxCell id="food" value="食" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="400" y="320" width="120" height="46" as="geometry" />
+          <mxGeometry x="586.5" y="89.5" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="chuka" value="中華" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="220" y="240" width="100" height="40" as="geometry" />
+          <mxGeometry x="401.5" y="40.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="hoiko" value="回鍋肉" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="60" y="200" width="90" height="30" as="geometry" />
+          <mxGeometry x="225.0" y="48.0" width="73.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="yosyoku" value="洋食" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="230" y="400" width="100" height="40" as="geometry" />
+          <mxGeometry x="401.5" y="139.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="pizza" value="ピザ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="70" y="375" width="80" height="30" as="geometry" />
+          <mxGeometry x="231.5" y="114.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="pasta" value="パスタ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="70" y="445" width="80" height="30" as="geometry" />
+          <mxGeometry x="225.0" y="180.0" width="73.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="baito" value="バイト" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="880" y="300" width="120" height="46" as="geometry" />
+          <mxGeometry x="860.0" y="271.0" width="103.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="juku" value="塾" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1070" y="250" width="100" height="40" as="geometry" />
+          <mxGeometry x="1051.5" y="271.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="math" value="数学" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1240" y="180" width="90" height="34" as="geometry" />
+          <mxGeometry x="1236.5" y="238.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="tokui" value="得意" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="140" width="80" height="30" as="geometry" />
+          <mxGeometry x="1436.5" y="246.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="eigo" value="英語" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1240" y="300" width="90" height="34" as="geometry" />
+          <mxGeometry x="1236.5" y="304.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="nigate" value="苦手" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1400" y="350" width="80" height="30" as="geometry" />
+          <mxGeometry x="1436.5" y="312.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="sports" value="スポーツ" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="930" y="500" width="120" height="46" as="geometry" />
+          <mxGeometry x="849.5" y="403.0" width="124.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="takkyu" value="卓球" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="450" width="80" height="30" as="geometry" />
+          <mxGeometry x="1066.5" y="378.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="suiei" value="水泳" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1120" y="540" width="80" height="30" as="geometry" />
+          <mxGeometry x="1066.5" y="444.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="kazoku" value="家族" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="900" y="660" width="120" height="46" as="geometry" />
+          <mxGeometry x="866.5" y="568.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="ryoshin" value="両親" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1110" y="630" width="80" height="30" as="geometry" />
+          <mxGeometry x="1066.5" y="510.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="otouto" value="弟" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1110" y="705" width="80" height="30" as="geometry" />
+          <mxGeometry x="1066.5" y="576.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="inu" value="犬" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="1110" y="780" width="80" height="30" as="geometry" />
+          <mxGeometry x="1066.5" y="642.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="shumi" value="趣味" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="480" y="680" width="120" height="46" as="geometry" />
+          <mxGeometry x="586.5" y="865.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="game" value="ゲーム" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="300" y="630" width="100" height="40" as="geometry" />
+          <mxGeometry x="395.0" y="733.0" width="103.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="tps" value="TPS" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="140" y="580" width="90" height="34" as="geometry" />
+          <mxGeometry x="210.0" y="700.0" width="103.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="spla" value="スプラ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="10" y="545" width="80" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="masked" value="■■■■" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="10" y="615" width="80" height="30" as="geometry" />
+          <mxGeometry x="40.0" y="708.0" width="73.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="mine" value="マイクラ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="150" y="685" width="90" height="30" as="geometry" />
+          <mxGeometry x="215.5" y="774.0" width="92.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="hon" value="本" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="330" y="790" width="100" height="40" as="geometry" />
+          <mxGeometry x="401.5" y="865.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="manga" value="マンガ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="190" y="790" width="80" height="30" as="geometry" />
+          <mxGeometry x="225.0" y="840.0" width="73.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="shosetsu" value="小説" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="190" y="855" width="80" height="30" as="geometry" />
+          <mxGeometry x="231.5" y="906.0" width="60.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="ongaku" value="音楽" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontSize=16;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="520" y="860" width="100" height="40" as="geometry" />
+          <mxGeometry x="401.5" y="997.0" width="90.0" height="44.0" as="geometry" />
         </mxCell>
         <mxCell id="orche" value="オーケストラ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="370" y="945" width="120" height="30" as="geometry" />
+          <mxGeometry x="196.5" y="972.0" width="130.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="vocalo" value="ボカロ" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;fontFamily=Helvetica;" vertex="1" parent="1">
-          <mxGeometry x="560" y="955" width="80" height="30" as="geometry" />
+          <mxGeometry x="225.0" y="1038.0" width="73.0" height="28.0" as="geometry" />
         </mxCell>
         <mxCell id="e-food" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="food">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-baito" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="baito">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-sports" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="sports">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-kazoku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="kazoku">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-shumi" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="shumi">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-chuka" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="food" target="chuka">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-hoiko" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="chuka" target="hoiko">
+        <mxCell id="e-yosyoku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="food" target="yosyoku">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-yosyoku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="food" target="yosyoku">
+        <mxCell id="e-hoiko" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="chuka" target="hoiko">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-pizza" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="yosyoku" target="pizza">
@@ -118,34 +127,25 @@
         <mxCell id="e-pasta" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="yosyoku" target="pasta">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-baito" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="baito">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="e-juku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="baito" target="juku">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-math" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="juku" target="math">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-tokui" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="math" target="tokui">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="e-eigo" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="juku" target="eigo">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-nigate" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="eigo" target="nigate">
+        <mxCell id="e-tokui" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="math" target="tokui">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-sports" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="sports">
+        <mxCell id="e-nigate" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="eigo" target="nigate">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-takkyu" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="sports" target="takkyu">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-suiei" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="sports" target="suiei">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-kazoku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="kazoku">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-ryoshin" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="kazoku" target="ryoshin">
@@ -157,34 +157,28 @@
         <mxCell id="e-inu" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="kazoku" target="inu">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-shumi" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=2.5;" edge="1" parent="1" source="root" target="shumi">
+        <mxCell id="e-game" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="game">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-game" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="game">
+        <mxCell id="e-hon" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="hon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ongaku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="ongaku">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-tps" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="game" target="tps">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-spla" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="tps" target="spla">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-masked" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="tps" target="masked">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="e-mine" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="game" target="mine">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e-hon" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="hon">
+        <mxCell id="e-spla" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="tps" target="spla">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-manga" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="hon" target="manga">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-shosetsu" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="hon" target="shosetsu">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="e-ongaku" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="shumi" target="ongaku">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e-orche" style="edgeStyle=none;curved=1;rounded=1;html=1;endArrow=none;startArrow=none;strokeColor=#000000;strokeWidth=1.5;" edge="1" parent="1" source="ongaku" target="orche">

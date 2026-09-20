@@ -136,7 +136,7 @@ kbd{font-family:var(--font-d); font-size:11px; background:var(--panel2); border:
 <div class="wrap">
   <header class="brand">
     <h1>絶界<em>弾幕</em></h1>
-    <span class="sub">Danmaku / 7 Stages · 28 Spells</span>
+    <span class="sub">Danmaku / 10 Stages · 40 Spells</span>
     <span class="rank" id="rankChip">LUNATIC</span>
     <span class="chip" id="stageChip">STAGE 1</span>
     <span class="chip" id="modeChip">残機制</span>
@@ -151,7 +151,7 @@ kbd{font-family:var(--font-d); font-size:11px; background:var(--panel2); border:
       <div class="ov" id="ovTitle">
         <span class="eyebrow">Insert Coin</span>
         <p class="kanji">絶界弾幕</p>
-        <p class="lede">被弾判定は<b>半径2.6px</b>。掠れば掠るほど火力が上がる。<br>全7面・スペルカード28枚、面ごとに固有ギミック10種。<br><b>体力無限</b>はやられても続行、<b>被弾回数の少なさ</b>を競う。</p>
+        <p class="lede">被弾判定は<b>半径2.6px</b>。掠れば掠るほど火力が上がる。<br>全10面・スペルカード40枚、面ごとに固有ギミック10種。<br><b>体力無限</b>はやられても続行、<b>被弾回数の少なさ</b>を競う。</p>
         <div class="segs">
           <div class="seg" role="group" aria-label="難易度">
             <button type="button" id="dEas" aria-pressed="false">EASY</button>
@@ -171,6 +171,9 @@ kbd{font-family:var(--font-d); font-size:11px; background:var(--panel2); border:
             <button type="button" id="st5" aria-pressed="false">5</button>
             <button type="button" id="st6" aria-pressed="false">6</button>
             <button type="button" id="st7" aria-pressed="false">7</button>
+            <button type="button" id="st8" aria-pressed="false">8</button>
+            <button type="button" id="st9" aria-pressed="false">9</button>
+            <button type="button" id="st10" aria-pressed="false">10</button>
           </div>
         </div>
         <button class="btn" type="button" id="btnStart">Start</button>
@@ -206,7 +209,6 @@ kbd{font-family:var(--font-d); font-size:11px; background:var(--panel2); border:
     <div class="touch">
       <button class="icobtn" type="button" id="tFocus">低速 FOCUS</button>
       <button class="icobtn" type="button" id="tBomb">ボム BOMB</button>
-      <button class="icobtn" type="button" id="tPol">極性 POL</button>
       <button class="icobtn" type="button" id="tPause">■ PAUSE</button>
     </div>
   </div>
@@ -265,7 +267,7 @@ kbd{font-family:var(--font-d); font-size:11px; background:var(--panel2); border:
     </div>
   </aside>
 
-  <p class="foot">絶界への道 → 鏡界回廊 → 灼熱機関 → 電脳網 → 絶界の果て → 深海回廊 → 天壇審判</p>
+  <p class="foot">絶界への道 → 鏡界回廊 → 灼熱機関 → 電脳網 → 絶界の果て → 深海回廊 → 天壇審判 → 音律回廊 → 幻想回廊 → 深淵略奪</p>
 </div>
 
 <script>
@@ -365,14 +367,13 @@ for(var i=0;i<130;i++) stars.push({x:Math.random()*W,y:Math.random()*H,z:Math.ra
 /* ─────────────────────────────  入力  ───────────────────────────── */
 var keys={}, touchFocus=false, dragging=false, lastPt=null;
 var KEYMAP={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d",KeyA:"l",KeyD:"r",KeyW:"u",KeyS:"d",
-  ShiftLeft:"f",ShiftRight:"f",KeyX:"b",Space:"b",KeyZ:"z",Enter:"z",Escape:"p",KeyP:"p",KeyC:"c",KeyV:"c"};
+  ShiftLeft:"f",ShiftRight:"f",KeyX:"b",Space:"b",KeyZ:"z",Enter:"z",Escape:"p",KeyP:"p",KeyC:"c"};
 addEventListener("keydown",function(e){
   var k=KEYMAP[e.code]; if(!k) return;
   e.preventDefault();
   if(!keys[k]){
     if(k==="b") tryBomb();
     if(k==="p") togglePause();
-    if(k==="c") togglePol();
     if(k==="z" && mode==="title") startRun();
     else if(k==="z" && (mode==="over"||mode==="clear")) startRun();
   }
@@ -481,12 +482,12 @@ function rainBurst(){
 }
 
 /* ─────────────────────────────  道中スクリプト  ───────────────────────────── */
-var BOSSAT={1:86,2:78,3:74,4:74,5:78,6:76,7:80};
-var STAGEINFO={1:"絶界への道",2:"鏡界回廊",3:"灼熱機関",4:"電脳網",5:"絶界の果て",6:"深海回廊",7:"天壇審判"};
-function spellsFor(nst){ return [0,SPELLS1,SPELLS2,SPELLS3,SPELLS4,SPELLS5,SPELLS6,SPELLS7][nst]||SPELLS1; }
+var BOSSAT={1:86,2:78,3:74,4:74,5:78,6:76,7:80,8:76,9:80,10:82};
+var STAGEINFO={1:"絶界への道",2:"鏡界回廊",3:"灼熱機関",4:"電脳網",5:"絶界の果て",6:"深海回廊",7:"天壇審判",8:"音律回廊",9:"幻想回廊",10:"深淵略奪"};
+function spellsFor(nst){ return [0,SPELLS1,SPELLS2,SPELLS3,SPELLS4,SPELLS5,SPELLS6,SPELLS7,SPELLS8,SPELLS9,SPELLS10][nst]||SPELLS1; }
 function buildWaves(){
   waves=[]; waveI=0;
-  var bw=[0,buildWaves1,buildWaves2,buildWaves3,buildWaves4,buildWaves5,buildWaves6,buildWaves7][stage];
+  var bw=[0,buildWaves1,buildWaves2,buildWaves3,buildWaves4,buildWaves5,buildWaves6,buildWaves7,buildWaves8,buildWaves9,buildWaves10][stage];
   (bw||buildWaves1)();
   waves.sort(function(a,b){ return a.at-b.at; });
 }
@@ -567,7 +568,10 @@ var THEME={
   4:{a:"rgba(14,92,82,.30)",  b:"rgba(8,26,34,.12)", c:"rgba(22,122,142,.22)",g:"rgba(60,255,200,.08)"},
   5:{a:"rgba(74,26,124,.34)", b:"rgba(14,10,34,.12)",c:"rgba(152,20,92,.24)", g:"rgba(180,120,255,.09)"},
   6:{a:"rgba(8,58,72,.36)",   b:"rgba(4,18,28,.16)", c:"rgba(10,40,70,.26)",  g:"rgba(40,210,190,.07)"},
-  7:{a:"rgba(148,116,30,.26)",b:"rgba(20,16,34,.12)",c:"rgba(96,40,140,.26)", g:"rgba(255,214,130,.08)"}
+  7:{a:"rgba(148,116,30,.26)",b:"rgba(20,16,34,.12)",c:"rgba(96,40,140,.26)", g:"rgba(255,214,130,.08)"},
+  8:{a:"rgba(120,20,120,.30)", b:"rgba(14,8,30,.14)", c:"rgba(30,60,180,.26)", g:"rgba(255,90,220,.09)"},
+  9:{a:"rgba(24,86,48,.30)",   b:"rgba(10,22,18,.12)",c:"rgba(90,70,20,.24)",  g:"rgba(120,230,150,.07)"},
+ 10:{a:"rgba(80,14,14,.34)",   b:"rgba(18,8,10,.14)", c:"rgba(150,70,10,.26)", g:"rgba(255,120,70,.08)"}
 };
 var SPELLS1=[
   {name:"螺旋葬送", hp:1500, time:42, fn:ph1, col:C.violet},
@@ -599,7 +603,7 @@ function nextPhase(cleared){
   wells.length=0; blocks.length=0; tethers.length=0; hazards.length=0; zones.length=0; portals.length=0;
   pickups.length=0; inks.length=0; bubbles.length=0;
   darkT=0; mirrorT=0; windX=0; gravY=0; doom=0; bulletScale=1; heat=0; shotLock=0;
-  driftX=0; driftY=0; spinCtl=0; swirl=0; pbRange=0; markT=0; balance=0; balanceOn=0;
+  driftX=0; driftY=0; spinCtl=0; swirl=0; pbRange=0; markT=0; balance=0; balanceOn=0; eyeOn=0; eyeT=0; eyeState=0;
   tfL=8; tfR=W-8; tfT=20; tfB=H-14;
   if(endless) bombs=D.bombs;
   if(boss.phase>=SP.length){ boss=null; stageClear(); return; }
@@ -614,7 +618,7 @@ function nextPhase(cleared){
 /* ─────────────────────────────  プレイヤー  ───────────────────────────── */
 function playerStep(dt){
   P.focus=!!keys.f||touchFocus;
-  var sp=P.focus?110:252, vx=0, vy=0;
+  var sp=(P.focus?110:252)*(paraT>0?.45:1), vx=0, vy=0;
   if(keys.l)vx-=1; if(keys.r)vx+=1; if(keys.u)vy-=1; if(keys.d)vy+=1;
   if(mirrorT>0) vx=-vx;
   if(vx&&vy){ vx*=.7071; vy*=.7071; }
@@ -625,6 +629,10 @@ function playerStep(dt){
     if(zones[sz].kind==="silence"&&inZone(zones[sz],P.x,P.y)){ P.safe=true; break; }
   }
   if(P.safe) shotLock=Math.max(shotLock,.07);
+  P.cursed=false;
+  for(var cz=0;cz<zones.length;cz++){
+    if(zones[cz].kind==="curse"&&inZone(zones[cz],P.x,P.y)){ P.cursed=true; break; }
+  }
   var nx=P.x+vx*sp*dt, ny=P.y+vy*sp*dt;
   for(var zi=0;zi<zones.length;zi++){
     var z=zones[zi];
@@ -637,7 +645,7 @@ function playerStep(dt){
   P.fire-=dt;
   if(shotLock>0){ shotLock=Math.max(0,shotLock-dt); P.fire=.05; }
   else if(P.fire<=0){
-    P.fire=.072;
+    P.fire=P.cursed?.155:.072;
     var dmg=6.2*(D.dmg||1);
     pbs.push({x:P.x-6,y:P.y-12,vx:0,vy:-960,d:dmg});
     pbs.push({x:P.x+6,y:P.y-12,vx:0,vy:-960,d:dmg});
@@ -702,7 +710,13 @@ function step(dt){
   /* 敵 */
   for(var i=enemies.length-1;i>=0;i--){
     var e=enemies[i]; e.t+=dt; if(e.flash>0) e.flash-=dt;
-    e.ai(e,dt);
+    if(e.stunT>0){ e.stunT-=dt; }
+    else e.ai(e,dt);
+    if(e.dacc){ e.dpt=(e.dpt||0)-dt;
+      if(e.dpt<=0){ e.dpt=.26;
+        pops.push({x:e.x+rnd(-10,10),y:e.y-14,txt:(e.dcrit?"会心 ":"")+Math.round(e.dacc),
+          col:e.dcrit?C.amber:"#ffffff",t:.6,big:!!e.dcrit});
+        e.dacc=0; e.dcrit=0; } }
     if(e.y>H+70||e.y<-140||e.x<-80||e.x>W+80){ if(e.onDead) e.onDead(); enemies.splice(i,1); continue; }
   }
   stepExtras(dt);
@@ -743,7 +757,12 @@ function step(dt){
       }
       var eHit=en.rw?(Math.abs(dx)<en.rw/2+3&&Math.abs(dy)<en.rh/2+3):(dx*dx+dy*dy<(en.r+4)*(en.r+4));
       if(eHit){
-        en.hp-=pb.d; en.flash=.08; hitDone=true;
+        var crit=(elemOn&&Math.random()<.08)?2:1;
+        var dealt=eliteGuarded(en)?0:pb.d*dmgMul(en)*crit;
+        en.hp-=dealt; en.flash=.08; hitDone=true;
+        if(en.cast) en.cast.dmg+=dealt;
+        if(dmgNum&&dealt>0){ en.dacc=(en.dacc||0)+dealt; if(crit>1) en.dcrit=1; }
+        if(dealt<=0&&Math.random()<.2) pops.push({x:en.x,y:en.y-20,txt:"無敵",col:"#b97bff",t:.5});
         parts.push({x:pb.x,y:pb.y,a:rnd(-2.6,-.5),s:rnd(40,130),t:.18,col:C.lime,sz:1.6});
         if(en.hp<=0) killEnemy(en,k);
         break;
@@ -759,7 +778,7 @@ function step(dt){
             cb.sp=Math.max(-70,cb.sp-pb.d*7); cb.y-=4;
             parts.push({x:cb.x,y:cb.y+cb.r,a:rnd(1.2,1.9),s:rnd(40,110),t:.2,col:holyCol,sz:2});
           } else {
-            cb.hp-=pb.d;
+            cb.hp-=pb.d*dmgMul(null);
             if(cb.hp<=0) breakCrystal(cb,ci);
           }
           break;
@@ -769,7 +788,9 @@ function step(dt){
     if(!hitDone&&boss&&boss.state==="fight"){
       var bx=boss.x-pb.x, by=boss.y-pb.y;
       if(bx*bx+by*by<(boss.r+6)*(boss.r+6)){
-        boss.hp-=pb.d; boss.flash=.07; hitDone=true;
+        var bdealt=pb.d*dmgMul(boss);
+        boss.hp-=bdealt; boss.flash=.07; hitDone=true;
+        if(boss.cast) boss.cast.dmg+=bdealt;
         parts.push({x:pb.x,y:pb.y,a:rnd(-2.6,-.5),s:rnd(40,130),t:.18,col:C.mag,sz:1.6});
         if(boss.hp<=0) nextPhase(true);
       }
@@ -819,14 +840,23 @@ function step(dt){
     for(var c=0;c<bullets.length;c++){
       var bu=bullets[c], gx=bu.x-P.x, gy=bu.y-P.y, dd=gx*gx+gy*gy;
       var hr=bu.r*.68+P.r;
-      if(bu.pol!==undefined&&bu.pol===P.pol&&dd<(bu.r+11)*(bu.r+11)){ absorbBullet(c); c--; continue; }
-      if(dd<hr*hr&&!bu.phOff&&!P.safe){ hitPlayer(); break; }
+      if(dd<hr*hr&&!bu.phOff&&!P.safe){
+        if(bu.poison){ poisonT=7; pops.push({x:P.x,y:P.y-42,txt:"毒",col:"#9ae06a",t:1.2}); }
+        if(bu.para){ paraT=3.2; pops.push({x:P.x,y:P.y-42,txt:"麻痺",col:ELEMC[2],t:1.2}); }
+        hitPlayer(); break;
+      }
       if(!bu.gz&&dd<(bu.r+18)*(bu.r+18)){ bu.gz=true; doGraze(bu.x,bu.y); }
     }
   }
 }
 function doGraze(x,y){
-  graze++; P.pow=Math.min(100,P.pow+1.6); addScore(35);
+  graze++;
+  if(bpm){
+    var bn=beatNear();
+    if(bn===2){ perfects++; addScore(120); P.pow=Math.min(100,P.pow+2.4); judgeTxt="PERFECT"; judgeT=.5; }
+    else if(bn===1){ addScore(60); judgeTxt="GREAT"; judgeT=.4; }
+  }
+  P.pow=Math.min(100,P.pow+1.6); addScore(35);
   parts.push({x:x,y:y,a:rnd(0,TAU),s:rnd(30,90),t:.22,col:C.ice,sz:1.4});
   if(gzSnd<=0){ gzSnd=.06; blip(2100,.025,"sine",.02,2600); }
 }
@@ -852,6 +882,8 @@ function moveBullets(dt,live){
     }
     if(frozen){ bullets[w++]=b; if(b.hp) nc++; continue; }
     if(b.ph){ var per=b.ph.on+b.ph.off; b.phOff=(b.t%per)>b.ph.on; }
+    if(b.stut&&bpm&&beatT>beatSpb*.5){ bullets[w++]=b; if(b.hp||b.pushable) nc++; continue; }
+    if(b.beatTurn&&b.lastB!==beatN){ b.lastB=beatN; b.ang+=(Math.random()<.5?1:-1)*Math.PI/2; b.flash=.14; }
     if(b.rev&&b.t>=b.rev){ b.ang+=Math.PI; b.rev=0; b.col=C.rose; b.flash=.25; }
     if(b.grid){ b.gt=(b.gt===undefined?b.grid:b.gt)-dt;
       if(b.gt<=0){ b.gt=b.grid; b.ang=Math.round(b.ang/(Math.PI/2))*(Math.PI/2)+(Math.random()<.5?Math.PI/2:-Math.PI/2); b.flash=.12; } }
@@ -910,7 +942,10 @@ function killEnemy(e,idx){
   if(e.onDead) e.onDead();
   enemies.splice(idx,1); kills++;
   chain++; chainT=3.2; if(chain>maxChain) maxChain=chain;
-  addScore(Math.round(e.score*(1+chain*.02)));
+  momentum=Math.min(10,momentum+1); momT=2.5;
+  gainExp(e.score);
+  var kscore=Math.round(e.score*(1+chain*.02)*(1+greed*.02));
+  addScore(kscore);
   P.pow=Math.min(100,P.pow+(e.boss?14:2.2));
   var n=e.boss?60:14;
   for(var i=0;i<n;i++) parts.push({x:e.x,y:e.y,a:rnd(0,TAU),s:rnd(50,e.boss?400:220),t:rnd(.2,.7),col:i%2?e.col:"#ffffff",sz:e.boss?3:2});
@@ -918,7 +953,7 @@ function killEnemy(e,idx){
   if(e.onKill) e.onKill(e);
   if(e.boss){ shake=reduce?3:16; flash=.4; boom(.8,.26,2400); clearBullets(110); setPhaseText("道中 後半"); }
   else boom(.22,.10,2600);
-  pops.push({x:e.x,y:e.y,txt:"+"+fmt(Math.round(e.score*(1+chain*.02))),col:e.col,t:.7});
+  pops.push({x:e.x,y:e.y,txt:"+"+fmt(kscore),col:e.col,t:.7});
 }
 
 /* ─────────────────────────────  タイトル演出  ───────────────────────────── */
@@ -993,10 +1028,6 @@ function render(){
       ctx.drawImage(sp.c,-sp.half,-sp.half,sp.size,sp.size); ctx.restore();
     } else ctx.drawImage(sp.c,bu.x-sp.half,bu.y-sp.half,sp.size,sp.size);
     if(bu.ph) ctx.globalAlpha=1;
-    if(bu.pol!==undefined&&bu.pol===P.pol&&!bu.phOff){
-      ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=1.4;
-      ctx.beginPath(); ctx.arc(bu.x,bu.y,bu.r+4,0,TAU); ctx.stroke();
-    }
     if(bu.hp&&!bu.pushable){
       ctx.save(); ctx.translate(bu.x,bu.y); ctx.rotate(runTime*1.3);
       ctx.strokeStyle=bu.flash>0?"#ffffff":hex(C.lime,.95); ctx.lineWidth=2;
@@ -1013,6 +1044,7 @@ function render(){
 
   drawInk();
   drawNew();
+  drawEye();
 
   /* 自機 */
   if(mode==="play"||mode==="pause") drawPlayer();
@@ -1060,10 +1092,6 @@ function drawPlayer(){
     ctx.beginPath(); ctx.arc(0,0,9,Math.PI,Math.PI+1.6); ctx.stroke();
     ctx.restore();
   }
-  if(polOn){
-    ctx.strokeStyle=hex(P.pol?C.violet:C.ice,.95); ctx.lineWidth=2.4;
-    ctx.beginPath(); ctx.arc(0,0,12+(P.polT>0?4:0),0,TAU); ctx.stroke();
-  }
   if(P.stun>0){
     ctx.strokeStyle=hex(deepCol,.9); ctx.lineWidth=2;
     ctx.beginPath(); ctx.arc(0,0,18,0,TAU); ctx.stroke();
@@ -1093,6 +1121,22 @@ function drawEnemy(e){
   } else if(e.kind==="turret"){
     ctx.rotate(e.sp*.4); ctx.fillRect(-e.r,-e.r,e.r*2,e.r*2); ctx.strokeRect(-e.r,-e.r,e.r*2,e.r*2);
     ctx.fillStyle="#ffffff"; ctx.fillRect(-e.r*.22,-e.r*.22,e.r*.44,e.r*.44);
+  } else if(e.kind==="chest"){
+    ctx.fillStyle=col; ctx.strokeStyle=hex("#ffffff",.6); ctx.lineWidth=1.4;
+    ctx.fillRect(-e.rw/2,-e.rh/2,e.rw,e.rh); ctx.strokeRect(-e.rw/2,-e.rh/2,e.rw,e.rh);
+    ctx.fillStyle=hex("#ffffff",.75); ctx.fillRect(-e.rw/2,-3,e.rw,3);
+    ctx.fillRect(-4,-e.rh/2,8,e.rh);
+  } else if(e.kind==="goblin"){
+    ctx.beginPath(); ctx.moveTo(0,-e.r); ctx.lineTo(e.r,e.r*.6); ctx.lineTo(-e.r,e.r*.6); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#ffffff"; ctx.fillRect(-3,-4,6,6);
+  } else if(e.kind==="elite"){
+    ctx.rotate(e.t*.9);
+    ctx.beginPath();
+    for(var ei=0;ei<8;ei++){ var ea=ei*TAU/8, er=ei%2?e.r*.6:e.r*1.15;
+      ctx[ei?"lineTo":"moveTo"](Math.cos(ea)*er,Math.sin(ea)*er); }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.rotate(-e.t*.9);
+    ctx.fillStyle="#ffffff"; ctx.beginPath(); ctx.arc(0,0,e.r*.28,0,TAU); ctx.fill();
   } else if(e.kind==="pillar"){
     ctx.fillStyle=e.flash>0?"#ffffff":hex(holyCol,.30);
     ctx.fillRect(-e.rw/2,-e.rh/2,e.rw,e.rh);
@@ -1146,7 +1190,23 @@ function drawEnemy(e){
     ctx.beginPath(); for(var m=0;m<3;m++){ var a3=m*TAU/3+Math.PI/3; ctx[m?"lineTo":"moveTo"](Math.cos(a3)*e.r*.8,Math.sin(a3)*e.r*.8); }
     ctx.closePath(); ctx.stroke();
   }
+  if(eliteGuarded(e)){
+    ctx.strokeStyle=hex("#b97bff",.5+.3*Math.sin(runTime*6)); ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(0,0,e.r*1.7,0,TAU); ctx.stroke();
+  }
   ctx.restore();
+  if(e.affs&&e.affs.length){
+    ctx.font='700 9px "Zen Kaku Gothic New",system-ui'; ctx.textAlign="center";
+    var lbl="";
+    for(var ai2=0;ai2<e.affs.length;ai2++) lbl+=(ai2?"・":"")+AFFIX[e.affs[ai2]].n;
+    ctx.fillStyle=hex("#ff8a3d",.95); ctx.fillText(lbl,e.x,e.y-e.r-9); ctx.textAlign="left";
+  }
+  if(e.cast){
+    var cf=Math.min(1,e.cast.t/e.cast.dur), df=Math.min(1,e.cast.dmg/e.cast.need);
+    ctx.fillStyle="rgba(4,6,16,.8)"; ctx.fillRect(e.x-30,e.y-e.r-22,60,5);
+    ctx.fillStyle=hex(C.mag,.9); ctx.fillRect(e.x-30,e.y-e.r-22,60*cf,5);
+    ctx.fillStyle=hex(C.lime,.9); ctx.fillRect(e.x-30,e.y-e.r-16,60*df,2.5);
+  }
   if(e.boss&&e.hp>0&&e.t>1){
     var f=Math.max(0,e.hp/e.max);
     ctx.fillStyle="rgba(4,6,16,.8)"; ctx.fillRect(W/2-120,10,240,5);
@@ -1185,6 +1245,14 @@ function drawCanvasHUD(){
     ctx.fillStyle=s.col; ctx.fillText("「"+s.name+"」",W-16,15);
     ctx.font='600 12px "Chakra Petch",monospace'; ctx.fillStyle=boss.timer<10?C.mag:"rgba(233,236,255,.7)";
     ctx.textAlign="left"; ctx.fillText(boss.timer.toFixed(2),74,15);
+    if(boss.cast){
+      var cf2=Math.min(1,boss.cast.t/boss.cast.dur), df2=Math.min(1,boss.cast.dmg/boss.cast.need);
+      ctx.fillStyle="rgba(4,6,16,.8)"; ctx.fillRect(W/2-90,40,180,9);
+      ctx.fillStyle=hex(C.mag,.9); ctx.fillRect(W/2-90,40,180*cf2,9);
+      ctx.fillStyle=hex(C.lime,.95); ctx.fillRect(W/2-90,49,180*df2,3);
+      ctx.font='700 11px "Zen Kaku Gothic New",system-ui'; ctx.textAlign="center";
+      ctx.fillStyle="#ffffff"; ctx.fillText("詠唱 — 撃ち込んで中断",W/2,37); ctx.textAlign="left";
+    }
   }
   if(banner){
     var a=Math.min(1,banner.t*1.4);
@@ -1202,6 +1270,39 @@ function drawCanvasHUD(){
     ctx.fillText("S"+stage+"  "+(boss?"BOSS":"WAVE "+Math.min(99,(stageT/8|0)+1))+"   "+bullets.length+" BULLETS",12,H-10);
     if(endless){ ctx.textAlign="right"; ctx.fillStyle=misses?hex(C.mag,.85):hex(C.lime,.85);
       ctx.fillText("MISS "+misses,W-12,H-10); ctx.textAlign="left"; }
+    if(bpm){
+      var bw3=W-24, bx3=12, ph=(beatT/beatSpb);
+      ctx.fillStyle="rgba(4,6,16,.6)"; ctx.fillRect(bx3,44,bw3,8);
+      ctx.fillStyle=hex(beatCol,.35);
+      for(var bq=0;bq<8;bq++) ctx.fillRect(bx3+bw3*bq/8,44,2,8);
+      ctx.fillStyle=hex(beatCol,.95); ctx.fillRect(bx3+bw3*ph-2,42,4,12);
+      ctx.font='600 10px "Chakra Petch",monospace'; ctx.fillStyle=hex(beatCol,.85);
+      ctx.fillText("BPM "+bpm+"  "+(beatN%4+1)+"/4",bx3,40);
+      if(beatPulse>0){ ctx.strokeStyle=hex(beatCol,beatPulse*.5); ctx.lineWidth=3;
+        ctx.strokeRect(2,2,W-4,H-4); }
+      if(judgeT>0&&judgeTxt){ ctx.textAlign="center"; ctx.font='700 15px "Chakra Petch",monospace';
+        ctx.fillStyle=hex(judgeTxt==="PERFECT"?C.amber:C.ice,Math.min(1,judgeT*3));
+        ctx.fillText(judgeTxt,W/2,H-70); ctx.textAlign="left"; }
+    }
+    if(lanesOn){
+      ctx.strokeStyle=hex(beatCol,.22); ctx.lineWidth=1;
+      for(var ln=1;ln<4;ln++){ ctx.beginPath(); ctx.moveTo(W*ln/4,60); ctx.lineTo(W*ln/4,H); ctx.stroke(); }
+    }
+    if(elemOn){
+      ctx.font='700 11px "Zen Kaku Gothic New",system-ui'; ctx.textAlign="left";
+      ctx.fillStyle=ELEMC[elem];
+      ctx.fillText("属性 "+ELEMN[elem]+" → "+ELEMN[elemWeak()]+"特効  Lv."+plevel,12,H-48);
+      if(poisonT>0){ ctx.fillStyle="#9ae06a"; ctx.fillText("毒 "+poisonT.toFixed(1),12,H-62); }
+      if(paraT>0){ ctx.fillStyle=ELEMC[2]; ctx.fillText("麻痺 "+paraT.toFixed(1),74,H-62); }
+    }
+    if(atkT>0){ ctx.font='700 11px "Zen Kaku Gothic New",system-ui'; ctx.textAlign="right";
+      ctx.fillStyle="#ff8a3d"; ctx.fillText("攻撃2倍 "+atkT.toFixed(1),W-12,H-76); ctx.textAlign="left"; }
+    if(lootOn){
+      ctx.font='600 10px "Chakra Petch",monospace'; ctx.textAlign="right";
+      ctx.fillStyle=hex("#ffd24b",.9); ctx.fillText("GREED x"+(1+greed*.02).toFixed(2),W-12,H-62);
+      if(momentum>0){ ctx.fillStyle=hex("#ff8a3d",.9); ctx.fillText("COMBO +"+(momentum*5)+"%",W-12,H-48); }
+      ctx.textAlign="left";
+    }
     if(heat>0||shotLock>0){
       var hw=110;
       ctx.fillStyle="rgba(4,6,16,.7)"; ctx.fillRect(12,H-32,hw,7);
@@ -1209,11 +1310,6 @@ function drawCanvasHUD(){
       ctx.fillRect(12,H-32,hw*(shotLock>0?1:heat/100),7);
       ctx.font='600 10px "Chakra Petch",monospace'; ctx.fillStyle=hex(C.amber,.8);
       ctx.fillText(shotLock>0?"OVERHEAT — 射撃停止":"HEAT",12,H-36);
-    }
-    if(polOn){
-      ctx.textAlign="left"; ctx.font='700 11px "Chakra Petch",monospace';
-      ctx.fillStyle=hex(P.pol?C.violet:C.ice,.95);
-      ctx.fillText("POLARITY "+(P.pol?"陰":"陽")+"  [C]",12,H-48);
     }
     if(markT>0){
       ctx.textAlign="center"; ctx.font='700 13px "Zen Kaku Gothic New",system-ui';
@@ -1571,7 +1667,8 @@ function stepHazards(dt){
       h.x=hx+Math.cos(h.orb.a)*h.orb.r; h.y=hy+Math.sin(h.orb.a)*h.orb.r;
     }
     if(h.lockUntil&&h.t<h.lockUntil){ h.x=P.x; h.y=P.y; }
-    if(h.spin) h.ang+=h.spin*dt;
+    if(h.osc) h.ang=h.osc.base+Math.sin(h.t*h.osc.sp)*h.osc.amp;
+    else if(h.spin) h.ang+=h.spin*dt;
     if(h.grow) h.r+=h.grow*dt;
     if(h.t>=h.warn){ if(h.vx) h.x+=h.vx*dt; if(h.vy) h.y+=h.vy*dt; }
     if(h.t>h.warn+h.fire){ hazards.splice(i,1); continue; }
@@ -1687,6 +1784,22 @@ function drawZones(){
     } else if(z.kind==="erase"){
       ctx.fillStyle=hex(C.mag,.09); ctx.fillRect(x0,y0,z.w,z.h);
       ctx.strokeStyle=hex(C.mag,.5); ctx.setLineDash([3,4]); ctx.strokeRect(x0,y0,z.w,z.h); ctx.setLineDash([]);
+    } else if(z.kind==="burn"){
+      var bg=ctx.createLinearGradient(0,y0,0,y0+z.h);
+      bg.addColorStop(0,hex("#ff5a3d",.10)); bg.addColorStop(1,hex("#ff5a3d",.30));
+      ctx.fillStyle=bg; ctx.fillRect(x0,y0,z.w,z.h);
+      ctx.strokeStyle=hex("#ff5a3d",.8); ctx.lineWidth=2; ctx.strokeRect(x0,y0,z.w,z.h);
+      ctx.fillStyle=hex("#ffd24b",.5);
+      for(var bi2=0;bi2<4;bi2++){
+        var bx2=x0+12+((bi2*37+z.t*30)%(z.w-24));
+        ctx.fillRect(bx2,y0+z.h-8-((z.t*40+bi2*20)%(z.h-12)),3,8);
+      }
+    } else if(z.kind==="curse"){
+      ctx.fillStyle=hex("#b97bff",.10); ctx.fillRect(x0,y0,z.w,z.h);
+      ctx.strokeStyle=hex("#b97bff",.6); ctx.setLineDash([4,6]); ctx.lineWidth=1.5;
+      ctx.strokeRect(x0,y0,z.w,z.h); ctx.setLineDash([]);
+      ctx.font='600 10px "Chakra Petch",monospace'; ctx.fillStyle=hex("#b97bff",.85);
+      ctx.textAlign="center"; ctx.fillText("呪詛 / 連射半減",z.x,y0+15); ctx.textAlign="left";
     } else if(z.kind==="silence"){
       ctx.fillStyle=hex(holyCol,.08); ctx.fillRect(x0,y0,z.w,z.h);
       ctx.strokeStyle=hex(holyCol,.55); ctx.setLineDash([9,7]); ctx.lineWidth=2;
@@ -2288,7 +2401,7 @@ var GIMMICKS={
  ["渦潮","操作の向きそのものが回転していく"],
  ["卵","放置すると孵化して追尾魚を吐き出す"]]},
 7:{name:"天壇審判",col:"#ffd98a",list:[
- ["極性","Cキーで陽/陰を切替。同色の弾は吸収して得点、異色は被弾"],
+ ["静止の律","審判の目が開いている間に動くと、足元から裁きの弾が湧く"],
  ["逆位相弾","点滅しながら実体と虚体を往復する弾"],
  ["大時計の針","画面中心から伸びる長針が常時回り続ける"],
  ["天秤","左右どちらかに居続けると傾き、反対側から裁きの弾"],
@@ -2297,17 +2410,50 @@ var GIMMICKS={
  ["重弾","自機弾で押し返せる巨弾。撃ち続けて軌道を変える"],
  ["贖罪の光","拾うと霊符+1、刻印があれば浄化"],
  ["静寂域","中では撃てないが弾も当たらない退避所"],
- ["最終審判","安全圏の円の外が全て裁かれる"]]}
+ ["最終審判","安全圏の円の外が全て裁かれる"]]},
+8:{name:"音律回廊",col:"#ff5ad8",list:[
+ ["BPMグリッド","全ての攻撃がBPMに同期。上部のバーで拍が読める"],
+ ["レーン譜面","4レーンのうち譜面通りのレーンに閃光が落ちる"],
+ ["拍頭バー","小節頭に横一線の衝撃波。隙間は1か所"],
+ ["メトロノーム","拍に合わせて振れる長針が薙ぎ払う"],
+ ["裏拍弾","拍の前半しか進まない。止まった瞬間が読みどころ"],
+ ["音符弾","拍ごとに90度向きを変える弾"],
+ ["精度判定","拍ジャストのかすりは PERFECT で得点3倍"],
+ ["休符","8小節ごとに1拍だけ全弾が止まる"],
+ ["BPM加速","132 → 150 → 165 → 174 と全攻撃が速くなる"],
+ ["低音の押し出し","2拍ごとにスピーカーが自機を横へ弾く"]]},
+9:{name:"幻想回廊",col:"#7ce89a",list:[
+ ["属性相性","6.5秒ごとに自属性が巡回。弱点属性の敵へ2.5倍、同属性へ0.6倍"],
+ ["ダメージ表示","与ダメージが数値で飛ぶ。会心は大きく光る"],
+ ["EXPとレベル","撃破で経験値。Lv5まで火力+12%ずつ"],
+ ["詠唱バー","詠唱中に規定ダメージを与えると中断、失敗すれば大魔法"],
+ ["毒","被弾でPOWERが継続的に流出する"],
+ ["麻痺","移動速度が半分以下に落ちる"],
+ ["攻撃バフ","拾えば8秒間ダメージ2倍"],
+ ["宝箱","撃ち抜くとバフ・解毒・霊符を落とす"],
+ ["回復役","他の敵を回復し続ける。先に潰せ"],
+ ["蘇生役","定期的に敵を呼び戻すネクロマンサー"]]},
+10:{name:"深淵略奪",col:"#ff8a3d",list:[
+ ["レアリティ戦利品","並/魔/稀/伝説の4段階。等級ごとに効果が変わる"],
+ ["アフィックス","エリートに接頭辞が付く：連射・疾走・爆散・守護・焦熱・分裂"],
+ ["守護オーラ","取り巻きが生きている間エリートは無敵"],
+ ["モンスターパック","6〜8体が同時湧きする群れ"],
+ ["焦熱の地面","踏むと被弾する溶岩溜まりが残る"],
+ ["呪詛領域","内部では連射速度が半減する"],
+ ["連撃ブースト","短時間に倒し続けるとダメージが最大+50%"],
+ ["強欲ゲージ","戦利品を拾うほど撃破スコアが増える"],
+ ["トレジャーゴブリン","逃げ切られる前に倒せば戦利品を大量に落とす"],
+ ["エンレイジ","ボスは時間とともに発狂し、弾速と密度が増す"]]}
 };
 
 /* ═════════════════  STAGE 6/7 用 新システム  ═════════════════ */
 var pickups=[], inks=[], bubbles=[];
-var driftX=0, driftY=0, spinCtl=0, swirl=0, pbRange=0, markT=0, balance=0, balanceOn=0, polOn=0;
+var driftX=0, driftY=0, spinCtl=0, swirl=0, pbRange=0, markT=0, balance=0, balanceOn=0, eyeOn=0, eyeT=0, eyeState=0;
 var deepCol="#39e0c8", holyCol="#ffd98a";
 
 function ink(x,y,r,life){ inks.push({x:x,y:y,r:0,tr:r,t:0,life:life||7}); }
 function bubble(x,y,vy){ bubbles.push({x:x,y:y,r:rnd(15,23),vy:vy||-52,t:0}); }
-function pickup(x,y,kind){ pickups.push({x:x,y:y,vy:58,kind:kind||"bomb",t:0}); }
+function pickup(x,y,kind){ var o={x:x,y:y,vy:58,kind:kind||"bomb",t:0,rar:0}; pickups.push(o); return o; }
 function bolt(){
   var h=hazard({kind:"circle",x:P.x,y:P.y,r:40,warn:1.15,fire:.45,col:C.ice});
   h.lockUntil=h.warn*.55;
@@ -2318,20 +2464,55 @@ function chainWhip(host,len,amp,life){
 function safeSpot(x,y,r){
   hazard({kind:"safe",x:x,y:y,r:r||78,warn:1.6,fire:1.5,col:holyCol});
 }
-function togglePol(){
-  if(mode!=="play") return;
-  P.pol=P.pol?0:1; P.polT=.22;
-  blip(P.pol?520:760,.09,"triangle",.045,P.pol?380:900);
+function stepEye(dt){
+  if(!eyeOn){ eyeState=0; return; }
+  eyeT-=dt;
+  if(eyeT<=0){
+    if(eyeState===0){ eyeState=1; eyeT=1.3*D.warn; blip(300,.25,"sine",.05,600); }
+    else if(eyeState===1){ eyeState=2; eyeT=2.6; blip(880,.2,"triangle",.05,1300); }
+    else { eyeState=0; eyeT=3.4; }
+  }
+  if(eyeState===2){
+    var mv=Math.abs(P.x-(P.ex===undefined?P.x:P.ex))+Math.abs(P.y-(P.ey===undefined?P.y:P.ey));
+    if(mv>1.1&&P.inv<=0){
+      P.eyeCd=(P.eyeCd||0)-dt;
+      if(P.eyeCd<=0){
+        P.eyeCd=.55;
+        ring(P.x,P.y,6,rnd(0,TAU),165,{col:holyCol,r:5});
+        pops.push({x:P.x,y:P.y-24,txt:"動いた",col:holyCol,t:.8});
+        blip(240,.2,"square",.05,120);
+      }
+    }
+  }
+  P.ex=P.x; P.ey=P.y;
 }
-function absorbBullet(i){
-  var b=bullets[i];
-  addScore(220); P.pow=Math.min(100,P.pow+1.1);
-  parts.push({x:b.x,y:b.y,a:rnd(0,TAU),s:rnd(30,90),t:.22,col:P.pol?C.violet:C.ice,sz:2});
-  bullets.splice(i,1);
+function drawEye(){
+  if(!eyeOn) return;
+  var open=eyeState===2?1:(eyeState===1?.45:.12);
+  var cx=W/2, cy=54, w2=52*open+14, h2=26*open+3;
+  ctx.save();
+  ctx.strokeStyle=hex(eyeState===2?C.mag:holyCol,.9); ctx.lineWidth=2;
+  ctx.beginPath(); ctx.ellipse(cx,cy,w2,h2,0,0,TAU);
+  ctx.fillStyle=hex(eyeState===2?C.mag:holyCol,.22); ctx.fill(); ctx.stroke();
+  if(eyeState===2){
+    ctx.fillStyle=hex(C.mag,.95); ctx.beginPath(); ctx.arc(cx,cy,Math.min(h2*.7,11),0,TAU); ctx.fill();
+    ctx.font='700 12px "Zen Kaku Gothic New",system-ui'; ctx.textAlign="center";
+    ctx.fillStyle=hex(C.mag,.6+.4*Math.sin(runTime*10)); ctx.fillText("静止せよ",cx,cy+34); ctx.textAlign="left";
+  }
+  ctx.restore();
+}
+function dmgMul(en){
+  var m=1;
+  if(atkT>0) m*=2;
+  if(plevel>1) m*=1+(plevel-1)*.12;
+  if(momentum>0) m*=1+momentum*.05;
+  if(elemOn&&en&&en.elem!==undefined){ m*= en.elem===elemWeak()?2.5:(en.elem===elem?.6:1); }
+  return m;
 }
 function stepNew(dt){
+  stepBeat(dt); stepRpg(dt); stepLoot(dt);
+  stepEye(dt);
   if(P.stun>0) P.stun-=dt;
-  if(P.polT>0) P.polT-=dt;
   if(swirl) spinCtl+=swirl*dt;
   if(markT>0){
     markT-=dt;
@@ -2371,9 +2552,25 @@ function stepNew(dt){
     if(pu.y>H+30||pu.t>20){ pickups.splice(k,1); continue; }
     if(dd<16){
       pickups.splice(k,1);
-      if(markT>0){ markT=0; pops.push({x:P.x,y:P.y-30,txt:"刻印 浄化",col:C.lime,t:1.4,big:true}); }
-      else { bombs=Math.min(bombs+1,9); pops.push({x:P.x,y:P.y-30,txt:"霊符 +1",col:C.amber,t:1.4,big:true}); }
-      addScore(1500); blip(1400,.16,"triangle",.05,2200);
+      if(pu.kind==="loot"){
+        var r2=pu.rar|0; greed=Math.min(60,greed+1);
+        if(r2===0) addScore(2200);
+        else if(r2===1){ bombs=Math.min(bombs+1,9); addScore(3200); }
+        else if(r2===2){ atkT=Math.max(atkT,8); addScore(5200); }
+        else { atkT=Math.max(atkT,12); bombs=Math.min(bombs+1,9); P.pow=100; addScore(12000); }
+        pops.push({x:P.x,y:P.y-30,txt:RAR[r2].n+"の戦利品",col:RAR[r2].c,t:1.6,big:r2>=2});
+        blip(900+r2*300,.18,"triangle",.05,1800+r2*500);
+      } else if(pu.kind==="atk"){
+        atkT=Math.max(atkT,8); addScore(1500);
+        pops.push({x:P.x,y:P.y-30,txt:"攻撃力2倍",col:"#ff8a3d",t:1.6,big:true}); blip(1200,.2,"triangle",.05,2000);
+      } else if(pu.kind==="cure"){
+        poisonT=0; paraT=0; addScore(1500);
+        pops.push({x:P.x,y:P.y-30,txt:"状態異常 回復",col:C.lime,t:1.6,big:true}); blip(1500,.2,"sine",.05,2400);
+      } else {
+        if(markT>0){ markT=0; pops.push({x:P.x,y:P.y-30,txt:"刻印 浄化",col:C.lime,t:1.4,big:true}); }
+        else { bombs=Math.min(bombs+1,9); pops.push({x:P.x,y:P.y-30,txt:"霊符 +1",col:C.amber,t:1.4,big:true}); }
+        addScore(1500); blip(1400,.16,"triangle",.05,2200);
+      }
     }
   }
   for(var m=0;m<enemies.length;m++){
@@ -2579,9 +2776,9 @@ var SPELLS6=[
 ];
 
 /* ═════════════════  STAGE 7 : 天壇審判  ═════════════════ */
-function polShot(x,y,ang,sp,pol,o){
-  o=o||{}; o.col=pol?C.violet:C.ice; o.r=o.r||6;
-  var b=shot(x,y,ang,sp,o); if(b) b.pol=pol; return b;
+function judgeShot(x,y,ang,sp,alt,o){
+  o=o||{}; o.col=holyCol; o.r=o.r||6;
+  return shot(x,y,ang,sp,o);
 }
 function judge(x,ty,pol){
   E({x:x,y:-30,ty:ty,kind:"split",hp:150,r:15,col:pol?C.violet:C.ice,score:1100,stay:9,
@@ -2589,7 +2786,7 @@ function judge(x,ty,pol){
       if(e.y<e.ty) e.y+=105*dt;
       else if(e.t<e.stay){ e.x=clamp(e.x+Math.sin(e.t)*50*dt,30,W-30);
         e.ft-=dt; if(e.ft<=0){ e.ft=1.0/D.dens;
-          for(var i=0;i<5;i++) polShot(e.x,e.y,aimAt(e.x,e.y)+(i-2)*.22,175,pol); } }
+          for(var i=0;i<5;i++) judgeShot(e.x,e.y,aimAt(e.x,e.y)+(i-2)*.22,175,pol); } }
       else e.y+=190*dt;
     }});
 }
@@ -2639,11 +2836,10 @@ function midboss7(){
   E({x:W/2,y:-60,ty:120,kind:"mid",hp:Math.round(1700*D.hp),r:31,col:holyCol,score:18000,stay:24,boss:true,name:"戒律の守り手",
     ai:function(e,dt){
       if(e.y<e.ty){ e.y+=70*dt; return; }
-      polOn=1;
       e.x=W/2+Math.sin(e.t*.85)*140;
       e.ft-=dt; if(e.ft<=0){ e.ft=.55/D.dens;
         var pl=(e.pl=(e.pl||0)+1)%2;
-        for(var i=0;i<8;i++) polShot(e.x,e.y,e.t*1.3+i*TAU/8,150,pl); }
+        for(var i=0;i<8;i++) judgeShot(e.x,e.y,e.t*1.3+i*TAU/8,150,pl); }
       e.ft2-=dt; if(e.ft2<=0){ e.ft2=3.2; heavyBall(e.x,e.y,aimAt(e.x,e.y)); }
       e.ft3=(e.ft3||5)-dt; if(e.ft3<=0){ e.ft3=7.0; almsOrb(rnd(60,W-60)); }
       if(e.t>e.stay) e.y-=160*dt;
@@ -2651,7 +2847,7 @@ function midboss7(){
 }
 function buildWaves7(){
   function add(at,fn){ waves.push({at:at,fn:fn}); }
-  add(1.0,function(){ polOn=1; banner={t:2.6,txt:"Polarity",sub:"極性 — Cキーで切替"}; });
+  add(1.0,function(){ eyeOn=1; banner={t:2.8,txt:"Judging Eye",sub:"静止の律 — 目が開いたら動くな"}; });
   add(2.5,function(){ judge(140,110,0); judge(340,110,1); });
   add(6.0,function(){ pillar(120,180); pillar(360,180); });
   add(9.0,function(){ judge(240,120,0); heavyBall(240,-10,Math.PI/2); });
@@ -2686,41 +2882,40 @@ function buildWaves7(){
   add(72.0,function(){ judge(90,120,1); judge(390,120,0); });
   add(75.0,function(){ judge(240,150,1); });
 }
-function s7p1(b,dt){ /* 極性審判 */
-  polOn=1;
+function s7p1(b,dt){ /* 戒律斉射 */
+  eyeOn=1;
   b.x=W/2+Math.sin(b.pt*.9)*150; b.y=102;
   b.ft-=dt; if(b.ft<=0){ b.ft=.42/D.dens;
     var pl=(b.pl=(b.pl||0)+1)%2;
-    for(var i=0;i<9;i++) polShot(b.x,b.y,b.pt*1.6+i*TAU/9,160,pl); }
+    for(var i=0;i<9;i++) judgeShot(b.x,b.y,b.pt*1.6+i*TAU/9,160,pl); }
   b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.1;
-    for(var k=0;k<6;k++) polShot(b.x,b.y,aimAt(b.x,b.y)+(k-2.5)*.18,215,k%2,{shape:"rice",r:5}); }
+    for(var k=0;k<6;k++) judgeShot(b.x,b.y,aimAt(b.x,b.y)+(k-2.5)*.18,215,k%2,{shape:"rice",r:5}); }
 }
 function s7p2(b,dt){ /* 時計回廊 */
-  polOn=1;
   b.x=W/2+Math.sin(b.pt*.5)*110; b.y=100;
   if(!b.setup){ b.setup=1;
     hazard({kind:"seg",x:W/2,y:H/2+40,n:1,arm:360,w:15,spin:.62,warn:1.4,fire:999,col:holyCol});
     hazard({kind:"seg",x:W/2,y:H/2+40,n:1,arm:250,w:13,spin:-1.15,warn:1.4,fire:999,col:holyCol});
   }
   b.ft-=dt; if(b.ft<=0){ b.ft=.9/D.dens;
-    for(var i=0;i<10;i++){ var bb=polShot(b.x,b.y,b.pt+i*TAU/10,140,i%2);
+    for(var i=0;i<10;i++){ var bb=judgeShot(b.x,b.y,b.pt+i*TAU/10,140,i%2);
       if(bb) bb.ph={on:.62,off:.5}; } }
   b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.6;
     for(var k=0;k<5;k++){ var b2=shot(b.x,b.y,aimAt(b.x,b.y)+(k-2)*.24,195,{col:holyCol,shape:"rice",r:4});
       if(b2) b2.ph={on:.5,off:.42}; } }
 }
 function s7p3(b,dt){ /* 天秤の理 */
-  polOn=1; balanceOn=1;
+  balanceOn=1;
   b.x=W/2+Math.sin(b.pt*.75)*140; b.y=100;
   if(!b.setup){ b.setup=1; pillar(96,210,200); pillar(W-96,210,200); }
   b.ft-=dt; if(b.ft<=0){ b.ft=2.4/D.dens; heavyBall(b.x,b.y,aimAt(b.x,b.y)); }
   b.ft2-=dt; if(b.ft2<=0){ b.ft2=.62/D.dens;
     var pl=(b.pl=(b.pl||0)+1)%2;
-    for(var i=0;i<6;i++) polShot(b.x,b.y,b.pt*1.9+i*TAU/6,168,pl); }
+    for(var i=0;i<6;i++) judgeShot(b.x,b.y,b.pt*1.9+i*TAU/6,168,pl); }
   b.ft3-=dt; if(b.ft3<=0){ b.ft3=5.0; almsOrb(rnd(60,W-60)); }
 }
 function s7p4(b,dt){ /* 最終審判 */
-  polOn=1;
+  eyeOn=1;
   b.x=W/2+Math.sin(b.pt*1.35)*150; b.y=96+Math.sin(b.pt*2.2)*16;
   if(!b.setup){ b.setup=1; markT=12; balanceOn=1;
     banner={t:2.4,txt:"Judgment",sub:"安全圏へ逃げ込め"}; }
@@ -2729,7 +2924,7 @@ function s7p4(b,dt){ /* 最終審判 */
     pops.push({x:P.x,y:P.y-30,txt:"刻印",col:holyCol,t:1.4,big:true}); } }
   b.ft-=dt; if(b.ft<=0){ b.ft=.52/D.dens;
     var pl=(b.pl=(b.pl||0)+1)%2;
-    for(var i=0;i<8;i++){ var bb=polShot(b.x,b.y,b.pt*1.4+i*TAU/8,172,pl);
+    for(var i=0;i<8;i++){ var bb=judgeShot(b.x,b.y,b.pt*1.4+i*TAU/8,172,pl);
       if(bb&&i%2) bb.ph={on:.6,off:.45}; } }
   b.ft2-=dt; if(b.ft2<=0){ b.ft2=6.5;
     safeSpot(rnd(90,W-90),rnd(260,H-120),80);
@@ -2737,10 +2932,580 @@ function s7p4(b,dt){ /* 最終審判 */
   b.ft3-=dt; if(b.ft3<=0){ b.ft3=4.4; almsOrb(rnd(60,W-60)); heavyBall(b.x,b.y,aimAt(b.x,b.y)); }
 }
 var SPELLS7=[
-  {name:"極性審判",hp:2300, time:48, fn:s7p1, col:C.ice},
+  {name:"戒律斉射",hp:2300, time:48, fn:s7p1, col:holyCol},
   {name:"時計回廊",hp:2400, time:50, fn:s7p2, col:holyCol},
   {name:"天秤の理",hp:2500, time:50, fn:s7p3, col:holyCol},
   {name:"最終審判",hp:3600, time:70, fn:s7p4, col:C.mag}
+];
+
+/* ═════════════════  STAGE 8 : 音律回廊（リズム）  ═════════════════ */
+var bpm=0, beatSpb=0, beatT=0, beatN=0, beatPulse=0, beatFn=null, lanesOn=0, speakersOn=0, restT=0;
+var judgeTxt=null, judgeT=0, perfects=0, beatCol="#ff5ad8";
+function setBpm(v){ bpm=v; beatSpb=v?60/v:0; }
+function beatNear(){
+  if(!bpm) return 0;
+  var d=Math.min(beatT,beatSpb-beatT);
+  return d<.085?2:(d<.17?1:0);
+}
+function stepBeat(dt){
+  if(beatPulse>0) beatPulse-=dt*3.6;
+  if(judgeT>0) judgeT-=dt;
+  if(!bpm) return;
+  beatT+=dt;
+  if(restT>0){ restT-=dt; bulletScale=0.06; if(restT<=0) bulletScale=1; }
+  if(beatT>=beatSpb){
+    beatT-=beatSpb; beatN++; beatPulse=1;
+    if(beatN%32===0){ restT=beatSpb*.9; banner={t:1.0,txt:"Rest",sub:"休符"}; }
+    if(speakersOn&&beatN%2===0){
+      var dir=P.x<W/2?1:-1;
+      P.x=clamp(P.x+dir*26,fL,fR);
+      parts.push({x:P.x-dir*20,y:P.y,a:dir>0?Math.PI:0,s:180,t:.2,col:beatCol,sz:3});
+    }
+    if(beatFn) beatFn(beatN);
+    blip(beatN%4===1?880:440,.05,"square",.018,300);
+  }
+}
+function laneStrike(lane,beats){
+  var lw=W/4;
+  var h=hazard({kind:"rect",x:lane*lw+lw/2,y:H/2,w:lw-10,h:H,warn:1,fire:.26,col:beatCol});
+  h.warn=beatSpb*(beats||1);
+}
+function beatBar(fromTop){
+  var h=hazard({kind:"rect",x:W/2,y:fromTop?110:H-110,w:W,h:26,warn:1,fire:.3,col:beatCol,gap:rnd(70,W-70),gapW:52});
+  h.warn=beatSpb*2;
+}
+function noteBullet(x,y,ang,sp,col){
+  var b=shot(x,y,ang,sp,{col:col||beatCol,r:5});
+  if(b) b.beatTurn=1;
+  return b;
+}
+function stutBullet(x,y,ang,sp){
+  var b=shot(x,y,ang,sp,{col:C.ice,r:5,shape:"rice"});
+  if(b) b.stut=1;
+  return b;
+}
+function drummer(x,ty,pat){
+  E({x:x,y:-30,ty:ty,kind:"split",hp:140,r:15,col:beatCol,score:900,stay:11,pat:pat||0,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=112*dt; return; }
+      e.x=clamp(e.x+Math.sin(e.t*.9)*52*dt,30,W-30);
+      if(e.lastB!==beatN){
+        e.lastB=beatN;
+        if(e.t<e.stay){
+          if(e.pat===0&&beatN%2===0) nway(e.x,e.y,aimAt(e.x,e.y),3,.26,190,{col:beatCol,r:5});
+          if(e.pat===1&&beatN%4===1) ring(e.x,e.y,8,beatN*.7,165,{col:beatCol,r:5});
+          if(e.pat===2) noteBullet(e.x,e.y,aimAt(e.x,e.y),185);
+        }
+      }
+      if(e.t>e.stay) e.y+=195*dt;
+    }});
+}
+function speakerBox(side){
+  E({x:side<0?26:W-26,y:-30,ty:190,kind:"turret",hp:230,r:16,col:beatCol,score:1400,stay:14,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=95*dt; return; }
+      if(e.lastB!==beatN){ e.lastB=beatN;
+        if(e.t<e.stay&&beatN%2===1) nway(e.x,e.y,e.x<W/2?0:Math.PI,3,.42,200,{col:C.ice,shape:"rice",r:4}); }
+      if(e.t>e.stay) e.y+=180*dt;
+    }});
+}
+function metronome(x,y){
+  var h=hazard({kind:"seg",x:x,y:y,n:1,arm:230,w:13,warn:1.2,fire:26,col:beatCol});
+  h.osc={base:Math.PI/2,amp:.85,sp:2.2};
+}
+function midboss8(){
+  banner={t:2.2,txt:"中ボス",sub:"拍動機関"};
+  setPhaseText("中ボス 「拍動機関」");
+  E({x:W/2,y:-60,ty:122,kind:"mid",hp:Math.round(1650*D.hp),r:31,col:beatCol,score:17000,stay:23,boss:true,name:"拍動機関",
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=70*dt; return; }
+      e.x=W/2+Math.sin(e.t*.85)*140;
+      if(e.lastB!==beatN){
+        e.lastB=beatN;
+        if(beatN%2===0) ring(e.x,e.y,9,beatN*.6,160,{col:beatCol,r:5});
+        if(beatN%4===2) laneStrike((beatN/2|0)%4,1);
+        if(beatN%8===5) beatBar(true);
+      }
+      if(e.t>e.stay) e.y-=160*dt;
+    }});
+}
+function buildWaves8(){
+  function add(at,fn){ waves.push({at:at,fn:fn}); }
+  add(0.5,function(){ setBpm(132); lanesOn=1; banner={t:2.6,txt:"BPM 132",sub:"音律回廊 — 拍に乗れ"}; });
+  add(2.0,function(){ drummer(150,110,0); drummer(330,110,0); });
+  add(6.0,function(){ laneStrike(0,2); laneStrike(3,2); });
+  add(8.0,function(){ drummer(240,130,1); });
+  add(10.5,function(){ metronome(W/2,150); });
+  add(13.0,function(){ speakersOn=1; speakerBox(-1); speakerBox(1); banner={t:2.0,txt:"Bass",sub:"低音で押される"}; });
+  add(16.0,function(){ drummer(90,110,2); drummer(390,110,2); });
+  add(19.0,function(){ beatBar(true); beatBar(false); });
+  add(21.0,function(){ for(var i=0;i<4;i++) laneStrike(i,1+i*.5); });
+  add(24.0,function(){ drummer(150,140,1); drummer(330,140,1); });
+  add(27.0,function(){ setBpm(150); banner={t:2.0,txt:"BPM 150",sub:"加速"}; });
+  add(28.0,function(){ metronome(130,200); metronome(350,200); });
+  add(31.5,function(){ drummer(240,110,0); speakerBox(-1); });
+  add(34.5,function(){ for(var i=0;i<3;i++) stutBullet(rnd(40,W-40),-10,Math.PI/2,220); beatBar(true); });
+  add(36.0,function(){ drummer(100,120,2); drummer(240,150,0); drummer(380,120,2); });
+  add(40.0,function(){ laneStrike(1,1); laneStrike(2,2); metronome(W/2,240); });
+  add(43.0,midboss8);
+  add(63.0,function(){ setBpm(165); speakersOn=1; banner={t:2.0,txt:"BPM 165",sub:"最終テンポ"}; });
+  add(64.0,function(){ drummer(120,110,1); drummer(360,110,1); speakerBox(1); });
+  add(67.0,function(){ for(var i=0;i<4;i++) laneStrike(i,1+i*.4); });
+  add(70.0,function(){ drummer(240,130,2); metronome(W/2,180); beatBar(false); });
+  add(73.5,function(){ drummer(90,120,0); drummer(390,120,0); beatBar(true); });
+}
+function s8p1(b,dt){ /* 四拍子 */
+  b.x=W/2+Math.sin(b.pt*.8)*148; b.y=102;
+  if(b.lastB!==beatN){
+    b.lastB=beatN;
+    if(beatN%4===1) ring(b.x,b.y,12,b.pt,170,{col:beatCol,r:5});
+    else if(beatN%2===0) nway(b.x,b.y,aimAt(b.x,b.y),5,.2,205,{col:C.ice,shape:"rice",r:4});
+    if(beatN%8===3) laneStrike((beatN/3|0)%4,1);
+  }
+}
+function s8p2(b,dt){ /* 裏拍葬送 */
+  b.x=W/2+Math.sin(b.pt*1.1)*140; b.y=100;
+  if(!b.setup){ b.setup=1; metronome(120,210); metronome(W-120,210); }
+  if(b.lastB!==beatN){
+    b.lastB=beatN;
+    for(var i=0;i<6;i++) stutBullet(b.x,b.y,b.pt+i*TAU/6,215);
+    if(beatN%4===2) nway(b.x,b.y,aimAt(b.x,b.y),3,.3,190,{col:beatCol,r:5});
+  }
+}
+function s8p3(b,dt){ /* 譜面掃射 */
+  b.x=W/2+Math.sin(b.pt*.6)*120; b.y=98;
+  if(!b.setup){ b.setup=1; speakersOn=1; }
+  if(b.lastB!==beatN){
+    b.lastB=beatN;
+    var pat=[0,2,1,3,0,3,2,1][beatN%8];
+    laneStrike(pat,1);
+    if(beatN%2===1) noteBullet(b.x,b.y,aimAt(b.x,b.y),200);
+    if(beatN%6===0) beatBar(beatN%12===0);
+  }
+}
+function s8p4(b,dt){ /* 最終楽章 */
+  b.x=W/2+Math.sin(b.pt*1.4)*152; b.y=98+Math.sin(b.pt*2.2)*16;
+  if(!b.setup){ b.setup=1; setBpm(174); speakersOn=1; metronome(W/2,260); }
+  if(b.lastB!==beatN){
+    b.lastB=beatN;
+    if(beatN%2===0) ring(b.x,b.y,10,b.pt*1.3,178,{col:beatCol,r:5});
+    else for(var i=0;i<5;i++) noteBullet(b.x,b.y,aimAt(b.x,b.y)+(i-2)*.26,195);
+    if(beatN%4===1) laneStrike((beatN/4|0)%4,1);
+    if(beatN%8===6) beatBar(true);
+    if(beatN%16===9) for(var k=0;k<7;k++) stutBullet(b.x,b.y,k*TAU/7,225);
+  }
+}
+var SPELLS8=[
+  {name:"四拍子",  hp:2350, time:48, fn:s8p1, col:beatCol},
+  {name:"裏拍葬送",hp:2450, time:50, fn:s8p2, col:C.ice},
+  {name:"譜面掃射",hp:2550, time:50, fn:s8p3, col:beatCol},
+  {name:"最終楽章",hp:3500, time:68, fn:s8p4, col:C.mag}
+];
+
+/* ═════════════════  STAGE 9 : 幻想回廊（RPG）  ═════════════════ */
+var elemOn=0, elem=0, elemT=0, pexp=0, plevel=1, dmgNum=0;
+var poisonT=0, paraT=0, atkT=0;
+var ELEMN=["火","水","雷"], ELEMC=["#ff6a4d","#4bc8ff","#ffd24b"];
+function elemWeak(){ return (elem+1)%3; }
+function stepRpg(dt){
+  if(poisonT>0){ poisonT-=dt; P.pow=Math.max(0,P.pow-7*dt); }
+  if(paraT>0) paraT-=dt;
+  if(atkT>0) atkT-=dt;
+  if(!elemOn) return;
+  elemT-=dt;
+  if(elemT<=0){ elemT=6.5; elem=(elem+1)%3;
+    pops.push({x:W/2,y:150,txt:"属性 "+ELEMN[elem]+" → "+ELEMN[elemWeak()]+"に特効",col:ELEMC[elem],t:1.6}); }
+}
+function gainExp(v){
+  if(!elemOn) return;
+  pexp+=v;
+  var need=plevel*900;
+  if(pexp>=need&&plevel<5){
+    pexp-=need; plevel++;
+    pops.push({x:P.x,y:P.y-34,txt:"LEVEL UP  Lv."+plevel,col:C.lime,t:2.0,big:true});
+    P.pow=Math.min(100,P.pow+20); blip(1200,.3,"triangle",.07,1900);
+  }
+}
+function caster(x,ty,el){
+  E({x:x,y:-30,ty:ty,kind:"spinner",hp:300,r:17,col:ELEMC[el],score:1700,stay:22,elem:el,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=96*dt; return; }
+      e.x=clamp(e.x+Math.sin(e.t*.7)*46*dt,40,W-40);
+      if(!e.cast){ e.ft-=dt; if(e.ft<=0){ e.cast={t:0,dur:3.6,dmg:0,need:Math.round(150*D.hp)}; } }
+      else {
+        e.cast.t+=dt;
+        if(e.cast.dmg>=e.cast.need){
+          e.cast=null; e.ft=3.0; e.stunT=1.8; addScore(2500);
+          pops.push({x:e.x,y:e.y-26,txt:"詠唱中断",col:C.lime,t:1.4,big:true});
+          blip(1500,.2,"triangle",.06,2400);
+        } else if(e.cast.t>=e.cast.dur){
+          e.cast=null; e.ft=4.2;
+          ring(e.x,e.y,20,aimAt(e.x,e.y),200,{col:ELEMC[e.elem],r:6});
+          nway(e.x,e.y,aimAt(e.x,e.y),7,.16,235,{col:ELEMC[e.elem],shape:"rice",r:4});
+          blip(180,.5,"sawtooth",.07,60);
+        }
+      }
+      if(e.t>e.stay) e.y-=150*dt;
+    }});
+}
+function poisonBat(x,ty){
+  E({x:x,y:-26,ty:ty,kind:"diver",hp:60,r:12,col:"#9ae06a",score:500,stay:9,elem:1,
+    ai:function(e,dt){
+      if(e.y<e.ty) e.y+=150*dt;
+      else if(e.t<e.stay){ e.x+=Math.sin(e.t*2.4)*90*dt;
+        e.ft-=dt; if(e.ft<=0){ e.ft=1.0/D.dens;
+          var b=shot(e.x,e.y,aimAt(e.x,e.y),185,{col:"#9ae06a",r:6}); if(b) b.poison=1;
+          nway(e.x,e.y,aimAt(e.x,e.y),2,.34,175,{col:"#9ae06a",r:5}); } }
+      else e.y+=200*dt;
+    }});
+}
+function sparkImp(x,ty){
+  E({x:x,y:-26,ty:ty,kind:"twin",hp:80,r:12,col:ELEMC[2],score:600,stay:9,elem:2,
+    ai:function(e,dt){
+      if(e.y<e.ty) e.y+=130*dt;
+      else if(e.t<e.stay){ e.x=clamp(e.x+Math.sin(e.t*1.9)*80*dt,26,W-26);
+        e.ft-=dt; if(e.ft<=0){ e.ft=1.1/D.dens;
+          var b2=shot(e.x,e.y,aimAt(e.x,e.y),210,{col:ELEMC[2],shape:"rice",r:5}); if(b2) b2.para=1;
+          ring(e.x,e.y,5,e.t*1.6,150,{col:ELEMC[2],r:5}); } }
+      else e.y+=190*dt;
+    }});
+}
+function healer(x,ty){
+  E({x:x,y:-30,ty:ty,kind:"crystal",hp:240,r:16,col:C.lime,score:2200,stay:20,elem:1,heal:1,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=92*dt; return; }
+      e.x=clamp(e.x+Math.sin(e.t*.9)*50*dt,40,W-40);
+      e.ft-=dt;
+      if(e.ft<=0){ e.ft=1.0;
+        for(var i=0;i<enemies.length;i++){
+          var t2=enemies[i];
+          if(t2!==e&&t2.hp<t2.max&&Math.abs(t2.x-e.x)<200&&Math.abs(t2.y-e.y)<200){
+            t2.hp=Math.min(t2.max,t2.hp+t2.max*.07);
+            parts.push({x:t2.x,y:t2.y,a:-Math.PI/2,s:60,t:.4,col:C.lime,sz:2});
+          }
+        }
+      }
+      if(e.t>e.stay) e.y-=150*dt;
+    }});
+}
+function necro(x,ty){
+  E({x:x,y:-30,ty:ty,kind:"sealer",hp:320,r:17,col:"#b97bff",score:2600,stay:22,elem:0,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=88*dt; return; }
+      e.x=clamp(e.x+Math.sin(e.t*.6)*44*dt,50,W-50);
+      e.ft-=dt;
+      if(e.ft<=0){ e.ft=6.0;
+        poisonBat(clamp(e.x+rnd(-70,70),30,W-30),e.y+40);
+        pops.push({x:e.x,y:e.y-24,txt:"蘇生",col:"#b97bff",t:1.2});
+      }
+      e.ft2-=dt; if(e.ft2<=0){ e.ft2=1.9/D.dens; ring(e.x,e.y,9,e.t,145,{col:"#b97bff",r:5}); }
+      if(e.t>e.stay) e.y-=150*dt;
+    }});
+}
+function chest(x){
+  E({x:x,y:-26,kind:"chest",hp:120,r:15,col:"#ffcf6a",score:1200,stay:99,rw:34,rh:28,
+    onKill:function(e){
+      var kinds=["atk","cure","bomb"];
+      for(var i=0;i<3;i++) pickup(e.x+rnd(-20,20),e.y,kinds[i]);
+      pops.push({x:e.x,y:e.y-22,txt:"宝箱",col:"#ffcf6a",t:1.4,big:true});
+    },
+    ai:function(e,dt){ e.y+=95*dt; e.x+=Math.sin(e.t*1.4)*40*dt; }});
+}
+function midboss9(){
+  banner={t:2.2,txt:"中ボス",sub:"大魔導師"};
+  setPhaseText("中ボス 「大魔導師」");
+  E({x:W/2,y:-60,ty:124,kind:"mid",hp:Math.round(1700*D.hp),r:31,col:"#b97bff",score:19000,stay:24,boss:true,name:"大魔導師",elem:0,
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=70*dt; return; }
+      e.x=W/2+Math.sin(e.t*.8)*138;
+      if(!e.cast){ e.ft-=dt; if(e.ft<=0){ e.cast={t:0,dur:4.2,dmg:0,need:Math.round(320*D.hp)}; } }
+      else {
+        e.cast.t+=dt;
+        if(e.cast.dmg>=e.cast.need){ e.cast=null; e.ft=3.4; addScore(6000);
+          pops.push({x:e.x,y:e.y-30,txt:"詠唱中断",col:C.lime,t:1.6,big:true}); }
+        else if(e.cast.t>=e.cast.dur){ e.cast=null; e.ft=4.6;
+          for(var k=0;k<3;k++) ring(e.x,e.y,18,e.t+k,150+k*40,{col:ELEMC[k],r:5}); }
+      }
+      e.ft2-=dt; if(e.ft2<=0){ e.ft2=1.6/D.dens; nway(e.x,e.y,aimAt(e.x,e.y),5,.2,190,{col:"#b97bff",shape:"rice",r:4}); }
+      if(e.t>e.stay) e.y-=160*dt;
+    }});
+}
+function buildWaves9(){
+  function add(at,fn){ waves.push({at:at,fn:fn}); }
+  add(0.5,function(){ elemOn=1; dmgNum=1; elemT=6.5;
+    banner={t:2.8,txt:"Elements",sub:"属性相性 — 弱点に特効2.5倍"}; });
+  add(2.0,function(){ poisonBat(140,120); poisonBat(340,120); });
+  add(5.0,function(){ caster(240,120,0); });
+  add(8.0,function(){ sparkImp(100,110); sparkImp(380,110); });
+  add(11.0,function(){ chest(240); });
+  add(13.0,function(){ healer(150,130); poisonBat(330,120); });
+  add(16.5,function(){ caster(120,110,1); caster(360,110,2); });
+  add(20.0,function(){ necro(240,130); });
+  add(23.5,function(){ sparkImp(80,120); sparkImp(240,150); sparkImp(400,120); });
+  add(26.5,function(){ chest(140); chest(340); });
+  add(29.0,function(){ healer(240,120); caster(90,140,0); });
+  add(33.0,function(){ poisonBat(120,110); poisonBat(240,140); poisonBat(360,110); });
+  add(36.5,function(){ caster(150,120,2); caster(330,120,1); });
+  add(40.0,function(){ necro(150,130); healer(330,130); });
+  add(44.0,midboss9);
+  add(66.0,function(){ caster(120,110,0); caster(360,110,1); chest(240); });
+  add(69.5,function(){ necro(240,120); sparkImp(90,140); sparkImp(390,140); });
+  add(73.0,function(){ healer(150,120); healer(330,120); poisonBat(240,150); });
+  add(76.5,function(){ caster(240,110,2); chest(120); chest(360); });
+  add(3.5,function(){ sparkImp(240,130); });
+  add(6.5,function(){ poisonBat(90,140); poisonBat(390,140); });
+  add(10.0,function(){ caster(120,140,1); });
+  add(14.5,function(){ sparkImp(180,120); sparkImp(300,120); });
+  add(18.5,function(){ poisonBat(240,110); caster(330,150,0); });
+  add(22.0,function(){ sparkImp(120,130); poisonBat(360,130); });
+  add(25.0,function(){ caster(180,120,2); caster(300,120,1); });
+  add(31.0,function(){ poisonBat(90,120); sparkImp(240,140); poisonBat(390,120); });
+  add(35.0,function(){ caster(240,110,0); });
+  add(38.5,function(){ sparkImp(100,130); sparkImp(380,130); poisonBat(240,160); });
+  add(42.0,function(){ caster(150,140,1); poisonBat(330,120); });
+  add(68.0,function(){ sparkImp(120,120); sparkImp(360,120); });
+  add(71.5,function(){ poisonBat(90,130); poisonBat(240,110); poisonBat(390,130); });
+  add(75.0,function(){ sparkImp(180,140); sparkImp(300,140); });
+  add(78.5,function(){ caster(240,120,1); poisonBat(120,150); poisonBat(360,150); });
+}
+function s9p1(b,dt){ /* 属性乱舞 */
+  b.x=W/2+Math.sin(b.pt*.85)*145; b.y=102;
+  b.elem=elem===0?1:0;
+  b.ft-=dt; if(b.ft<=0){ b.ft=.9/D.dens;
+    var ec=ELEMC[(b.pl=(b.pl||0)+1)%3];
+    ring(b.x,b.y,11,b.pt*1.4,155,{col:ec,r:5}); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.3;
+    var bb=shot(b.x,b.y,aimAt(b.x,b.y),185,{col:"#9ae06a",r:7}); if(bb) bb.poison=1;
+    var b2=shot(b.x,b.y,aimAt(b.x,b.y)+.4,200,{col:ELEMC[2],r:6,shape:"rice"}); if(b2) b2.para=1; }
+}
+function s9p2(b,dt){ /* 詠唱：極大魔法 */
+  b.x=W/2+Math.sin(b.pt*.6)*110; b.y=100;
+  if(!b.cast){ b.ct=(b.ct===undefined?2.5:b.ct)-dt;
+    if(b.ct<=0){ b.cast={t:0,dur:4.4,dmg:0,need:Math.round(420*D.hp)};
+      banner={t:1.4,txt:"Casting",sub:"詠唱を止めろ"}; } }
+  else {
+    b.cast.t+=dt;
+    if(b.cast.dmg>=b.cast.need){ b.cast=null; b.ct=3.2; addScore(8000);
+      pops.push({x:W/2,y:220,txt:"詠唱中断  +8,000",col:C.lime,t:2.0,big:true}); }
+    else if(b.cast.t>=b.cast.dur){ b.cast=null; b.ct=4.0;
+      for(var k=0;k<4;k++) ring(b.x,b.y,22,b.pt+k*.4,140+k*38,{col:ELEMC[k%3],r:5});
+      shake=reduce?2:14; }
+  }
+  b.ft-=dt; if(b.ft<=0){ b.ft=1.3/D.dens; nway(b.x,b.y,aimAt(b.x,b.y),5,.19,195,{col:"#b97bff",shape:"rice",r:4}); }
+}
+function s9p3(b,dt){ /* 状態異常の檻 */
+  b.x=W/2+Math.sin(b.pt*1.15)*148; b.y=100;
+  b.ft-=dt; if(b.ft<=0){ b.ft=.55/D.dens;
+    var bb=shot(b.x,b.y,b.pt*2.1,170,{col:"#9ae06a",r:6}); if(bb) bb.poison=1;
+    var b2=shot(b.x,b.y,b.pt*2.1+Math.PI,170,{col:ELEMC[2],r:6}); if(b2) b2.para=1; }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.0; ring(b.x,b.y,16,aimAt(b.x,b.y),200,{col:ELEMC[elem],shape:"rice",r:4}); }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=6.0; pickup(rnd(60,W-60),120,"cure"); }
+}
+function s9p4(b,dt){ /* 賢者の最終詠唱 */
+  b.x=W/2+Math.sin(b.pt*1.35)*150; b.y=98+Math.sin(b.pt*2.1)*16;
+  if(!b.setup){ b.setup=1; b.ct=3.0; }
+  if(!b.cast){ b.ct-=dt; if(b.ct<=0){ b.cast={t:0,dur:4.0,dmg:0,need:Math.round(520*D.hp)}; } }
+  else { b.cast.t+=dt;
+    if(b.cast.dmg>=b.cast.need){ b.cast=null; b.ct=5.0; b.hp-=Math.round(380*D.hp); addScore(9000);
+      pops.push({x:W/2,y:230,txt:"詠唱粉砕  +9,000",col:C.lime,t:2.0,big:true}); }
+    else if(b.cast.t>=b.cast.dur){ b.cast=null; b.ct=5.5;
+      for(var k=0;k<5;k++) ring(b.x,b.y,20,b.pt+k*.3,130+k*34,{col:ELEMC[k%3],r:5});
+      shake=reduce?3:18; } }
+  b.ft-=dt; if(b.ft<=0){ b.ft=.062/D.dens; b.sp-=.42;
+    for(var i=0;i<3;i++) shot(b.x,b.y,b.sp+i*TAU/3,166,{col:ELEMC[i],r:5}); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.6;
+    var bb=shot(b.x,b.y,aimAt(b.x,b.y),190,{col:"#9ae06a",r:7}); if(bb) bb.poison=1; }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=7.0; pickup(rnd(60,W-60),130,"atk"); }
+}
+var SPELLS9=[
+  {name:"属性乱舞",      hp:2400, time:48, fn:s9p1, col:ELEMC[0]},
+  {name:"極大魔法詠唱",  hp:2500, time:50, fn:s9p2, col:"#b97bff"},
+  {name:"状態異常の檻",  hp:2600, time:50, fn:s9p3, col:"#9ae06a"},
+  {name:"賢者の最終詠唱",hp:3600, time:70, fn:s9p4, col:C.mag}
+];
+
+/* ═════════════════  STAGE 10 : 深淵略奪（ハック&スラッシュ）  ═════════════════ */
+var lootOn=0, greed=0, momentum=0, momT=0, enrage=0, enrageOn=0;
+var RAR=[{n:"並",c:"#d8dcf0"},{n:"魔",c:"#4bc8ff"},{n:"稀",c:"#b97bff"},{n:"伝説",c:"#ff9a3d"}];
+var AFFIX={
+  burst :{n:"爆散",c:"#ff8a3d"},
+  rapid :{n:"連射",c:"#ffd24b"},
+  swift :{n:"疾走",c:"#4bc8ff"},
+  ward  :{n:"守護",c:"#b97bff"},
+  scorch:{n:"焦熱",c:"#ff5a3d"},
+  fract :{n:"分裂",c:"#7dffb8"}
+};
+function lootDrop(x,y,rar){
+  var pu=pickup(x,y,"loot"); if(!pu) return;
+  pu.rar=rar===undefined?(Math.random()<.5?0:Math.random()<.6?1:Math.random()<.7?2:3):rar;
+}
+function burnPool(x,y){ zone({kind:"burn",x:x,y:y,w:110,h:96,col:"#ff5a3d",life:9}); }
+function cursePool(x,y){ zone({kind:"curse",x:x,y:y,w:150,h:140,col:"#b97bff",life:12}); }
+function eliteAffixes(e,list){
+  e.affs=list;
+  for(var i=0;i<list.length;i++){
+    var a=list[i];
+    if(a==="rapid") e.rateMul=.55;
+    if(a==="swift") e.spdMul=1.7;
+    if(a==="burst") e.revenge={n:16,sp:190,col:"#ff8a3d"};
+    if(a==="ward"){
+      e.guards=[];
+      for(var k=0;k<3;k++){
+        var g=E({x:e.x+Math.cos(k*TAU/3)*60,y:e.y+Math.sin(k*TAU/3)*60,kind:"twin",hp:Math.round(120*D.hp),
+          r:11,col:"#b97bff",score:600,stay:99,host:e,ga:k*TAU/3,
+          ai:function(g2,dt){ g2.ga+=1.5*dt;
+            if(g2.host&&enemies.indexOf(g2.host)>=0){ g2.x=g2.host.x+Math.cos(g2.ga)*62; g2.y=g2.host.y+Math.sin(g2.ga)*62; }
+            else g2.y+=180*dt;
+            g2.ft-=dt; if(g2.ft<=0){ g2.ft=2.2/D.dens; shot(g2.x,g2.y,aimAt(g2.x,g2.y),175,{col:"#b97bff",r:5}); } }});
+        e.guards.push(g);
+      }
+    }
+    if(a==="fract") e.fract=1;
+  }
+}
+function eliteGuarded(e){
+  if(!e.guards) return false;
+  for(var i=0;i<e.guards.length;i++) if(enemies.indexOf(e.guards[i])>=0) return true;
+  return false;
+}
+function elite(x,ty,list){
+  var e=E({x:x,y:-40,ty:ty,kind:"elite",hp:Math.round(560*D.hp),r:20,col:"#ff8a3d",score:4200,stay:20,
+    ai:function(e,dt){
+      var sm=e.spdMul||1;
+      if(e.y<e.ty){ e.y+=100*sm*dt; return; }
+      e.x=clamp(e.x+Math.sin(e.t*.9)*62*sm*dt,36,W-36);
+      e.ft-=dt;
+      if(e.ft<=0){ e.ft=1.25*(e.rateMul||1)/D.dens;
+        nway(e.x,e.y,aimAt(e.x,e.y),4,.22,190,{col:"#ff8a3d",r:5}); }
+      if(e.affs&&e.affs.indexOf("scorch")>=0){ e.ft2-=dt; if(e.ft2<=0){ e.ft2=2.4; burnPool(e.x,e.y+90); } }
+      if(e.t>e.stay) e.y+=170*dt;
+    },
+    onKill:function(e){
+      var n2=2+((Math.random()*3)|0);
+      for(var i=0;i<n2;i++) lootDrop(e.x+rnd(-26,26),e.y+rnd(-14,14));
+      if(e.fract){
+        for(var k=0;k<2;k++) E({x:e.x+(k?26:-26),y:e.y,kind:"twin",hp:Math.round(150*D.hp),r:12,col:"#7dffb8",
+          score:900,stay:99,
+          ai:function(g,dt){ g.y+=120*dt; g.x+=Math.sin(g.t*2.2)*70*dt;
+            g.ft-=dt; if(g.ft<=0){ g.ft=1.3/D.dens; nway(g.x,g.y,aimAt(g.x,g.y),3,.26,185,{col:"#7dffb8",r:5}); } }});
+      }
+    }});
+  eliteAffixes(e,list);
+  return e;
+}
+function pack(n,y){
+  for(var i=0;i<n;i++){
+    E({x:40+i*((W-80)/(n-1)),y:-30-((i%3)*24),ty:y+(i%2)*30,kind:"grunt",hp:Math.round(52*D.hp),r:12,
+      col:"#ff8a3d",score:280,stay:7,
+      ai:function(e,dt){
+        if(e.y<e.ty) e.y+=150*dt;
+        else if(e.t<e.stay){ e.x+=Math.sin(e.t*1.4)*44*dt;
+          e.ft-=dt; if(e.ft<=0){ e.ft=1.5/D.dens; nway(e.x,e.y,aimAt(e.x,e.y),2,.3,190,{col:"#ff8a3d",r:5}); } }
+        else e.y+=200*dt;
+      }});
+  }
+}
+function goblin(){
+  E({x:rnd(80,W-80),y:-26,kind:"goblin",hp:Math.round(330*D.hp),r:15,col:"#ffd24b",score:6000,stay:99,
+    onKill:function(e){ for(var i=0;i<5;i++) lootDrop(e.x+rnd(-40,40),e.y+rnd(-20,20),i<2?2:1);
+      pops.push({x:e.x,y:e.y-26,txt:"強奪成功",col:"#ffd24b",t:2.0,big:true}); },
+    ai:function(e,dt){
+      e.y+=(e.t<1.2?150:-30)*dt;
+      e.x+=Math.sin(e.t*2.6)*190*dt;
+      e.x=clamp(e.x,24,W-24);
+      e.ft-=dt; if(e.ft<=0){ e.ft=1.1; lootDrop(e.x,e.y,0); }
+      if(e.t>9.5){ e.y-=260*dt; if(e.y<-40) pops.push({x:W/2,y:200,txt:"逃走された",col:C.dim||"#7b84b8",t:1.6,big:true}); }
+    }});
+}
+function stepLoot(dt){
+  if(momT>0){ momT-=dt; if(momT<=0) momentum=0; }
+  if(enrageOn){ enrage+=dt; }
+  for(var i=zones.length-1;i>=0;i--){
+    var z=zones[i];
+    if(z.kind==="burn"&&P.inv<=0&&inZone(z,P.x,P.y)){
+      P.burnCd=(P.burnCd||0)-dt;
+      if(P.burnCd<=0){ P.burnCd=1.1; hitPlayer(); return; }
+    }
+  }
+}
+function midboss10(){
+  banner={t:2.2,txt:"中ボス",sub:"略奪者の長"};
+  setPhaseText("中ボス 「略奪者の長」");
+  var e=E({x:W/2,y:-60,ty:122,kind:"mid",hp:Math.round(1750*D.hp),r:31,col:"#ff8a3d",score:20000,stay:24,boss:true,name:"略奪者の長",
+    ai:function(e,dt){
+      if(e.y<e.ty){ e.y+=70*dt; return; }
+      e.x=W/2+Math.sin(e.t*.85)*138;
+      e.ft-=dt; if(e.ft<=0){ e.ft=.85*(e.rateMul||1)/D.dens; ring(e.x,e.y,10,e.t*1.4,160,{col:"#ff8a3d",r:5}); }
+      e.ft2-=dt; if(e.ft2<=0){ e.ft2=3.0; burnPool(rnd(70,W-70),rnd(240,H-140)); }
+      e.ft3=(e.ft3||5)-dt; if(e.ft3<=0){ e.ft3=7.0; lootDrop(e.x,e.y+30,2); pack(5,140); }
+      if(e.t>e.stay) e.y-=160*dt;
+    }});
+  eliteAffixes(e,["rapid","ward"]);
+}
+function buildWaves10(){
+  function add(at,fn){ waves.push({at:at,fn:fn}); }
+  add(0.5,function(){ lootOn=1; banner={t:2.8,txt:"Plunder",sub:"深淵略奪 — 戦利品を拾え"}; });
+  add(2.0,function(){ pack(6,120); });
+  add(5.0,function(){ elite(150,120,["rapid"]); });
+  add(8.5,function(){ pack(7,110); lootDrop(240,140,1); });
+  add(11.5,function(){ elite(340,130,["swift","burst"]); });
+  add(15.0,function(){ cursePool(150,330); cursePool(330,460); });
+  add(16.0,function(){ pack(6,140); });
+  add(19.0,function(){ goblin(); });
+  add(22.5,function(){ elite(120,120,["ward"]); });
+  add(26.0,function(){ pack(8,120); burnPool(240,400); });
+  add(29.5,function(){ elite(360,130,["scorch","rapid"]); });
+  add(33.0,function(){ pack(6,150); cursePool(W/2,300); });
+  add(36.0,function(){ elite(240,110,["fract","swift"]); });
+  add(40.0,function(){ goblin(); pack(7,130); });
+  add(44.0,midboss10);
+  add(66.0,function(){ elite(120,120,["rapid","scorch"]); elite(360,120,["swift"]); });
+  add(70.0,function(){ pack(8,130); cursePool(150,340); });
+  add(73.5,function(){ goblin(); burnPool(340,420); });
+  add(77.0,function(){ elite(240,120,["ward","burst"]); pack(6,160); });
+  add(80.0,function(){ pack(7,120); lootDrop(240,150,3); });
+}
+function s10p1(b,dt){ /* 略奪の宴 */
+  enrageOn=1;
+  b.x=W/2+Math.sin(b.pt*.85)*145; b.y=102;
+  var rg=1+Math.min(.8,enrage/50);
+  b.ft-=dt; if(b.ft<=0){ b.ft=.75/D.dens/rg; ring(b.x,b.y,11,b.pt*1.5,160,{col:"#ff8a3d",r:5}); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=3.4/rg; pack(5,130); }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=5.0; lootDrop(rnd(60,W-60),150,1); }
+}
+function s10p2(b,dt){ /* 焦熱の刻印 */
+  b.x=W/2+Math.sin(b.pt*1.05)*148; b.y=100;
+  var rg=1+Math.min(.8,enrage/50);
+  b.ft-=dt; if(b.ft<=0){ b.ft=2.0/rg; burnPool(clamp(P.x+rnd(-60,60),70,W-70),clamp(P.y+rnd(-50,50),200,H-90)); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=.95/D.dens/rg; nway(b.x,b.y,aimAt(b.x,b.y),6,.18,205,{col:"#ff5a3d",shape:"rice",r:4}); }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=4.2; elite(rnd(80,W-80),140,["swift"]); }
+}
+function s10p3(b,dt){ /* 呪詛の宝物庫 */
+  b.x=W/2+Math.sin(b.pt*.65)*120; b.y=100;
+  var rg=1+Math.min(.8,enrage/50);
+  if(!b.setup){ b.setup=1; cursePool(110,330); cursePool(W-110,450); }
+  b.ft-=dt; if(b.ft<=0){ b.ft=.09/D.dens/rg; b.sp+=.4;
+    for(var i=0;i<3;i++) shot(b.x,b.y,b.sp+i*TAU/3,152,{col:"#b97bff",r:5}); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=5.5; goblin(); }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=3.6; lootDrop(rnd(60,W-60),160); }
+}
+function s10p4(b,dt){ /* 深淵の怒り */
+  b.x=W/2+Math.sin(b.pt*1.35)*150; b.y=98+Math.sin(b.pt*2.1)*16;
+  if(!b.setup){ b.setup=1; enrageOn=1; enrage=0; eliteAffixes(b,["rapid"]); }
+  var rg=1+Math.min(1.1,enrage/40);
+  b.ft-=dt; if(b.ft<=0){ b.ft=.06/D.dens/rg; b.sp-=.44;
+    for(var i=0;i<3;i++) shot(b.x,b.y,b.sp+i*TAU/3,170,{col:"#ff8a3d",r:5}); }
+  b.ft2-=dt; if(b.ft2<=0){ b.ft2=2.2/rg; nway(b.x,b.y,aimAt(b.x,b.y),7,.17,215,{col:"#ff5a3d",shape:"rice",r:4}); }
+  b.ft3-=dt; if(b.ft3<=0){ b.ft3=3.0/rg; burnPool(rnd(70,W-70),rnd(230,H-120)); }
+  b.ft4=(b.ft4===undefined?6:b.ft4)-dt;
+  if(b.ft4<=0){ b.ft4=6.5; pack(6,140); lootDrop(b.x,b.y+30,2);
+    banner={t:1.2,txt:"Enrage",sub:"怒り  x"+rg.toFixed(2)}; }
+}
+var SPELLS10=[
+  {name:"略奪の宴",    hp:2500, time:50, fn:s10p1, col:"#ff8a3d"},
+  {name:"焦熱の刻印",  hp:2600, time:52, fn:s10p2, col:"#ff5a3d"},
+  {name:"呪詛の宝物庫",hp:2700, time:52, fn:s10p3, col:"#b97bff"},
+  {name:"深淵の怒り",  hp:3800, time:72, fn:s10p4, col:C.mag}
 ];
 
 /* ─────────────────────────────  UI 同期  ───────────────────────────── */
@@ -2799,7 +3564,7 @@ function gameOver(){
 }
 function grade(m){ return m===0?"無傷 PERFECT":m<=2?"RANK S":m<=5?"RANK A":m<=10?"RANK B":m<=20?"RANK C":"RANK D"; }
 function stageClear(){
-  if(stage<7){
+  if(stage<10){
     clearBullets(0); enemies.length=0;
     if(!endless) lives=Math.min(lives+1,9);
     bombs=D.bombs;
@@ -2813,8 +3578,11 @@ function clearField(){
   bullets.length=0; enemies.length=0; blocks.length=0; wells.length=0; tethers.length=0; lasers.length=0;
   hazards.length=0; zones.length=0; portals.length=0; pickups.length=0; inks.length=0; bubbles.length=0;
   darkT=0; mirrorT=0; windX=0; crystalN=0; lightBoost=0; heat=0; shotLock=0; gravY=0; doom=0; bulletScale=1;
-  driftX=0; driftY=0; spinCtl=0; swirl=0; pbRange=0; markT=0; balance=0; balanceOn=0; polOn=0;
-  P.stun=0; P.pol=0; P.safe=false;
+  driftX=0; driftY=0; spinCtl=0; swirl=0; pbRange=0; markT=0; balance=0; balanceOn=0; eyeOn=0; eyeT=0; eyeState=0;
+  bpm=0; beatSpb=0; beatT=0; beatN=0; beatFn=null; lanesOn=0; speakersOn=0; restT=0; perfects=0; judgeT=0;
+  elemOn=0; elem=0; elemT=0; pexp=0; plevel=1; dmgNum=0; poisonT=0; paraT=0; atkT=0;
+  lootOn=0; greed=0; momentum=0; momT=0; enrage=0; enrageOn=0;
+  P.stun=0; P.safe=false; P.cursed=false;
   tfL=fL=8; tfR=fR=W-8; tfT=fT=20; tfB=fB=H-14;
 }
 function beginStage(nst){
@@ -2856,7 +3624,7 @@ function setMode(e){
 }
 function setStart(nst){
   startStage=nst; if(mode!=="play"){ stage=nst; SP=spellsFor(nst); renderGimmicks(nst); }
-  for(var i=1;i<=7;i++) $("st"+i).setAttribute("aria-pressed",String(nst===i));
+  for(var i=1;i<=10;i++) $("st"+i).setAttribute("aria-pressed",String(nst===i));
   loadBest(); updateChips(); syncUI();
 }
 function renderGimmicks(nst){
@@ -2889,13 +3657,12 @@ $("dNor").onclick=function(){ setDiff("normal"); };
 $("dLun").onclick=function(){ setDiff("lunatic"); };
 $("mNorm").onclick=function(){ setMode(false); };
 $("mEnd").onclick=function(){ setMode(true); };
-for(var sb=1;sb<=7;sb++)(function(i){ $("st"+i).onclick=function(){ setStart(i); }; })(sb);
+for(var sb=1;sb<=10;sb++)(function(i){ $("st"+i).onclick=function(){ setStart(i); }; })(sb);
 $("dExt").onclick=function(){ setDiff("extra"); };
 $("btnMute").onclick=function(){ setMute(!muted); };
 $("tFocus").onpointerdown=function(){ touchFocus=true; this.dataset.hold="1"; };
 $("tFocus").onpointerup=$("tFocus").onpointerleave=function(){ touchFocus=false; this.dataset.hold="0"; };
 $("tBomb").onclick=tryBomb;
-$("tPol").onclick=togglePol;
 $("tPause").onclick=togglePause;
 
 /* ─────────────────────────────  ループ  ───────────────────────────── */
@@ -2920,7 +3687,7 @@ function boot(data){
   data=data||{};
   if(data.diff&&DIFFS[data.diff]) diffKey=data.diff;
   if(typeof data.endless==="boolean") endless=data.endless;
-  if(data.startStage>=1&&data.startStage<=7) startStage=data.startStage;
+  if(data.startStage>=1&&data.startStage<=10) startStage=data.startStage;
   setDiff(diffKey); setMode(endless); setStart(startStage);
   if(typeof data.high==="number"&&data.high>high){ high=data.high; }
   setMute(!!data.muted);

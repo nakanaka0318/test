@@ -1,0 +1,21 @@
+{
+  "itemGroup.mightyghast": "Mighty Ghast",
+
+  "item.mightyghast.ghast_ingot": "Ghast Ingot",
+  "item.mightyghast.ghast_blade": "Ghast Blade",
+
+  "ability.mightyghast.mega_fireball": "Mega Fireball",
+  "ability.mightyghast.fireball_storm": "Fireball Storm",
+  "ability.mightyghast.meteor_rain": "Meteor Rain",
+  "ability.mightyghast.shockwave": "Shockwave",
+  "ability.mightyghast.wither_roar": "Withering Roar",
+  "ability.mightyghast.flame_pillar": "Flame Pillar",
+
+  "message.mightyghast.random": "Random",
+  "message.mightyghast.cast": "%s!",
+  "message.mightyghast.switch": "Technique: %s",
+
+  "tooltip.mightyghast.ghast_blade.selected": "Selected technique: %s",
+  "tooltip.mightyghast.ghast_blade.left_click": "Left click: unleash a Ghast technique",
+  "tooltip.mightyghast.ghast_blade.right_click": "Right click: switch technique"
+}

@@ -1,0 +1,21 @@
+{
+  "itemGroup.mightyghast": "Mighty Ghast",
+
+  "item.mightyghast.ghast_ingot": "ガストインゴット",
+  "item.mightyghast.ghast_blade": "ガストブレード",
+
+  "ability.mightyghast.mega_fireball": "超大火球",
+  "ability.mightyghast.fireball_storm": "火球連射",
+  "ability.mightyghast.meteor_rain": "隕石雨",
+  "ability.mightyghast.shockwave": "衝撃波",
+  "ability.mightyghast.wither_roar": "呪詛の咆哮",
+  "ability.mightyghast.flame_pillar": "獄炎の柱",
+
+  "message.mightyghast.random": "ランダム",
+  "message.mightyghast.cast": "%s ！",
+  "message.mightyghast.switch": "技を変更: %s",
+
+  "tooltip.mightyghast.ghast_blade.selected": "選択中の技: %s",
+  "tooltip.mightyghast.ghast_blade.left_click": "左クリック: ガストの技を放つ",
+  "tooltip.mightyghast.ghast_blade.right_click": "右クリック: 技を切り替える"
+}

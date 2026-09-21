@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>朱入れPDF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#dcdee4; --panel:#f7f8fa; --surface:#ffffff;
+  --line:#c5c9d4; --line-soft:#e4e6ed;
+  --ink:#191c23; --ink-2:#5b6273; --ink-3:#878da0;
+  --shu:#c0442a; --shu-ink:#ffffff; --shu-soft:#f4e2dd;
+  --ok:#2f7d55; --warn:#9a6a14;
+  --ui:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:6px;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101218; --panel:#171a21; --surface:#1e222b;
+    --line:#343a48; --line-soft:#272c36;
+    --ink:#e6e9f0; --ink-2:#a2a9ba; --ink-3:#737b8e;
+    --shu:#e4684a; --shu-ink:#1b0f0b; --shu-soft:#3a241f;
+    --ok:#63b98a; --warn:#d6a44a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101218; --panel:#171a21; --surface:#1e222b;
+  --line:#343a48; --line-soft:#272c36;
+  --ink:#e6e9f0; --ink-2:#a2a9ba; --ink-3:#737b8e;
+  --shu:#e4684a; --shu-ink:#1b0f0b; --shu-soft:#3a241f;
+  --ok:#63b98a; --warn:#d6a44a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.6}
+img{max-width:100%}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--shu);outline-offset:2px}
+
+/* ---------- bar ---------- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;display:flex;flex-wrap:wrap;gap:12px 16px;
+  align-items:center;justify-content:space-between;
+  padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{flex:none;width:34px;height:34px;border-radius:var(--r);background:var(--shu);color:var(--shu-ink);
+  display:grid;place-items:center;font-weight:700;font-size:17px;letter-spacing:.02em}
+.brand h1{margin:0;font-size:15px;font-weight:700;letter-spacing:.04em}
+.sub{margin:0;font-family:var(--mono);font-size:11px;color:var(--ink-2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.btn{padding:7px 13px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+.btn:hover:not(:disabled){border-color:var(--ink-3)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--shu);border-color:var(--shu);color:var(--shu-ink);font-weight:700}
+.btn-sm{padding:5px 10px;font-size:12px}
+.sep{width:1px;height:22px;background:var(--line)}
+
+/* ---------- status ---------- */
+.status{display:flex;align-items:center;gap:8px;padding:7px 16px;
+  background:var(--surface);border-bottom:1px solid var(--line-soft);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.status[data-tone="ok"] .dot{background:var(--ok)}
+.status[data-tone="busy"] .dot{background:var(--warn)}
+.status[data-tone="err"] .dot{background:var(--shu)}
+.status[data-tone="err"]{color:var(--shu)}
+
+/* ---------- layout ---------- */
+.work{display:grid;grid-template-columns:304px minmax(0,1fr);align-items:start}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 86px);
+  max-height:calc(100vh - 92px);overflow-y:auto;
+  padding:16px;display:flex;flex-direction:column;gap:14px;
+  background:var(--panel);border-right:1px solid var(--line)}
+.stage{padding:24px 16px 64px;display:flex;flex-direction:column;align-items:center;gap:26px;min-width:0}
+@media (max-width:900px){
+  .work{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}
+  .sub{max-width:60vw}
+}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.panel>h2{margin:0;padding:9px 12px;font-size:10.5px;font-weight:700;letter-spacing:.14em;
+  color:var(--ink-2);background:var(--panel);border-bottom:1px solid var(--line-soft)}
+.panel-body{padding:12px;display:flex;flex-direction:column;gap:10px}
+.meta{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;
+  font-family:var(--mono);font-size:11.5px}
+.meta dt{color:var(--ink-3)}
+.meta dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
+.tag{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border-radius:99px;
+  font-family:var(--mono);font-size:10.5px;border:1px solid var(--line)}
+.tag.on{background:var(--shu-soft);border-color:var(--shu);color:var(--shu)}
+.note{margin:0;font-size:11.5px;line-height:1.55;color:var(--ink-2)}
+.note strong{color:var(--ink)}
+
+.field{display:flex;flex-direction:column;gap:5px}
+.field>label{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ink-3)}
+textarea,input[type=text],input[type=number],select{
+  width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);font-size:13px}
+textarea{resize:vertical;min-height:62px;line-height:1.5}
+input[type=number]{font-family:var(--mono)}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{min-width:0}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 2px var(--surface) inset}
+.toggle{padding:6px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  font-size:12px;cursor:pointer}
+.toggle[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li+li{border-top:1px solid var(--line-soft)}
+.list button{display:flex;gap:9px;width:100%;padding:8px 12px;border:0;background:none;
+  text-align:left;cursor:pointer;align-items:baseline}
+.list button:hover{background:var(--panel)}
+.list button[aria-current="true"]{background:var(--shu-soft)}
+.list .pn{flex:none;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+.list .tx{flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{padding:14px 12px;font-size:12px;color:var(--ink-3)}
+
+/* ---------- pages ---------- */
+.page{width:100%;max-width:960px;display:flex;flex-direction:column;gap:6px}
+.pagehead{display:flex;align-items:baseline;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.pno{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:4px;
+  background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:600}
+.paper{position:relative;margin:0 auto;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.14),0 8px 24px rgba(0,0,0,.12);
+  max-width:100%}
+.paper canvas{display:block;width:100%;height:100%}
+.layer{position:absolute;inset:0;cursor:crosshair}
+.anno{position:absolute;margin:0;padding:0 1px;white-space:pre;line-height:1.3;cursor:move;
+  outline:1px dashed transparent;transform-origin:0 0}
+.anno:hover{outline-color:var(--ink-3)}
+.anno[data-sel="1"]{outline:1px solid var(--shu);background:rgba(192,68,42,.07)}
+.anno[contenteditable="true"]{cursor:text;outline:1px solid var(--shu);background:rgba(192,68,42,.1)}
+.loading{padding:40px;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+
+/* ---------- dialog ---------- */
+dialog{border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);
+  padding:0;max-width:440px;width:calc(100vw - 32px)}
+dialog::backdrop{background:rgba(10,12,16,.5)}
+.dlg-body{padding:18px;display:flex;flex-direction:column;gap:12px}
+.dlg-body h3{margin:0;font-size:15px}
+.dlg-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;
+  border-top:1px solid var(--line-soft);background:var(--panel)}
+code{font-family:var(--mono);font-size:11.5px;background:var(--panel);padding:1px 4px;border-radius:3px}
+a{color:var(--shu)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">朱</span>
+    <div style="min-width:0">
+      <h1>朱入れPDF</h1>
+      <p class="sub" id="srcLine">読み込み中…</p>
+    </div>
+  </div>
+  <div class="acts">
+    <button class="btn" id="btnOpenLocal">PDFを開く</button>
+    <button class="btn" id="btnOpenDrive">Driveから開く</button>
+    <span class="sep" aria-hidden="true"></span>
+    <button class="btn btn-primary" id="btnSave">上書き保存</button>
+    <button class="btn" id="btnSaveAs">別名で保存</button>
+  </div>
+</header>
+
+<div class="status" id="status" data-tone="busy"><span class="dot"></span><span id="statusText">起動中…</span></div>
+
+<main class="work">
+  <aside class="rail">
+
+    <section class="panel">
+      <h2>保存先</h2>
+      <div class="panel-body">
+        <div class="row" style="flex-wrap:wrap">
+          <span class="tag" id="tagLocal">ローカル</span>
+          <span class="tag" id="tagDrive">Google ドライブ</span>
+        </div>
+        <dl class="meta">
+          <dt>ファイル</dt><dd id="mName">—</dd>
+          <dt>ページ</dt><dd id="mPages">—</dd>
+          <dt>用紙</dt><dd id="mSize">—</dd>
+          <dt>更新</dt><dd id="mSaved">未保存</dd>
+        </dl>
+        <p class="note" id="destNote"></p>
+        <div class="row" style="flex-wrap:wrap">
+          <button class="btn btn-sm" id="btnDriveSetup">Drive 設定</button>
+          <a class="btn btn-sm" id="lnkDrive" hidden target="_blank" rel="noopener">ドライブで開く</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>注釈を編集</h2>
+      <div class="panel-body" id="editor">
+        <p class="note" id="editorHint">ページの好きな位置を<strong>クリック</strong>すると、そこにテキスト注釈を置けます。ドラッグで移動、ダブルクリックで文字を編集。</p>
+        <div id="editorFields" hidden style="display:flex;flex-direction:column;gap:10px">
+          <div class="field">
+            <label for="fText">本文（改行可）</label>
+            <textarea id="fText" spellcheck="false"></textarea>
+          </div>
+          <div class="row">
+            <div class="field" style="flex:1">
+              <label for="fSize">サイズ pt</label>
+              <input type="number" id="fSize" min="5" max="96" step="0.5">
+            </div>
+            <div class="field" style="flex:1.4">
+              <label for="fFont">書体</label>
+              <select id="fFont"></select>
+            </div>
+            <div class="field" style="flex:none">
+              <label for="fBold">太さ</label>
+              <button class="toggle" id="fBold" aria-pressed="false">太字</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>インク</label>
+            <div class="swatches" id="fColors"></div>
+          </div>
+          <div class="row">
+            <button class="btn btn-sm" id="fDup">複製</button>
+            <button class="btn btn-sm" id="fDel">削除</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>注釈一覧 <span id="annoCount" style="font-family:var(--mono);font-weight:400"></span></h2>
+      <ul class="list" id="annoList"></ul>
+      <p class="empty" id="annoEmpty">まだ注釈はありません。</p>
+    </section>
+
+  </aside>
+
+  <section class="stage" id="stage">
+    <p class="loading">PDF を準備しています…</p>
+  </section>
+</main>
+
+<input type="file" id="filePicker" accept="application/pdf,.pdf" hidden>
+
+<dialog id="dlgDrive">
+  <div class="dlg-body">
+    <h3>Google ドライブ連携の設定</h3>
+    <p class="note">Google Cloud で <strong>OAuth クライアント ID（ウェブ）</strong>と <strong>API キー</strong>を作り、Drive API と Picker API を有効化してください。値はこのブラウザにのみ保存されます。</p>
+    <div class="field"><label for="gcid">OAuth クライアント ID</label><input type="text" id="gcid" placeholder="xxxxx.apps.googleusercontent.com" spellcheck="false"></div>
+    <div class="field"><label for="gkey">API キー</label><input type="text" id="gkey" placeholder="AIza…" spellcheck="false"></div>
+    <div class="field"><label for="gapp">アプリ ID（GCP プロジェクト番号）</label><input type="text" id="gapp" placeholder="123456789012" spellcheck="false"></div>
+    <p class="note">承認済み JavaScript 生成元に <code id="originHint">—</code> を登録します。スコープは <code>drive.file</code>（あなたが選んだファイルだけ）です。</p>
+  </div>
+  <div class="dlg-foot">
+    <button class="btn btn-sm" id="dlgCancel">閉じる</button>
+    <button class="btn btn-sm btn-primary" id="dlgSave">保存</button>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+(function () {
+'use strict';
+
+var pdfjs = window.pdfjsLib, PL = window.PDFLib;
+pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ============================ 定数 ============================ */
+
+var FONTS = {
+  gothic: { label:'ゴシック', css:'"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif', std:'Helvetica', bold:'HelveticaBold' },
+  mincho: { label:'明朝',     css:'"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif',                     std:'TimesRoman', bold:'TimesRomanBold' },
+  mono:   { label:'等幅',     css:'"IBM Plex Mono",ui-monospace,monospace',                                        std:'Courier', bold:'CourierBold' }
+};
+var INKS = [['朱','#c0442a'],['墨','#14161c'],['藍','#1d4e89'],['緑','#2f7d55'],['橙','#d68a1a']];
+var LH = 1.3;          // 行送り（em）
+var ASC = 1.0;         // 行頭からベースラインまで（em）— CSS の half-leading に合わせた近似
+var RASTER = 4;        // 非 ASCII をラスタライズするときの pt あたりピクセル数
+var DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+var LSKEY = 'shuire-pdf/google';
+
+/* ============================ 状態 ============================ */
+
+var S = {
+  bytes: null,            // 元 PDF（Uint8Array）
+  pages: [],              // { proxy, rot, pw, ph, W, H, scale, canvas, layer }
+  annos: [], nextId: 1, sel: null,
+  src: { kind:'sample', name:'サンプル_作業報告書.pdf', handle:null, file:null },
+  savedAt: null,
+  google: { clientId:'', apiKey:'', appId:'', token:null, tokenExp:0, client:null }
+};
+
+var $ = function (id) { return document.getElementById(id); };
+var stage = $('stage');
+
+/* ============================ 小物 ============================ */
+
+function status(text, tone) {
+  $('statusText').textContent = text;
+  $('status').dataset.tone = tone || '';
+}
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+
+function isAscii(s) { return /^[\x20-\x7E\n\r\t]*$/.test(s); }
+
+function hexRgb(hex) {
+  var n = parseInt(hex.slice(1), 16);
+  return PL.rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
+}
+
+function fmtTime(d) {
+  return d.toLocaleString('ja-JP', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+/** 表示座標(左上原点) → PDF ユーザ座標(左下原点)。p.rot は 0/90/180/270。 */
+function toPdf(p, dx, dy) {
+  switch (p.rot) {
+    case 90:  return { x: dy,           y: dx };
+    case 180: return { x: p.pw - dx,    y: dy };
+    case 270: return { x: p.pw - dy,    y: p.ph - dx };
+    default:  return { x: dx,           y: p.ph - dy };
+  }
+}
+
+/* ============================ ラスタライズ ============================ */
+
+/** 日本語など非 ASCII を含む注釈を PNG 化する。画面表示と同じ書体・行送りを使う。 */
+function rasterize(a) {
+  var lines = a.text.split('\n');
+  var font = (a.bold ? '700 ' : '400 ') + (a.size * RASTER) + 'px ' + FONTS[a.font].css;
+  var probe = document.createElement('canvas').getContext('2d');
+  probe.font = font;
+  var w = 0;
+  for (var i = 0; i < lines.length; i++) w = Math.max(w, probe.measureText(lines[i]).width);
+
+  var c = document.createElement('canvas');
+  c.width = Math.max(1, Math.ceil(w) + 2 * RASTER);
+  c.height = Math.max(1, Math.ceil(lines.length * a.size * LH * RASTER));
+  var x = c.getContext('2d');
+  x.font = font;                       // リサイズでリセットされるため再設定
+  x.fillStyle = a.color;
+  x.textBaseline = 'alphabetic';
+  for (var j = 0; j < lines.length; j++) {
+    x.fillText(lines[j], RASTER, (a.size * LH * j + a.size * ASC) * RASTER);
+  }
+  return { url: c.toDataURL('image/png'), w: c.width / RASTER, h: c.height / RASTER };
+}
+
+/* ============================ PDF 書き出し ============================ */
+
+async function buildPdf() {
+  var doc = await PL.PDFDocument.load(S.bytes.slice().buffer);
+  var pages = doc.getPages();
+  var cache = {};
+
+  for (var i = 0; i < S.annos.length; i++) {
+    var a = S.annos[i];
+    var page = pages[a.page];
+    if (!page || !a.text.trim()) continue;
+    var meta = S.pages[a.page];
+    var rot = meta.rot;
+    var lines = a.text.split('\n');
+    var boxH = lines.length * a.size * LH;
+
+    if (isAscii(a.text)) {
+      var key = a.font + (a.bold ? '-b' : '');
+      if (!cache[key]) cache[key] = await doc.embedFont(PL.StandardFonts[a.bold ? FONTS[a.font].bold : FONTS[a.font].std]);
+      for (var k = 0; k < lines.length; k++) {
+        if (!lines[k]) continue;
+        var pt = toPdf(meta, a.x, a.y + a.size * LH * k + a.size * ASC);
+        page.drawText(lines[k], {
+          x: pt.x, y: pt.y, size: a.size, font: cache[key],
+          color: hexRgb(a.color), rotate: PL.degrees(rot)
+        });
+      }
+    } else {
+      var img = rasterize(a);
+      var png = await doc.embedPng(img.url);
+      var anchor = toPdf(meta, a.x, a.y + boxH);
+      page.drawImage(png, {
+        x: anchor.x, y: anchor.y, width: img.w, height: img.h, rotate: PL.degrees(rot)
+      });
+    }
+  }
+  return await doc.save();
+}
+
+/* ============================ 読み込み・描画 ============================ */
+
+async function openBytes(bytes, src) {
+  status('PDF を解析しています…', 'busy');
+  S.bytes = new Uint8Array(bytes);
+  var doc = await pdfjs.getDocument({ data: S.bytes.slice() }).promise;
+
+  S.pages = [];
+  for (var n = 1; n <= doc.numPages; n++) {
+    var proxy = await doc.getPage(n);
+    var vp = proxy.getViewport({ scale: 1 });
+    var rot = ((proxy.rotate % 360) + 360) % 360;
+    var pw = (rot % 180) ? vp.height : vp.width;
+    var ph = (rot % 180) ? vp.width  : vp.height;
+    S.pages.push({ proxy: proxy, rot: rot, pw: pw, ph: ph, W: vp.width, H: vp.height, scale: 1 });
+  }
+
+  if (src) S.src = src;
+  S.annos = []; S.sel = null; S.savedAt = null;
+  await layout();
+  paintChrome();
+  status(doc.numPages + ' ページを読み込みました', 'ok');
+  return doc.numPages;
+}
+
+async function layout() {
+  var avail = Math.max(240, stage.clientWidth - 32);
+  stage.textContent = '';
+
+  for (var i = 0; i < S.pages.length; i++) {
+    var p = S.pages[i];
+    var cssW = Math.min(avail, 960, p.W * 1.6);
+    p.scale = cssW / p.W;
+
+    var art = document.createElement('article');
+    art.className = 'page';
+    art.innerHTML =
+      '<div class="pagehead"><span class="pno">' + (i + 1) + '</span>' +
+      '<span>' + Math.round(p.pw) + ' × ' + Math.round(p.ph) + ' pt' +
+      (p.rot ? ' · 回転 ' + p.rot + '°' : '') + '</span></div>';
+
+    var paper = document.createElement('div');
+    paper.className = 'paper';
+    paper.style.width = cssW + 'px';
+    paper.style.height = (p.H * p.scale) + 'px';
+
+    var canvas = document.createElement('canvas');
+    var layer = document.createElement('div');
+    layer.className = 'layer';
+    layer.dataset.i = String(i);
+    paper.appendChild(canvas);
+    paper.appendChild(layer);
+    art.appendChild(paper);
+    stage.appendChild(art);
+
+    p.canvas = canvas; p.layer = layer;
+    await renderPage(p);
+  }
+  paintAnnos();
+}
+
+async function renderPage(p) {
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var vp = p.proxy.getViewport({ scale: p.scale * dpr });
+  p.canvas.width = Math.round(vp.width);
+  p.canvas.height = Math.round(vp.height);
+  await p.proxy.render({ canvasContext: p.canvas.getContext('2d'), viewport: vp }).promise;
+}
+
+/* ============================ 注釈の描画 ============================ */
+
+function annoEl(a) {
+  return S.pages[a.page] ? S.pages[a.page].layer.querySelector('[data-id="' + a.id + '"]') : null;
+}
+
+function styleAnno(el, a) {
+  var s = S.pages[a.page].scale;
+  el.style.left = (a.x * s) + 'px';
+  el.style.top = (a.y * s) + 'px';
+  el.style.fontSize = (a.size * s) + 'px';
+  el.style.fontFamily = FONTS[a.font].css;
+  el.style.fontWeight = a.bold ? '700' : '400';
+  el.style.color = a.color;
+  el.dataset.sel = (S.sel === a.id) ? '1' : '0';
+}
+
+function paintAnnos() {
+  for (var i = 0; i < S.pages.length; i++) if (S.pages[i].layer) S.pages[i].layer.textContent = '';
+  for (var j = 0; j < S.annos.length; j++) {
+    var a = S.annos[j];
+    if (!S.pages[a.page] || !S.pages[a.page].layer) continue;
+    var el = document.createElement('div');
+    el.className = 'anno';
+    el.dataset.id = String(a.id);
+    el.textContent = a.text;
+    styleAnno(el, a);
+    S.pages[a.page].layer.appendChild(el);
+  }
+  paintList();
+}
+
+function paintList() {
+  var ul = $('annoList'), n = S.annos.length;
+  $('annoCount').textContent = n ? '(' + n + ')' : '';
+  $('annoEmpty').hidden = n > 0;
+  ul.textContent = '';
+  for (var i = 0; i < n; i++) {
+    var a = S.annos[i];
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-current', S.sel === a.id ? 'true' : 'false');
+    b.dataset.id = String(a.id);
+    b.innerHTML = '<span class="pn">p' + (a.page + 1) + '</span>' +
+      '<span class="tx" style="color:' + a.color + '">' + esc(a.text.split('\n')[0] || '（空）') + '</span>';
+    li.appendChild(b);
+    ul.appendChild(li);
+  }
+  paintEditor();
+}
+
+function paintEditor() {
+  var a = current();
+  $('editorHint').hidden = !!a;
+  $('editorFields').hidden = !a;
+  if (!a) return;
+  if (document.activeElement !== $('fText')) $('fText').value = a.text;
+  $('fSize').value = a.size;
+  $('fFont').value = a.font;
+  $('fBold').setAttribute('aria-pressed', a.bold ? 'true' : 'false');
+  var sw = $('fColors').children;
+  for (var i = 0; i < sw.length; i++) sw[i].setAttribute('aria-pressed', sw[i].dataset.hex === a.color ? 'true' : 'false');
+}
+
+function current() {
+  for (var i = 0; i < S.annos.length; i++) if (S.annos[i].id === S.sel) return S.annos[i];
+  return null;
+}
+
+function select(id) {
+  S.sel = id;
+  for (var i = 0; i < S.annos.length; i++) {
+    var el = annoEl(S.annos[i]);
+    if (el) el.dataset.sel = (S.annos[i].id === id) ? '1' : '0';
+  }
+  paintList();
+}
+
+function addAnno(page, x, y) {
+  var a = {
+    id: S.nextId++, page: page, x: x, y: y,
+    text: '', size: 12, color: INKS[0][1], font: 'gothic', bold: false
+  };
+  S.annos.push(a);
+  paintAnnos();
+  select(a.id);
+  var el = annoEl(a);
+  if (el) beginEdit(el, a);
+  return a;
+}
+
+function beginEdit(el, a) {
+  el.setAttribute('contenteditable', 'true');
+  el.focus();
+  var r = document.createRange();
+  r.selectNodeContents(el);
+  r.collapse(false);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+
+function endEdit(el, a) {
+  el.removeAttribute('contenteditable');
+  a.text = el.innerText.replace(/ /g, ' ').replace(/\n$/, '');
+  el.textContent = a.text;
+  if (!a.text.trim()) {
+    S.annos = S.annos.filter(function (x) { return x.id !== a.id; });
+    S.sel = null;
+    paintAnnos();
+  } else {
+    paintList();
+  }
+  markDirty();
+}
+
+function markDirty() {
+  if (S.savedAt) { S.savedAt = null; paintChrome(); }
+}
+
+/* ============================ 画面上部・保存先表示 ============================ */
+
+function paintChrome() {
+  var p0 = S.pages[0];
+  $('srcLine').textContent = S.src.name + (p0 ? ' · ' + S.pages.length + 'ページ' : '');
+  $('mName').textContent = S.src.name;
+  $('mPages').textContent = S.pages.length ? String(S.pages.length) : '—';
+  $('mSize').textContent = p0 ? Math.round(p0.pw) + ' × ' + Math.round(p0.ph) + ' pt' : '—';
+  $('mSaved').textContent = S.savedAt ? fmtTime(S.savedAt) : '未保存';
+
+  var onDrive = S.src.kind === 'drive';
+  $('tagLocal').className = 'tag' + (onDrive ? '' : ' on');
+  $('tagDrive').className = 'tag' + (onDrive ? ' on' : '');
+  $('lnkDrive').hidden = !(onDrive && S.src.file && S.src.file.webViewLink);
+  if (!$('lnkDrive').hidden) $('lnkDrive').href = S.src.file.webViewLink;
+
+  var btn = $('btnSave'), note = $('destNote');
+  if (onDrive) {
+    btn.textContent = 'ドライブへ上書き保存';
+    note.innerHTML = '同じファイル ID に上書きします。ドライブ側は<strong>新しいリビジョン</strong>になり、保存した瞬間から最新版が表示されます。';
+  } else if (S.src.handle) {
+    btn.textContent = '上書き保存';
+    note.innerHTML = '開いた元のファイルに<strong>その場で上書き</strong>します。';
+  } else {
+    btn.textContent = '保存（ダウンロード）';
+    note.innerHTML = 'このファイルは読み取り専用で開かれています。保存するとダウンロードになります。元ファイルを直接書き換えるには <strong>「PDFを開く」</strong> から開き直すか、ドライブ連携を使ってください。';
+  }
+}
+
+/* ============================ 保存 ============================ */
+
+async function offerDownload(bytes, name) {
+  var blob = new Blob([bytes], { type: 'application/pdf' });
+  if (window.claude && window.claude.use) {
+    var dl = await window.claude.use('downloads');
+    if (dl) {
+      await dl.save({ filename: name, data: blob });
+      return true;
+    }
+  }
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  return true;
+}
+
+async function save(overwrite) {
+  try {
+    status('PDF を書き出しています…', 'busy');
+    var bytes = await buildPdf();
+
+    if (overwrite && S.src.kind === 'drive') {
+      await driveOverwrite(bytes);
+      S.savedAt = new Date(); paintChrome();
+      return;
+    }
+    if (overwrite && S.src.handle) {
+      var w = await S.src.handle.createWritable();
+      await w.write(bytes);
+      await w.close();
+      S.savedAt = new Date(); paintChrome();
+      status('元のファイルに上書きしました', 'ok');
+      return;
+    }
+    var name = S.src.name.replace(/\.pdf$/i, '') + (overwrite ? '' : '_朱入れ') + '.pdf';
+    await offerDownload(bytes, name);
+    S.savedAt = new Date(); paintChrome();
+    status('保存しました：' + name, 'ok');
+  } catch (e) {
+    if (e && (e.code === 'declined' || e.name === 'AbortError')) { status('保存を取り消しました', ''); return; }
+    console.error(e);
+    status('保存に失敗しました：' + (e && e.message ? e.message : e), 'err');
+  }
+}
+
+/* ============================ ローカルを開く ============================ */
+
+async function openLocal() {
+  try {
+    if (window.showOpenFilePicker) {
+      var picked = await window.showOpenFilePicker({
+        types: [{ description: 'PDF', accept: { 'application/pdf': ['.pdf'] } }],
+        multiple: false
+      });
+      var handle = picked[0];
+      var file = await handle.getFile();
+      var buf = await file.arrayBuffer();
+      await openBytes(buf, { kind: 'local', name: file.name, handle: handle, file: null });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+    // SecurityError など（サンドボックス内）は input へフォールバック
+  }
+  $('filePicker').click();
+}
+
+/* ============================ Google ドライブ ============================ */
+
+function loadGoogle() {
+  var key = LSKEY;
+  try {
+    var raw = localStorage.getItem(key);
+    if (raw) {
+      var v = JSON.parse(raw);
+      S.google.clientId = v.clientId || '';
+      S.google.apiKey = v.apiKey || '';
+      S.google.appId = v.appId || '';
+    }
+  } catch (e) { /* localStorage が使えない環境 */ }
+}
+
+function saveGoogle() {
+  try {
+    localStorage.setItem(LSKEY, JSON.stringify({
+      clientId: S.google.clientId, apiKey: S.google.apiKey, appId: S.google.appId
+    }));
+  } catch (e) { /* 保存できなくても動作は継続 */ }
+}
+
+var scripts = {};
+function loadScript(src) {
+  if (scripts[src]) return scripts[src];
+  scripts[src] = new Promise(function (res, rej) {
+    var s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = function () { res(true); };
+    s.onerror = function () { rej(new Error('スクリプトを読み込めません: ' + src)); };
+    document.head.appendChild(s);
+    setTimeout(function () { rej(new Error('blocked')); }, 8000);
+  });
+  return scripts[src];
+}
+
+async function driveToken(interactive) {
+  if (S.google.token && Date.now() < S.google.tokenExp - 60000) return S.google.token;
+  if (!S.google.clientId) throw new Error('OAuth クライアント ID が未設定です');
+  await loadScript('https://accounts.google.com/gsi/client');
+  return new Promise(function (res, rej) {
+    S.google.client = window.google.accounts.oauth2.initTokenClient({
+      client_id: S.google.clientId,
+      scope: DRIVE_SCOPE,
+      callback: function (r) {
+        if (r.error) { rej(new Error(r.error_description || r.error)); return; }
+        S.google.token = r.access_token;
+        S.google.tokenExp = Date.now() + (Number(r.expires_in || 3600) * 1000);
+        res(S.google.token);
+      },
+      error_callback: function (e) { rej(new Error(e && e.type ? e.type : '認可がキャンセルされました')); }
+    });
+    S.google.client.requestAccessToken({ prompt: interactive ? 'consent' : '' });
+  });
+}
+
+async function drivePick() {
+  var token = await driveToken(false);
+  await loadScript('https://apis.google.com/js/api.js');
+  await new Promise(function (res) { window.gapi.load('picker', res); });
+
+  return new Promise(function (res) {
+    var g = window.google;
+    var view = new g.picker.DocsView(g.picker.ViewId.DOCS)
+      .setMimeTypes('application/pdf')
+      .setIncludeFolders(true)
+      .setSelectFolderEnabled(false);
+    var b = new g.picker.PickerBuilder()
+      .addView(view)
+      .setOAuthToken(token)
+      .setCallback(function (d) {
+        if (d.action === g.picker.Action.PICKED) res(d.docs[0]);
+        else if (d.action === g.picker.Action.CANCEL) res(null);
+      });
+    if (S.google.apiKey) b.setDeveloperKey(S.google.apiKey);
+    if (S.google.appId) b.setAppId(S.google.appId);
+    b.build().setVisible(true);
+  });
+}
+
+async function driveFetch(url, opts) {
+  var token = await driveToken(false);
+  opts = opts || {};
+  opts.headers = Object.assign({}, opts.headers, { Authorization: 'Bearer ' + token });
+  var r = await fetch(url, opts);
+  if (r.status === 401) {
+    S.google.token = null;
+    token = await driveToken(true);
+    opts.headers.Authorization = 'Bearer ' + token;
+    r = await fetch(url, opts);
+  }
+  if (!r.ok) {
+    var t = await r.text();
+    throw new Error('Drive API ' + r.status + '：' + t.slice(0, 200));
+  }
+  return r;
+}
+
+async function openFromDrive() {
+  try {
+    if (!S.google.clientId) { $('dlgDrive').showModal(); return; }
+    status('ドライブに接続しています…', 'busy');
+    var doc = await drivePick();
+    if (!doc) { status('選択を取り消しました', ''); return; }
+
+    status('ドライブから取得しています…', 'busy');
+    var meta = await (await driveFetch(
+      'https://www.googleapis.com/drive/v3/files/' + doc.id +
+      '?supportsAllDrives=true&fields=id,name,modifiedTime,version,webViewLink')).json();
+    var buf = await (await driveFetch(
+      'https://www.googleapis.com/drive/v3/files/' + doc.id + '?alt=media&supportsAllDrives=true')).arrayBuffer();
+
+    await openBytes(buf, { kind: 'drive', name: meta.name, handle: null, file: meta });
+    status('ドライブから開きました：' + meta.name, 'ok');
+  } catch (e) {
+    console.error(e);
+    if (e && e.message === 'blocked') {
+      status('この環境では Google のスクリプトを読み込めません（GitHub Pages 版をご利用ください）', 'err');
+    } else {
+      status('ドライブを開けませんでした：' + (e && e.message ? e.message : e), 'err');
+    }
+  }
+}
+
+async function driveOverwrite(bytes) {
+  status('ドライブへ上書きしています…', 'busy');
+  var id = S.src.file.id;
+  var r = await driveFetch(
+    'https://www.googleapis.com/upload/drive/v3/files/' + id +
+    '?uploadType=media&supportsAllDrives=true&fields=id,name,modifiedTime,version,webViewLink',
+    { method: 'PATCH', headers: { 'Content-Type': 'application/pdf' }, body: new Blob([bytes], { type: 'application/pdf' }) }
+  );
+  var meta = await r.json();
+  S.src.file = meta;
+  status('ドライブに上書きしました（リビジョン ' + (meta.version || '?') + '）', 'ok');
+}
+
+/* ============================ サンプル文書 ============================ */
+
+function samplePage(n) {
+  var W = 595, H = 842, s = 2;
+  var c = document.createElement('canvas');
+  c.width = W * s; c.height = H * s;
+  var x = c.getContext('2d');
+  x.scale(s, s);
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#1a1a1a';
+
+  var G = '"Zen Kaku Gothic New",sans-serif';
+  var M = '"IBM Plex Mono",monospace';
+
+  x.font = '700 20px ' + G;
+  x.fillText(n === 1 ? '作業報告書' : '作業報告書（内訳）', 48, 76);
+  x.font = '400 10px ' + M;
+  x.fillText('SAMPLE / 朱入れPDF', 48, 94);
+  x.fillText('No. SR-2026-0142    ' + (n) + ' / 2', 380, 94);
+
+  x.strokeStyle = '#1a1a1a'; x.lineWidth = 1.2;
+  x.beginPath(); x.moveTo(48, 106); x.lineTo(547, 106); x.stroke();
+
+  var rows = n === 1
+    ? [['件名', '倉庫棟 空調フィルタ定期交換'], ['実施日', '2026-09-14（月）09:00 – 15:30'],
+       ['場所', '第二倉庫 1F / 2F 機械室'], ['担当', '設備課 3 名'],
+       ['天候', '晴 / 気温 24℃'], ['立会', '管理部 1 名']]
+    : [['交換数', 'HEPA 12 枚 / プレ 24 枚'], ['廃棄', '産廃業者 引渡済'],
+       ['所要', '6.5 時間'], ['追加作業', 'ドレンパン清掃 2 箇所'],
+       ['次回予定', '2027-03 中旬'], ['備考', '2F 機械室 扉ラッチ緩み']];
+
+  x.font = '400 11px ' + G;
+  var y = 136;
+  for (var i = 0; i < rows.length; i++) {
+    x.strokeStyle = '#d0d0d0'; x.lineWidth = .8;
+    x.beginPath(); x.moveTo(48, y + 8); x.lineTo(547, y + 8); x.stroke();
+    x.fillStyle = '#666'; x.fillText(rows[i][0], 56, y);
+    x.fillStyle = '#1a1a1a'; x.fillText(rows[i][1], 160, y);
+    y += 30;
+  }
+
+  x.font = '700 11px ' + G;
+  x.fillStyle = '#1a1a1a';
+  x.fillText(n === 1 ? '所見' : '確認欄', 48, y + 34);
+  x.font = '400 10.5px ' + G;
+  x.fillStyle = '#333';
+  var body = n === 1
+    ? ['フィルタ差圧は交換前 265 Pa、交換後 88 Pa。基準値内に復帰した。',
+       '2F 機械室の送風機ベルトに軽微な摩耗を確認。次回点検時に要交換。',
+       '作業中の騒音・粉塵について、隣接事務所より苦情なし。']
+    : ['本報告の内容に相違ないことを確認しました。',
+       '', '設備課長 ______________    管理部長 ______________'];
+  for (var j = 0; j < body.length; j++) x.fillText(body[j], 56, y + 58 + j * 20);
+
+  if (n === 2) {
+    x.strokeStyle = '#d0d0d0'; x.lineWidth = .8;
+    x.strokeRect(48, y + 140, 236, 90);
+    x.strokeRect(300, y + 140, 247, 90);
+  }
+
+  x.font = '400 9px ' + M;
+  x.fillStyle = '#999';
+  x.fillText('このページは朱入れPDFのサンプルです。実データではありません。', 48, 800);
+  return c.toDataURL('image/png');
+}
+
+async function makeSample() {
+  var doc = await PL.PDFDocument.create();
+  for (var n = 1; n <= 2; n++) {
+    var page = doc.addPage([595, 842]);
+    var png = await doc.embedPng(samplePage(n));
+    page.drawImage(png, { x: 0, y: 0, width: 595, height: 842 });
+  }
+  return await doc.save();
+}
+
+/* ============================ 操作 ============================ */
+
+stage.addEventListener('pointerdown', function (ev) {
+  var layerEl = ev.target.closest('.layer');
+  var annoElm = ev.target.closest('.anno');
+
+  if (annoElm) {
+    var a = S.annos.filter(function (z) { return z.id === Number(annoElm.dataset.id); })[0];
+    if (!a || annoElm.getAttribute('contenteditable') === 'true') return;
+    select(a.id);
+    ev.preventDefault();
+
+    var p = S.pages[a.page];
+    var startX = ev.clientX, startY = ev.clientY, ox = a.x, oy = a.y, moved = false;
+    annoElm.setPointerCapture(ev.pointerId);
+
+    var move = function (e) {
+      var dx = (e.clientX - startX) / p.scale, dy = (e.clientY - startY) / p.scale;
+      if (Math.abs(dx) + Math.abs(dy) > 1.5) moved = true;
+      a.x = Math.max(0, Math.min(p.W - 4, ox + dx));
+      a.y = Math.max(0, Math.min(p.H - 4, oy + dy));
+      styleAnno(annoElm, a);
+    };
+    var up = function () {
+      annoElm.removeEventListener('pointermove', move);
+      annoElm.removeEventListener('pointerup', up);
+      if (moved) markDirty();
+    };
+    annoElm.addEventListener('pointermove', move);
+    annoElm.addEventListener('pointerup', up);
+    return;
+  }
+
+  if (layerEl) {
+    var i = Number(layerEl.dataset.i);
+    var r = layerEl.getBoundingClientRect();
+    var sc = S.pages[i].scale;
+    addAnno(i, (ev.clientX - r.left) / sc, (ev.clientY - r.top) / sc - 6);
+  }
+});
+
+stage.addEventListener('dblclick', function (ev) {
+  var el = ev.target.closest('.anno');
+  if (!el) return;
+  var a = S.annos.filter(function (z) { return z.id === Number(el.dataset.id); })[0];
+  if (a) { select(a.id); beginEdit(el, a); }
+});
+
+stage.addEventListener('focusout', function (ev) {
+  var el = ev.target.closest && ev.target.closest('.anno[contenteditable="true"]');
+  if (!el) return;
+  var a = S.annos.filter(function (z) { return z.id === Number(el.dataset.id); })[0];
+  if (a) endEdit(el, a);
+});
+
+document.addEventListener('keydown', function (ev) {
+  var editing = document.activeElement &&
+    (document.activeElement.isContentEditable || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+
+  if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 's') { ev.preventDefault(); save(true); return; }
+  if (ev.key === 'Escape') {
+    if (document.activeElement && document.activeElement.isContentEditable) document.activeElement.blur();
+    else { S.sel = null; paintAnnos(); }
+    return;
+  }
+  if ((ev.key === 'Delete' || ev.key === 'Backspace') && !editing && S.sel != null) {
+    ev.preventDefault(); removeCurrent();
+  }
+});
+
+function removeCurrent() {
+  S.annos = S.annos.filter(function (z) { return z.id !== S.sel; });
+  S.sel = null; paintAnnos(); markDirty();
+}
+
+$('annoList').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-id]');
+  if (!b) return;
+  var id = Number(b.dataset.id);
+  select(id);
+  var a = current();
+  var el = a && annoEl(a);
+  if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+});
+
+$('fText').addEventListener('input', function () {
+  var a = current(); if (!a) return;
+  a.text = $('fText').value;
+  var el = annoEl(a); if (el) el.textContent = a.text;
+  paintList(); markDirty();
+});
+$('fSize').addEventListener('input', function () {
+  var a = current(); if (!a) return;
+  a.size = Math.max(5, Math.min(96, Number($('fSize').value) || 12));
+  var el = annoEl(a); if (el) styleAnno(el, a);
+  markDirty();
+});
+$('fFont').addEventListener('change', function () {
+  var a = current(); if (!a) return;
+  a.font = $('fFont').value;
+  var el = annoEl(a); if (el) styleAnno(el, a);
+  markDirty();
+});
+$('fBold').addEventListener('click', function () {
+  var a = current(); if (!a) return;
+  a.bold = !a.bold;
+  $('fBold').setAttribute('aria-pressed', a.bold ? 'true' : 'false');
+  var el = annoEl(a); if (el) styleAnno(el, a);
+  markDirty();
+});
+$('fColors').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button[data-hex]');
+  var a = current(); if (!b || !a) return;
+  a.color = b.dataset.hex;
+  var el = annoEl(a); if (el) styleAnno(el, a);
+  paintList(); markDirty();
+});
+$('fDel').addEventListener('click', removeCurrent);
+$('fDup').addEventListener('click', function () {
+  var a = current(); if (!a) return;
+  var b = Object.assign({}, a, { id: S.nextId++, x: a.x + 12, y: a.y + a.size * LH + 4 });
+  S.annos.push(b); paintAnnos(); select(b.id); markDirty();
+});
+
+$('btnOpenLocal').addEventListener('click', openLocal);
+$('btnOpenDrive').addEventListener('click', openFromDrive);
+$('btnSave').addEventListener('click', function () { save(true); });
+$('btnSaveAs').addEventListener('click', function () { save(false); });
+
+$('filePicker').addEventListener('change', async function (ev) {
+  var f = ev.target.files && ev.target.files[0];
+  if (!f) return;
+  var buf = await f.arrayBuffer();
+  await openBytes(buf, { kind: 'local', name: f.name, handle: null, file: null });
+  ev.target.value = '';
+});
+
+$('btnDriveSetup').addEventListener('click', function () {
+  $('gcid').value = S.google.clientId;
+  $('gkey').value = S.google.apiKey;
+  $('gapp').value = S.google.appId;
+  $('originHint').textContent = location.origin === 'null' ? '（このサンドボックスでは利用不可）' : location.origin;
+  $('dlgDrive').showModal();
+});
+$('dlgCancel').addEventListener('click', function () { $('dlgDrive').close(); });
+$('dlgSave').addEventListener('click', function () {
+  S.google.clientId = $('gcid').value.trim();
+  S.google.apiKey = $('gkey').value.trim();
+  S.google.appId = $('gapp').value.trim();
+  S.google.token = null;
+  saveGoogle();
+  $('dlgDrive').close();
+  status('ドライブ設定を保存しました', 'ok');
+});
+
+var relayoutTimer;
+window.addEventListener('resize', function () {
+  clearTimeout(relayoutTimer);
+  relayoutTimer = setTimeout(function () { if (S.pages.length) layout(); }, 180);
+});
+
+/* ============================ 起動 ============================ */
+
+(function initControls() {
+  var sel = $('fFont');
+  Object.keys(FONTS).forEach(function (k) {
+    var o = document.createElement('option');
+    o.value = k; o.textContent = FONTS[k].label;
+    sel.appendChild(o);
+  });
+  var wrap = $('fColors');
+  INKS.forEach(function (c) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'sw';
+    b.dataset.hex = c[1]; b.style.background = c[1];
+    b.title = c[0]; b.setAttribute('aria-label', c[0]);
+    b.setAttribute('aria-pressed', 'false');
+    wrap.appendChild(b);
+  });
+})();
+
+loadGoogle();
+
+(async function boot() {
+  try {
+    if (document.fonts && document.fonts.load) {
+      await Promise.all([
+        document.fonts.load('700 20px "Zen Kaku Gothic New"'),
+        document.fonts.load('400 11px "Zen Kaku Gothic New"'),
+        document.fonts.load('400 10px "IBM Plex Mono"')
+      ]).catch(function () {});
+    }
+    var bytes = await makeSample();
+    await openBytes(bytes, { kind: 'sample', name: 'サンプル_作業報告書.pdf', handle: null, file: null });
+
+    S.annos = [
+      { id: S.nextId++, page: 0, x: 300, y: 300, text: '差圧の測定条件を追記のこと', size: 11, color: '#c0442a', font: 'gothic', bold: true },
+      { id: S.nextId++, page: 0, x: 160, y: 196, text: '← 2F は 10:30 着手', size: 10, color: '#1d4e89', font: 'gothic', bold: false },
+      { id: S.nextId++, page: 1, x: 160, y: 166, text: 'マニフェスト番号を控える', size: 10.5, color: '#c0442a', font: 'gothic', bold: false }
+    ];
+    paintAnnos();
+    status('サンプル文書を表示中 — ページをクリックして朱を入れてください', 'ok');
+  } catch (e) {
+    console.error(e);
+    stage.innerHTML = '<p class="loading">起動に失敗しました：' + esc(String(e && e.message || e)) + '</p>';
+    status('起動に失敗しました', 'err');
+  }
+})();
+
+})();
+</script>
+</body>
+</html>

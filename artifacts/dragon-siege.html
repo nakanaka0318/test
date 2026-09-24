@@ -199,6 +199,17 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
 .ucard.lock em{color:#7a6a50}
 .fbtns.one{grid-template-columns:1fr}
 .res .gold{font-size:15px;font-weight:800;color:#8a5a0a;margin:0 0 12px;display:flex;align-items:center;justify-content:center;gap:6px}
+.skill{margin-top:6px;padding:6px 8px;border-radius:8px;background:#5b36c414;line-height:1.5}
+.skill b{color:#4a2a9a}
+.skill small{color:#7a5f3a;font-weight:800}
+.postlabel{margin:10px 0 2px;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;color:#a3261d;letter-spacing:.1em}
+.postlabel::before,.postlabel::after{content:"";flex:1;height:1px;background:#a3261d55}
+.sbtn.post{background:linear-gradient(90deg,#3a1420,#2a1a2a)}
+.sbtn.post .no{color:#ff8a7a}
+.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.gtab{padding:8px 4px;border-radius:10px;border:1px solid #000;background:#0000001a;font-weight:800;font-size:13px;color:#4a3920}
+.gtab.on{background:linear-gradient(100deg,#5b36c4,#a3322b);color:#fff}
+.gtab i{font-style:normal;font-size:9px;background:#e8b04a;color:var(--ink);border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:2px}
 @media (prefers-reduced-motion:reduce){.gitem{animation:none}}
 @media (prefers-reduced-motion:reduce){.banner.show{animation-duration:.01s}.meteor.arm{animation:none}.card{transition:none}}
 </style>
@@ -255,7 +266,9 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
         ・カードを選び、戦場の下側をタップした位置に兵が出る<br>
         ・<b>飛行ユニット</b>は「対空」持ちでしか攻撃できない<br>
         ・「魔力Lv」を上げると魔力の回復が速くなる<br>
-        ・「隕石」は溜まったらタップ→戦場タップで範囲攻撃
+        ・「隕石」は溜まったらタップ→戦場タップで範囲攻撃<br>
+        ・全ユニットに<b>特殊技</b>あり。時間がたつと自動で発動する<br>
+        ・魔王城をクリアすると<b>ラスボス後の5ステージ</b>が解放
       </div>
     </div>
   </div>
@@ -283,13 +296,14 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
   <div class="ov" id="gachaOv" hidden>
     <div class="panel">
       <div class="fhead"><h2>召喚</h2><div class="wallet" id="gWallet"></div></div>
+      <div class="gtabs" id="gTabs"></div>
       <div class="altar">
         <p class="rates">当たり <b>40%</b>（R 65%・SR 28%・SSR 7%）<br>ハズレ <b>60%</b> … ユニットは出ず、ハズレメダル1枚<br>持っているユニットが出たら、そのユニットがLv+1</p>
         <div class="gbtns">
-          <button class="btn pri" id="g1">1回召喚<small>金 200</small></button>
-          <button class="btn pri" id="g10">10回召喚<small>金 1800</small></button>
+          <button class="btn pri" id="g1">1回召喚<small id="g1c"></small></button>
+          <button class="btn pri" id="g10">10回召喚<small id="g10c"></small></button>
         </div>
-        <button class="btn medal" id="gMedal">メダル確定召喚<small>ハズレメダル10枚＋金100・必ずユニットが出る</small></button>
+        <button class="btn medal" id="gMedal">メダル確定召喚<small id="gMc"></small></button>
         <div class="medalbar"><i id="gMedalFill"></i><span id="gMedalT">0/10</span></div>
       </div>
       <p class="gmsg" id="gMsg"></p>
@@ -374,18 +388,81 @@ const TYPES = {
   skeleton:{name:'骸骨兵',cost:3, hp:60,  atk:14, rate:0.9, range:6,   speed:36, r:7,  count:3, enemyOnly:true, desc:'3体まとめて現れる。'},
   bat:    {name:'大蝙蝠', cost:3, hp:45,  atk:9,  rate:0.8, range:8,   speed:50, r:7,  count:3, air:true, hitsAir:true, hpY:22, enemyOnly:true, desc:'3匹の群れで飛来する。'},
   troll:  {name:'トロル', cost:6, hp:950, atk:46, rate:1.3, range:8,   speed:20, r:13, regen:10, enemyOnly:true, desc:'体力が自然回復する巨体。'},
-  wyrm:   {name:'黒竜',   cost:0, hp:2600,atk:90, rate:1.6, range:88,  speed:17, r:26, air:true, hitsAir:true, proj:'fire', splash:56, hpY:60, enemyOnly:true, desc:'ボス。'},
+  wyrm:   {name:'黒竜',   cost:0, hp:2600,atk:90, rate:1.6, range:88,  speed:17, r:26, air:true, hitsAir:true, proj:'fire', splash:56, hpY:60, enemyOnly:true, desc:'ボス。黒い炎を降らせる竜。'},
+  // ガチャ第2弾（プレイヤー専用）
+  twinblade:{name:'双剣士', gacha:'R', ver:2, cost:3, hp:200, atk:20, rate:0.5, range:6,  speed:38, r:8,  hero:{head:'band', weapon:'twin'}, desc:'二本の剣で素早く斬り続ける。'},
+  thief:   {name:'盗賊',   gacha:'R', ver:2, cost:2, hp:110, atk:18, rate:0.7, range:6,  speed:56, r:7,  hero:{head:'hood', hood:'#4a3a2a', weapon:'dagger'}, desc:'足が速い。特殊技で敵から魔力を盗む。'},
+  xbow:    {name:'弩兵',   gacha:'R', ver:2, cost:3, hp:110, atk:26, rate:1.3, range:125,speed:28, r:8,  hitsAir:true, proj:'arrow', hero:{head:'helm', weapon:'xbow'}, desc:'重い矢を放つ。空にも届く。'},
+  alchemist:{name:'薬師',  gacha:'R', ver:2, cost:3, hp:120, atk:12, rate:1.3, range:90, speed:28, r:8,  hitsAir:true, proj:'flask', splash:30, hero:{head:'goggle', weapon:'flask'}, desc:'薬瓶を投げて範囲攻撃。特殊技で味方を回復。'},
+  witch:   {name:'見習い魔女',gacha:'R', ver:2, cost:4, hp:110, atk:24, rate:1.4, range:100,speed:26, r:8, hitsAir:true, proj:'orb', splash:30, slow:1, hero:{head:'wizard', hat:'#2a2a3a', weapon:'staff', orb:'#9cf59c'}, desc:'呪いの魔法弾で敵を遅くする。'},
+  dragoon: {name:'竜騎士', gacha:'SR', ver:2, cost:6, hp:420, atk:48, rate:1.1, range:16, speed:34, r:10, hero:{head:'plume', weapon:'lance', body:'#3a5a8a'}, desc:'長槍の騎士。特殊技で空高く跳び敵に突き刺さる。'},
+  samurai: {name:'侍',     gacha:'SR', ver:2, cost:5, hp:330, atk:46, rate:0.8, range:8,  speed:40, r:9,  hero:{head:'kabuto', weapon:'katana', body:'#8a2a2a'}, desc:'鋭い刀の使い手。居合で大ダメージ。'},
+  windmage:{name:'風術師', gacha:'SR', ver:2, cost:5, hp:130, atk:30, rate:1.4, range:105,speed:26, r:8,  hitsAir:true, proj:'wind', splash:30, hero:{head:'wizard', hat:'#3a8a5a', weapon:'staff', orb:'#c8ffe0'}, desc:'風の刃で攻撃。竜巻で敵を吹き飛ばす。'},
+  treant:  {name:'森の番人',gacha:'SR', ver:2, cost:6, hp:1100,atk:30, rate:1.4, range:8,  speed:15, r:15, regen:12, desc:'体力が回復し続ける大樹。根で敵を縛る。'},
+  valkyrie:{name:'戦乙女', gacha:'SR', ver:2, cost:6, hp:400, atk:40, rate:0.9, range:12, speed:48, r:11, air:true, hitsAir:true, hpY:34, hero:{head:'wingHelm', weapon:'lance', wings:true, body:'#dfe3ea'}, desc:'空を駆ける槍の乙女。味方を鼓舞する。'},
+  wolf:    {name:'銀狼',   gacha:'SR', ver:2, cost:4, hp:200, atk:26, rate:0.7, range:6,  speed:60, r:9,  count:2, desc:'2頭の群れで駆ける。遠吠えで加速。'},
+  saint:   {name:'聖女',   gacha:'SR', ver:2, cost:6, hp:200, atk:14, rate:1.2, range:95, speed:26, r:8,  hitsAir:true, proj:'holy', heal:{amt:30,radius:80,every:2}, hero:{head:'veil', weapon:'staff', body:'#f7f3e8', orb:'#fff6c0'}, desc:'味方を癒し、聖域で守る。'},
+  thunderemp:{name:'雷帝', gacha:'SSR', ver:2, cost:9, hp:600, atk:70, rate:1.6, range:120,speed:24, r:10, hitsAir:true, proj:'bolt', splash:50, hero:{head:'crown', weapon:'staff', body:'#3a3a8a', cape:'#f5d36a', orb:'#fff27a'}, desc:'雷を統べる王。無数の雷を降らせる。'},
+  swordmaster:{name:'剣聖',gacha:'SSR', ver:2, cost:8, hp:900, atk:80, rate:0.7, range:10, speed:44, r:10, leech:.15, hero:{head:'band', weapon:'sword', blade:'#fff4c0', cape:'#eef1f6', body:'#2a2a36'}, desc:'剣を極めた者。千の刃で周りを斬り刻む。'},
+  holydragon:{name:'神竜', gacha:'SSR', ver:2, cost:10,hp:1400,atk:75, rate:1.4, range:90, speed:24, r:18, air:true, hitsAir:true, proj:'holy', splash:55, hpY:40, desc:'聖なる竜。光の息吹で敵を焼き、味方を癒す。'},
+  chrono:  {name:'時の魔女',gacha:'SSR', ver:2, cost:8, hp:300, atk:40, rate:1.3, range:110,speed:24, r:8,  hitsAir:true, proj:'orb', hero:{head:'wizard', hat:'#5a2a8a', weapon:'staff', orb:'#e0c0ff', cape:'#2a1a3a'}, desc:'時を操る魔女。戦場の全ての敵を止める。'},
+  // 新たな敵
+  ghost:   {name:'亡霊',   cost:3, hp:70,  atk:14, rate:0.9, range:6,  speed:40, r:8,  count:2, air:true, hitsAir:true, hpY:24, enemyOnly:true, desc:'2体で漂う霊。'},
+  harpy:   {name:'ハーピー',cost:4, hp:110, atk:18, rate:0.7, range:8,  speed:55, r:9,  count:2, air:true, hitsAir:true, hpY:28, enemyOnly:true, desc:'素早い鳥人の群れ。'},
+  gargoyle:{name:'ガーゴイル',cost:5,hp:600, atk:30, rate:1.1, range:8,  speed:28, r:12, air:true, hitsAir:true, hpY:30, enemyOnly:true, desc:'石の体を持つ飛行魔。'},
+  lich:    {name:'リッチ', cost:6, hp:300, atk:34, rate:1.6, range:105,speed:24, r:9,  hitsAir:true, proj:'orb', splash:30, enemyOnly:true, hero:{head:'lich', weapon:'staff', body:'#3a2a4a', orb:'#9cf59c'}, desc:'骸骨兵を呼ぶ不死の魔術師。'},
+  darkknight:{name:'暗黒騎士',cost:5,hp:650, atk:40, rate:1.0, range:6,  speed:28, r:11, enemyOnly:true, hero:{head:'helm', helmCol:'#3a3a44', weapon:'sword', body:'#2a2a36', blade:'#c08aff', cape:'#5a1a2a'}, desc:'闇の突進で切り込む騎士。'},
+  demon:   {name:'悪魔',   cost:6, hp:500, atk:50, rate:0.9, range:8,  speed:36, r:11, enemyOnly:true, hero:{head:'horn', skin:'#b0402a', weapon:'trident', body:'#5a1a1a'}, desc:'獄炎をまとう魔族。'},
+  shadow:  {name:'影法師', cost:4, hp:160, atk:36, rate:0.5, range:6,  speed:60, r:8,  enemyOnly:true, hero:{head:'band', weapon:'dagger', body:'#15151c', skin:'#3a3a48'}, desc:'影のように素早い暗殺者。'},
+  cyclops: {name:'サイクロプス',cost:7,hp:1300,atk:60,rate:1.6, range:8,  speed:18, r:16, hpY:38, enemyOnly:true, hero:{head:'cyclops', weapon:'club', body:'#7a5a3a', skin:'#b0a070', scale:1.5}, desc:'一つ目の巨人。岩を投げる。'},
+  icegiant:{name:'氷の巨人',cost:7, hp:1400,atk:55, rate:1.6, range:8,  speed:16, r:16, hpY:40, enemyOnly:true, hero:{head:'helm', helmCol:'#cfefff', weapon:'hammer', body:'#8fd8f0', skin:'#cfefff', scale:1.55}, desc:'咆哮で周りを凍らせる。'},
+  hydra:   {name:'ヒドラ', cost:8, hp:1500,atk:30, rate:1.2, range:100,speed:16, r:16, hitsAir:true, proj:'poison', hpY:36, enemyOnly:true, desc:'三つの首から毒を吐く大蛇。'},
+  hades:   {name:'冥王',   cost:0, hp:5000,atk:100,rate:1.5, range:12, speed:14, r:26, splash:40, hpY:74, enemyOnly:true, hero:{head:'crown', weapon:'scythe', body:'#2a1a3a', skin:'#9a8ab0', cape:'#5a1a2a', scale:2.1}, desc:'ボス。亡霊を呼び、大鎌で薙ぎ払う。'},
+  dragonking:{name:'竜王', cost:0, hp:7000,atk:105,rate:1.5, range:100,speed:14, r:30, air:true, hitsAir:true, proj:'fire', splash:65, hpY:84, enemyOnly:true, desc:'真のラスボス。竜の王。'},
 };
+// 特殊技（全ユニット）。cd秒ごとに条件を満たすと自動で発動
+const SKILLS = {
+  knight:{n:'旋風斬',k:'nova',cd:8,r:34,m:1.6}, spear:{n:'連突き',k:'execute',cd:6,m:2.5}, archer:{n:'三連射',k:'multi',cd:7,c:3,m:1},
+  shield:{n:'鉄壁',k:'shield',cd:10,r:60,t:4}, bomber:{n:'導火疾走',k:'haste',cd:20,t:4}, ninja:{n:'瞬影斬',k:'dash',cd:6,d:90,m:2},
+  priest:{n:'祝福',k:'heal',cd:9,r:100,amt:80}, icemage:{n:'氷結陣',k:'stun',cd:10,r:55,t:1.6,m:.5}, mage:{n:'爆炎',k:'blast',cd:9,r:60,m:2.2},
+  cavalry:{n:'突撃',k:'dash',cd:8,d:110,m:2.2}, griffin:{n:'急降下',k:'execute',cd:7,m:2.5}, catapult:{n:'火炎弾',k:'rain',cd:12,c:3,r:40,m:1.2},
+  golem:{n:'地響き',k:'stun',cd:10,r:60,t:1.5,m:1}, dragon:{n:'業火の息',k:'blast',cd:10,r:75,m:2},
+  skeleton:{n:'骨の盾',k:'shield',cd:12,r:0,t:3}, bat:{n:'吸血',k:'drain',cd:8,r:20,m:1.5}, troll:{n:'激昂',k:'haste',cd:12,t:4}, wyrm:{n:'黒炎',k:'rain',cd:9,c:5,r:50,m:1.2},
+  axeman:{n:'大車輪',k:'nova',cd:8,r:44,m:1.8}, javelin:{n:'二段投げ',k:'multi',cd:7,c:2,m:1.2}, hammer:{n:'地割れ',k:'stun',cd:9,r:45,t:1.3,m:1.2},
+  musket:{n:'狙い撃ち',k:'execute',cd:8,m:3}, bard:{n:'英雄の歌',k:'rally',cd:12,r:120,t:5}, paladin:{n:'聖なる加護',k:'shield',cd:12,r:90,t:4},
+  berserker:{n:'狂乱',k:'haste',cd:10,t:5}, sniper:{n:'心臓射抜き',k:'execute',cd:10,m:4}, thunder:{n:'落雷の嵐',k:'rain',cd:11,c:4,r:40,m:1.3},
+  unicorn:{n:'癒しの角',k:'heal',cd:8,r:80,amt:70}, cannon:{n:'一斉砲撃',k:'rain',cd:13,c:3,r:35,m:1.5}, phoenix:{n:'転生の炎',k:'drain',cd:10,r:60,m:1.5},
+  angel:{n:'天の祝福',k:'heal',cd:10,r:150,amt:160}, frostwyrm:{n:'絶対零度',k:'stun',cd:12,r:80,t:2,m:1}, titan:{n:'天地崩壊',k:'nova',cd:10,r:70,m:2.5},
+  reaper:{n:'魂狩り',k:'drain',cd:8,r:50,m:2},
+  twinblade:{n:'乱れ斬り',k:'execute',cd:6,m:3}, thief:{n:'盗み取り',k:'mana',cd:12,amt:1}, xbow:{n:'貫通矢',k:'multi',cd:8,c:4,m:.9},
+  alchemist:{n:'回復薬',k:'heal',cd:8,r:70,amt:60}, witch:{n:'カエルの呪い',k:'stun',cd:10,r:40,t:2,m:.3}, dragoon:{n:'竜跳躍',k:'dash',cd:7,d:130,m:3},
+  samurai:{n:'居合一閃',k:'execute',cd:6,m:4}, windmage:{n:'大竜巻',k:'push',cd:10,r:60,d:60,m:1.5}, treant:{n:'根縛り',k:'stun',cd:9,r:70,t:2,m:.8},
+  valkyrie:{n:'戦士の鼓舞',k:'rally',cd:12,r:110,t:5}, wolf:{n:'遠吠え',k:'haste',cd:10,t:4}, saint:{n:'聖域',k:'shield',cd:12,r:110,t:5},
+  thunderemp:{n:'神鳴',k:'rain',cd:9,c:6,r:45,m:1.4}, swordmaster:{n:'千刃',k:'nova',cd:6,r:60,m:2.5}, holydragon:{n:'聖光の息吹',k:'blast',cd:9,r:90,m:2.5,heal:120},
+  chrono:{n:'時間停止',k:'stun',cd:14,r:400,t:3,m:0},
+  ghost:{n:'呪縛',k:'stun',cd:10,r:30,t:1,m:.5}, harpy:{n:'急襲',k:'dash',cd:8,d:90,m:1.8}, gargoyle:{n:'石化',k:'shield',cd:10,r:0,t:4},
+  lich:{n:'死者召喚',k:'summon',cd:12,unit:'skeleton'}, darkknight:{n:'闇の突進',k:'dash',cd:8,d:100,m:2}, demon:{n:'獄炎',k:'nova',cd:8,r:50,m:1.8},
+  shadow:{n:'影走り',k:'haste',cd:9,t:3}, cyclops:{n:'岩投げ',k:'blast',cd:9,r:45,m:2,reach:140}, icegiant:{n:'氷河の咆哮',k:'stun',cd:10,r:70,t:1.8,m:1},
+  hydra:{n:'三頭の毒',k:'multi',cd:7,c:3,m:1.5}, hades:{n:'冥府の門',k:'summon',cd:12,unit:'ghost',c:2}, dragonking:{n:'竜王の審判',k:'rain',cd:10,c:6,r:55,m:1.1},
+};
+const SKILLS2 = { hades:{n:'死の大鎌',k:'nova',cd:9,r:80,m:2}, dragonking:{n:'王の咆哮',k:'rally',cd:14,r:300,t:6}, wyrm:{n:'竜の威圧',k:'stun',cd:16,r:70,t:1.2,m:.5} };
+for (const k in TYPES) TYPES[k].skills = [SKILLS[k], SKILLS2[k]].filter(Boolean);
 const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23},
-  unicorn:{s:1.1,oy:23}, cannon:{s:.95,oy:22}, phoenix:{s:.78,oy:16}, angel:{s:.85,oy:25}, frostwyrm:{s:.56,oy:14}, titan:{s:.62,oy:29}, reaper:{s:1.2,oy:24}, sniper:{s:1.2,oy:23}};
+  unicorn:{s:1.1,oy:23}, cannon:{s:.95,oy:22}, phoenix:{s:.78,oy:16}, angel:{s:.85,oy:25}, frostwyrm:{s:.56,oy:14}, titan:{s:.62,oy:29}, reaper:{s:1.2,oy:24}, sniper:{s:1.2,oy:23},
+  ghost:{s:1.3,oy:20}, harpy:{s:.8,oy:16}, gargoyle:{s:.75,oy:16}, holydragon:{s:.52,oy:14}, dragonking:{s:.3,oy:14}, hades:{s:.5,oy:31}, cyclops:{s:.7,oy:28},
+  icegiant:{s:.68,oy:28}, hydra:{s:.8,oy:26}, treant:{s:.85,oy:26}, wolf:{s:1.2,oy:22}, valkyrie:{s:.9,oy:25}, dragoon:{s:1.2,oy:25}, lich:{s:1.25,oy:24}, thunderemp:{s:1.2,oy:25}};
 const PLAYABLE = Object.keys(TYPES).filter(k => !TYPES[k].enemyOnly && !TYPES[k].gacha);
 const GACHA = Object.keys(TYPES).filter(k => TYPES[k].gacha);
 const RARITY = {R:{w:65, col:'#4f7fb0'}, SR:{w:28, col:'#9a4fc8'}, SSR:{w:7, col:'#d99a14'}};
-const PULL_COST = 200, PULL10_COST = 1800, MEDAL_GOLD = 100, MEDAL_NEED = 10, HIT_RATE = .4;
+const BANNERS = {
+  v2:{name:'第2弾', sub:'NEW', cost:300, cost10:2700, medalGold:150, units:GACHA.filter(k => TYPES[k].ver===2)},
+  v1:{name:'第1弾', sub:'', cost:200, cost10:1800, medalGold:100, units:GACHA.filter(k => TYPES[k].ver!==2)},
+};
+const MEDAL_NEED = 10, HIT_RATE = .4;
 const lvCost = L => 40 + 25*(L-1) + 3*(L-1)*(L-1);   // Lv L → L+1 に必要な金
 const lvMul = L => 1 + 0.1*(L-1);                     // 体力・攻撃の倍率
 const DEFAULT_DECK = ['knight','archer','shield','mage','cavalry','dragon'];
-const bossTimes = (start, every) => { const a=[]; for (let t=start; t<900; t+=every) a.push(t); return a; };
+const bossTimes = (start, every, k='wyrm') => { const a=[]; for (let t=start; t<900; t+=every) a.push({t, k}); return a; };
 const P1 = {knight:4,archer:3,shield:2,spear:2,skeleton:2};
 const P2 = {...P1, knight:3, mage:2, bat:2, bomber:1.5};
 const P3 = {...P2, bat:1.5, cavalry:2, ninja:2, icemage:1, priest:1};
@@ -395,8 +472,20 @@ const STAGES = [
   {name:'辺境の砦', sub:'小鬼と骸骨の斥候部隊', erate:1.85, hp:1800, mul:1.00, pool:P1, g1:'#4f6b3a', g2:'#34482a'},
   {name:'霧の谷',   sub:'蝙蝠の群れと爆弾兵',   erate:1.70, hp:2200, mul:1.08, pool:P2, g1:'#48664f', g2:'#2c4235'},
   {name:'黒き森',   sub:'騎兵と忍の奇襲',       erate:1.55, hp:2600, mul:1.16, pool:P3, g1:'#35553a', g2:'#1f3322'},
-  {name:'炎の峠',   sub:'トロル・竜・投石機',   erate:1.42, hp:3000, mul:1.25, pool:P4, g1:'#6a5836', g2:'#43301f', boss:[85]},
+  {name:'炎の峠',   sub:'トロル・竜・投石機',   erate:1.42, hp:3000, mul:1.25, pool:P4, g1:'#6a5836', g2:'#43301f', boss:[{t:85,k:'wyrm'}]},
   {name:'魔王城',   sub:'ゴーレムと黒竜の総力戦', erate:1.30, hp:3600, mul:1.35, pool:P5, g1:'#4c4452', g2:'#2a2230', boss:bossTimes(50,70)},
+  // ラスボス後
+  {name:'冥府の門', sub:'亡霊とリッチ、そして冥王', erate:1.25, hp:4200, mul:1.45, g1:'#3a2a3e', g2:'#1a1020', post:true,
+    pool:{knight:2,archer:2,shield:2,skeleton:3,ghost:3,lich:1.5,darkknight:2,shadow:2,priest:1,mage:1.5}, boss:[{t:90,k:'hades'}]},
+  {name:'天空回廊', sub:'空を埋めつくす魔物の群れ', erate:1.20, hp:4800, mul:1.55, g1:'#5a7898', g2:'#2e3e5a', post:true,
+    pool:{archer:2,bat:3,ghost:2,harpy:3,gargoyle:2,griffin:2,dragon:1.5,mage:1.5,icemage:1,shield:1}, boss:bossTimes(60,70)},
+  {name:'氷獄',     sub:'氷の巨人とヒドラ', erate:1.15, hp:5400, mul:1.65, g1:'#86a4b4', g2:'#4a6878', post:true,
+    pool:{shield:2,icemage:2,ghost:2,darkknight:2,troll:2,icegiant:1.5,hydra:1,spear:2,archer:2}, boss:[{t:70,k:'wyrm'},{t:150,k:'hades'},{t:230,k:'wyrm'}]},
+  {name:'虚無の荒野', sub:'悪魔とサイクロプスの軍勢', erate:1.10, hp:6000, mul:1.75, g1:'#5a4a3a', g2:'#2a2018', post:true,
+    pool:{demon:2.5,cyclops:1.5,hydra:1.2,shadow:2,lich:1.5,golem:1,darkknight:2,catapult:1,bomber:2,archer:1.5}, boss:[{t:60,k:'hades'},{t:110,k:'wyrm'},{t:170,k:'hades'}]},
+  {name:'真・竜王の座', sub:'全ての魔物と竜王との決戦', erate:1.05, hp:7000, mul:1.90, g1:'#5a2a1a', g2:'#2a0e08', post:true,
+    pool:{demon:2,cyclops:1.2,hydra:1.2,shadow:2,lich:1.5,darkknight:2,harpy:2,gargoyle:1.5,dragon:1.5,icegiant:1,ghost:2,golem:1,archer:1.5},
+    boss:[{t:75,k:'dragonking'},{t:215,k:'dragonking'},{t:355,k:'dragonking'}].concat(bossTimes(120,70))},
 ];
 // 難易度：rate=敵の魔力回復間隔の倍率(小さいほど多く出る)、dup/dup2=同じ兵がおまけで追加出撃する確率
 const MODES = {
@@ -406,9 +495,17 @@ const MODES = {
 };
 function bossFor(mode, i){
   const S = STAGES[i];
-  if (mode==='hard') return i===3 ? [70,170] : i===4 ? bossTimes(40,60) : (S.boss||[]);
-  if (mode==='ultimate') return i>=3 ? bossTimes(35,50) : bossTimes(75,80);
-  return S.boss || [];
+  let list = (S.boss||[]).slice();
+  if (mode==='hard'){
+    if (i===3) list = [{t:70,k:'wyrm'},{t:170,k:'wyrm'}];
+    else if (i===4) list = bossTimes(40,60);
+    else if (S.post) list = list.concat(bossTimes(100,90));
+  }
+  if (mode==='ultimate'){
+    const w = i>=3 ? bossTimes(35,50) : bossTimes(75,80);
+    list = S.post ? list.concat(w) : w;
+  }
+  return list.sort((a,b) => a.t-b.t);
 }
 const LV_RATE = [1.5, 1.25, 1.05, 0.9, 0.76];
 const LV_COST = [4, 6, 8, 10];
@@ -420,7 +517,7 @@ const PAL = {
 const INK = '#1d150d';
 
 // ---------- セーブ ----------
-const emptyProg = () => ({unlocked:1, stars:[0,0,0,0,0]});
+const emptyProg = () => ({unlocked:1, stars:[0,0,0,0,0,0,0,0,0,0]});
 let save = {mode:'normal', deck:DEFAULT_DECK.slice(), muted:false, modes:{normal:emptyProg(), hard:emptyProg(), ultimate:emptyProg()},
   gold:500, medals:0, lv:{}, owned:[]};
 const available = () => PLAYABLE.concat(save.owned);
@@ -489,7 +586,7 @@ function newGame(stage, demo=false){
       e:{mana:3, next:null, rate:S.erate*M.rate, pool:S.pool, cap:M.cap},
       p:{mana:3, next:null, rate:1.6, pool:Object.fromEntries(PLAYABLE.map(k=>[k, k==='dragon'||k==='golem'?1:2])), cap:28},
     },
-    surgeT: M.surge, bossIdx:0, boss: demo ? [] : bossFor(mk, stage),
+    strikes:[], surgeT: M.surge, bossIdx:0, boss: demo ? [] : bossFor(mk, stage),
   };
   makeBG();
   refreshHUDStatic();
@@ -559,7 +656,7 @@ function spawn(team, type, x, y){
   const T = TYPES[type];
   const mul = team==='e' ? STAGES[G.stage].mul * G.M.mul : lvMul(lvOf(type));
   const u = {id:++uid, team, type, T, x, y, mul, hp:T.hp*mul, max:T.hp*mul, atk:T.atk*mul, cd:Math.random()*.3,
-    air:!!T.air, r:T.r, dir: team==='p'?-1:1, anim:Math.random()*6, atkA:0, hit:0, moving:true, slowT:0, healT:T.heal?T.heal.every:0};
+    air:!!T.air, r:T.r, dir: team==='p'?-1:1, anim:Math.random()*6, atkA:0, hit:0, moving:true, slowT:0, stunT:0, shieldT:0, hasteT:0, healT:T.heal?T.heal.every:0, sk:T.skills.map(k => k.cd*.6)};
   G.units.push(u);
   puff(x, y, team==='p'?'#bfdcff':'#ffb0a3', 8);
   return u;
@@ -586,7 +683,10 @@ function updateUnit(u, dt){
   const T = u.T;
   u.anim += dt; u.atkA = Math.max(0, u.atkA - dt*4); u.hit = Math.max(0, u.hit - dt);
   if (u.slowT > 0) u.slowT -= dt;
-  const slow = u.slowT > 0 ? .5 : 1;
+  if (u.shieldT > 0) u.shieldT -= dt;
+  if (u.hasteT > 0) u.hasteT -= dt;
+  if (u.stunT > 0){ u.stunT -= dt; u.moving = false; return; }
+  const slow = (u.slowT > 0 ? .5 : 1) * (u.hasteT > 0 ? 1.7 : 1);
   u.cd -= dt*slow;
   if (T.regen && u.hp < u.max) u.hp = Math.min(u.max, u.hp + T.regen*u.mul*dt);
   if (T.heal){
@@ -622,6 +722,13 @@ function updateUnit(u, dt){
   let target = null, dist = 0;
   if (best && bd < cd){ target = best; dist = bd; }
   else if (cd < aggro){ target = enemyCastle(u.team); dist = cd; }
+  for (let i=0;i<T.skills.length;i++){
+    u.sk[i] -= dt;
+    if (u.sk[i] <= 0){
+      if (castSkill(u, T.skills[i], target, dist, atkNow)) u.sk[i] = T.skills[i].cd; else u.sk[i] = 0;
+      if (u.hp <= 0) return;
+    }
+  }
   const sp = T.speed*slow;
   u.moving = true;
   if (target && dist <= T.range){
@@ -660,14 +767,123 @@ function updateUnit(u, dt){
   if (u.team==='p') u.y = Math.max(u.y, cp.front - 2); else u.y = Math.min(u.y, cp.front + 2);
 }
 
+// ---------- 特殊技 ----------
+const tgPos = (tg, u) => tg.isCastle ? {x:u.x, y:tg.front} : {x:tg.x, y:tg.y};
+function alliesIn(u, x, y, r, fn){
+  let n = 0;
+  for (const v of G.units) if (v.team===u.team && v.hp>0 && (r<=0 ? v===u : Math.hypot(v.x-x, v.y-y) <= r + v.r)){ if (fn(v) !== false) n++; }
+  return n;
+}
+function healAround(u, x, y, r, amt){
+  return alliesIn(u, x, y, r, v => {
+    if (v.hp >= v.max*.9) return false;
+    v.hp = Math.min(v.max, v.hp + amt);
+    G.fx.push({k:'txt', x:v.x, y:v.y-14, vx:0, vy:-20, life:.6, max:.6, col:'#9cf59c', txt:'+', sz:12});
+  });
+}
+function castSkill(u, s, tg, dist, atk){
+  const T = u.T, team = u.team, col = team==='p' ? '#ffe28a' : '#ffb0a3';
+  const inRange = extra => tg && dist <= Math.max(T.range, 10) + extra;
+  switch (s.k){
+    case 'nova':
+      if (!tg || dist > s.r) return false;
+      areaDamage(u.x, u.y, s.r, atk*s.m, team, true, (T.castleMul||1)*.4);
+      boom(u.x, u.y, col, s.r); break;
+    case 'blast': {
+      if (!tg || dist > (s.reach || T.range) + 20) return false;
+      const p = tgPos(tg, u);
+      areaDamage(p.x, p.y, s.r, atk*s.m, team, true, (T.castleMul||1)*.4);
+      boom(p.x, p.y, T.proj==='holy' ? '#fff6c0' : '#ff8a2a', s.r); boom(p.x, p.y, '#fff1a8', s.r*.5);
+      if (s.heal) healAround(u, u.x, u.y, 140, s.heal*u.mul);
+      break; }
+    case 'multi': {
+      if (!inRange(10)) return false;
+      const list = G.units.filter(v => v.team!==team && v.hp>0 && canHit(T.hitsAir, v) && Math.hypot(v.x-u.x, v.y-u.y) <= T.range + 30)
+        .sort((a,b) => Math.hypot(a.x-u.x,a.y-u.y) - Math.hypot(b.x-u.x,b.y-u.y)).slice(0, s.c);
+      if (!list.length) list.push(tg);
+      for (const v of list) shoot(T.proj || 'arrow', u.x, u.y-4, v, atk*s.m, team, {hitsAir:T.hitsAir, splash:T.splash||0, castleMul:T.castleMul||1, slow:T.slow||0});
+      break; }
+    case 'heal':
+      if (!healAround(u, u.x, u.y, s.r, s.amt*u.mul)) return false;
+      G.fx.push({k:'ring', x:u.x, y:u.y, r:s.r, life:.6, max:.6, col:'#8cf08c'}); break;
+    case 'shield':
+      if (!tg) return false;
+      alliesIn(u, u.x, u.y, s.r, v => { v.shieldT = s.t; });
+      G.fx.push({k:'ring', x:u.x, y:u.y, r:Math.max(s.r, 20), life:.6, max:.6, col:'#bfe4ff'}); break;
+    case 'rally':
+      if (!tg) return false;
+      alliesIn(u, u.x, u.y, s.r, v => { v.buffT = Math.max(v.buffT||0, s.t); });
+      G.fx.push({k:'ring', x:u.x, y:u.y, r:Math.min(s.r, 160), life:.6, max:.6, col:'#f5d36a'}); break;
+    case 'haste':
+      if (!tg) return false;
+      u.hasteT = s.t; puff(u.x, u.y, '#fff3c4', 8); break;
+    case 'dash': {
+      if (!tg || tg.isCastle || dist > s.d) return false;
+      const dx = tg.x-u.x, dy = tg.y-u.y, d = Math.hypot(dx,dy) || 1;
+      for (let i=1;i<6;i++) G.fx.push({k:'dot', x:u.x+dx*i/6, y:u.y+dy*i/6, vx:0, vy:0, life:.3, max:.3, col, s:3});
+      u.x = tg.x - dx/d*(tg.r+u.r); u.y = tg.y - dy/d*(tg.r+u.r);
+      damage(tg, atk*s.m); spark(tg.x, tg.y, col, 10); break; }
+    case 'stun': {
+      const global = s.r >= 300;
+      if (!tg || (!global && !inRange(40))) return false;
+      const p = global ? {x:u.x, y:u.y} : tgPos(tg, u);
+      let n = 0;
+      for (const v of G.units) if (v.team!==team && v.hp>0 && (global || Math.hypot(v.x-p.x, v.y-p.y) <= s.r + v.r)){
+        v.stunT = Math.max(v.stunT||0, s.t); if (s.m) damage(v, atk*s.m); n++;
+      }
+      if (!n) return false;
+      if (global){ G.fx.push({k:'flash', x:0, y:0, life:.6, max:.6, col:'#c9a0ff'}); }
+      else G.fx.push({k:'ring', x:p.x, y:p.y, r:s.r, life:.5, max:.5, col:'#aee6ff'});
+      break; }
+    case 'execute':
+      if (!inRange(10)) return false;
+      damage(tg, atk*s.m*dmgMul(T, tg)*(tg.isCastle ? .4 : 1));
+      { const p = tgPos(tg, u); spark(p.x, p.y, col, 12); G.fx.push({k:'ring', x:p.x, y:p.y, r:18, life:.3, max:.3, col}); }
+      break;
+    case 'rain': {
+      if (!inRange(30)) return false;
+      const p = tgPos(tg, u);
+      for (let i=0;i<s.c;i++) G.strikes.push({x:clamp(p.x+rand(-s.r,s.r),10,W-10), y:p.y+rand(-s.r*.7,s.r*.7), t:.35+i*.16, r:s.r*.7, dmg:atk*s.m, team, col:T.proj==='bolt'?'#fff27a':'#ff7a2a', cm:(T.castleMul||1)*.4});
+      break; }
+    case 'drain': {
+      if (!tg || dist > s.r) return false;
+      const tot = areaDamage(u.x, u.y, s.r, atk*s.m, team, true, .4);
+      u.hp = Math.min(u.max, u.hp + tot*.5);
+      boom(u.x, u.y, '#b04aff', s.r); break; }
+    case 'push': {
+      if (!inRange(30)) return false;
+      const p = tgPos(tg, u);
+      for (const v of G.units) if (v.team!==team && v.hp>0 && Math.hypot(v.x-p.x, v.y-p.y) <= s.r + v.r){
+        damage(v, atk*s.m); v.y -= v.dir * s.d * (v.T.hp >= 2000 ? .3 : 1);
+      }
+      for (let i=0;i<14;i++){ const a = i/14*6.28; G.fx.push({k:'dot', x:p.x+Math.cos(a)*10, y:p.y+Math.sin(a)*10, vx:Math.cos(a+1.4)*90, vy:Math.sin(a+1.4)*90, life:.5, max:.5, col:'#c8ffe0', s:3}); }
+      break; }
+    case 'summon': {
+      if (!tg) return false;
+      const cap = team==='p' ? PCAP : G.ai.e.cap;
+      let made = 0;
+      for (let i=0;i<(s.c||1);i++) made += spawnGroup(team, s.unit, clamp(u.x + rand(-24,24), 20, W-20), u.y + (team==='e'?12:-12), cap);
+      if (!made) return false;
+      G.fx.push({k:'ring', x:u.x, y:u.y, r:30, life:.6, max:.6, col:'#9cf59c'}); break; }
+    case 'mana':
+      if (!inRange(5) || team!=='p' || G.demo) return false;
+      G.mana = Math.min(MAXMANA, G.mana + s.amt);
+      floatText(u.x, u.y-36, '魔力+'+s.amt, '#c6a8ff'); break;
+    default: return false;
+  }
+  G.fx.push({k:'txt', x:u.x, y:u.y - (u.air ? 40 : 28), vx:0, vy:-18, life:1.1, max:1.1, col, txt:s.n, sz:11});
+  return true;
+}
+
 function shoot(kind, x, y, target, dmg, team, o={}){
-  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165, bullet:520, bolt:420, javelin:290, note:200}[kind];
+  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165, bullet:520, bolt:420, javelin:290, note:200, flask:200, wind:260, holy:210, poison:220}[kind];
   const tx = target.isCastle ? x : target.x, ty = target.isCastle ? target.front + (team==='p'?-6:6) : target.y;
   G.projs.push({kind, x, y, tx, ty, target, dmg, team, splash:o.splash||0, hitsAir:!!o.hitsAir, castleMul:o.castleMul||1, slow:o.slow||0,
     speed, life:3, d0:Math.hypot(tx-x, ty-y)||1});
 }
 function damage(t, dmg){
   if (t.hp <= 0) return;
+  if (t.shieldT > 0) dmg *= .5;
   t.hp -= dmg;
   if (t.isCastle){
     t.hit = .2; G.shake = Math.max(G.shake, 2);
@@ -676,12 +892,14 @@ function damage(t, dmg){
   } else { t.hit = .12; if (!G.demo) sfx.hit(); }
 }
 function areaDamage(x, y, radius, dmg, fromTeam, hitsAir, castleMul=1, slow=0){
+  let tot = 0;
   for (const v of G.units){
     if (v.team===fromTeam || v.hp<=0 || !canHit(hitsAir, v)) continue;
-    if (Math.hypot(v.x-x, v.y-y) <= radius + v.r){ damage(v, dmg); if (slow) v.slowT = slow; }
+    if (Math.hypot(v.x-x, v.y-y) <= radius + v.r){ damage(v, dmg); tot += dmg; if (slow) v.slowT = slow; }
   }
   const c = fromTeam==='p' ? G.cast.e : G.cast.p;
   if (Math.abs(y - c.front) <= radius + 6 && Math.abs(x - W/2) < 120) damage(c, dmg*castleMul);
+  return tot;
 }
 
 function updateProj(p, dt){
@@ -780,10 +998,10 @@ function update(dt){
     G.surgeT = G.M.surge; const ai = G.ai.e; ai.surgeCap = MAXMANA + G.M.bonus; ai.mana = Math.min(ai.surgeCap, ai.mana + G.M.bonus);
     banner('敵軍 総攻撃！', true); tone(300,.4,'sawtooth',.05,.6);
   }
-  if (G.bossIdx < G.boss.length && G.t >= G.boss[G.bossIdx]){
-    G.bossIdx++;
-    spawn('e', 'wyrm', rand(W/2-60, W/2+60), G.cast.e.front + 16);
-    banner('黒竜 襲来！', true); sfx.roar(); G.shake = 6;
+  if (G.bossIdx < G.boss.length && G.t >= G.boss[G.bossIdx].t){
+    const bk = G.boss[G.bossIdx++].k;
+    spawn('e', bk, rand(W/2-60, W/2+60), G.cast.e.front + 16);
+    banner(`${TYPES[bk].name} 襲来！`, true); sfx.roar(); G.shake = bk==='wyrm' ? 6 : 10;
   }
 
   for (const u of G.units) if (u.hp > 0) updateUnit(u, dt);
@@ -816,6 +1034,15 @@ function update(dt){
     }
   }
   G.meteors = G.meteors.filter(m => m.t > -0.3);
+  for (const st of G.strikes){
+    st.t -= dt;
+    if (st.t <= 0 && !st.done){
+      st.done = true;
+      areaDamage(st.x, st.y, st.r, st.dmg, st.team, true, st.cm);
+      boom(st.x, st.y, st.col, st.r); if (!G.demo && Math.random()<.4) tone(140,.15,'sawtooth',.03,.4);
+    }
+  }
+  G.strikes = G.strikes.filter(st => !st.done);
 
   for (const u of G.units) if (u.hp <= 0 && !u.gone){
     if (u.T.revive && !u.revived){
@@ -824,7 +1051,7 @@ function update(dt){
       continue;
     }
     u.gone = true; puff(u.x, u.y, '#d9d2c0', u.air?14:8);
-    if (u.type==='wyrm'){ boom(u.x,u.y,'#b04aff',50); G.shake = 8; if (!G.demo){ sfx.boom(); banner('黒竜 撃破！'); } }
+    if (u.T.hpY >= 60){ boom(u.x,u.y,'#b04aff',50); G.shake = 8; if (!G.demo){ sfx.boom(); banner(`${u.T.name} 撃破！`); } }
   }
   G.units = G.units.filter(u => !u.gone);
 
@@ -861,17 +1088,21 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
   c.lineWidth = 1.5; c.strokeStyle = INK; c.lineJoin = 'round';
   const bob = moving ? Math.abs(Math.sin(t*9))*-1.6 : 0;
   const TT = TYPES[type];
-  if (type==='dragon' || type==='wyrm' || type==='frostwyrm'){ drawDragon(c, type, team, t, atk); c.restore(); return; }
-  if (type==='griffin' || type==='phoenix'){ drawGriffin(c, team, t, atk, type==='phoenix' ? PHOENIX : null); c.restore(); return; }
+  if (DRAGONS[type] || type==='dragon'){ drawDragon(c, type, team, t, atk); c.restore(); return; }
+  if (type==='griffin' || BIRDS[type]){ drawGriffin(c, team, t, atk, BIRDS[type]); c.restore(); return; }
   if (type==='bat'){ drawBat(c, team, t, atk); c.restore(); return; }
+  if (type==='ghost'){ drawGhost(c, team, t, atk); c.restore(); return; }
   if (TT.hero && TT.air){
     ell(c, 0, 20, 10, 3.5, 'rgba(0,0,0,.25)'); c.strokeStyle=INK;
     c.translate(0, Math.sin(t*3)*2 - 10); drawHero(c, type, team, t, atk); c.restore(); return;
   }
-  const big = {cavalry:14, unicorn:14, catapult:15, cannon:15, golem:16, troll:15, titan:22}[type] || 8;
+  const big = {cavalry:14, unicorn:14, catapult:15, cannon:15, golem:16, troll:15, titan:22, treant:16, hydra:20, wolf:12, cyclops:20, icegiant:20, hades:30}[type] || 8;
   ell(c, 0, big>8?(big>16?17:11):9, big, big>8?4:3, 'rgba(0,0,0,.32)'); c.strokeStyle=INK;
   c.translate(0, (type==='catapult' || type==='cannon') ? 0 : bob);
   if (TT.hero){ drawHero(c, type, team, t, atk); c.restore(); return; }
+  if (type==='treant'){ drawTreant(c, team, t, atk); c.restore(); return; }
+  if (type==='wolf'){ drawWolf(c, team, t, atk, moving); c.restore(); return; }
+  if (type==='hydra'){ drawHydra(c, team, t, atk); c.restore(); return; }
   if (type==='knight'){
     circ(c,0,1,7,P.m);
     c.fillStyle=P.d; c.fillRect(-7,1,14,2.5);
@@ -1025,7 +1256,31 @@ function drawHero(c, type, team, t, atk){
   } else {
     circ(c,0,-7,5,skin);
     const h = S.head;
-    if (h==='helm') helm(c,-7,5.4);
+    if (h==='helm') helm(c,-7,5.4,S.helmCol);
+    else if (h==='goggle'){
+      helm(c,-7.5,5.2,P.d);
+      c.strokeStyle='#3a2a1a'; c.beginPath(); c.moveTo(-5,-8); c.lineTo(5,-8); c.stroke(); c.strokeStyle=INK;
+      circ(c,-2.2,-8,1.9,'#9fe8ff'); circ(c,2.2,-8,1.9,'#9fe8ff');
+    } else if (h==='plume'){
+      helm(c,-7,5.4,S.helmCol);
+      c.strokeStyle=P.m; c.lineWidth=2.4; c.lineCap='round'; c.beginPath(); c.moveTo(0,-12); c.quadraticCurveTo(-4,-19,-9,-16); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    } else if (h==='kabuto'){
+      helm(c,-7,5.6,'#5a1a1a');
+      c.strokeStyle='#f5c542'; c.lineWidth=1.6; c.beginPath(); c.moveTo(-5,-17); c.lineTo(0,-12); c.lineTo(5,-17); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    } else if (h==='wingHelm'){
+      helm(c,-7,5.4,'#dfe3ea');
+      c.fillStyle='#fffaf0'; for (const sd of [-1,1]){ c.beginPath(); c.moveTo(sd*5,-9); c.lineTo(sd*10,-15); c.lineTo(sd*7,-8); c.closePath(); c.fill(); c.stroke(); }
+    } else if (h==='veil'){
+      c.beginPath(); c.arc(0,-7,5.8,Math.PI*.85,Math.PI*2.15); c.lineTo(3,-1); c.lineTo(-3,-1); c.closePath(); c.fillStyle='#f7f3e8'; c.fill(); c.stroke();
+      circ(c,0,-6.5,3.4,skin,false); c.fillStyle='#f5c542'; c.fillRect(-4,-11.5,8,1.6);
+    } else if (h==='lich'){
+      circ(c,0,-7,5,'#ece6d4');
+      c.fillStyle='#9cf59c'; c.fillRect(-2.6,-8,1.8,1.8); c.fillRect(.8,-8,1.8,1.8);
+      c.fillStyle='#b8a040'; c.beginPath(); c.moveTo(-5,-10); c.lineTo(-5,-15); c.lineTo(-2,-12); c.lineTo(0,-16); c.lineTo(2,-12); c.lineTo(5,-15); c.lineTo(5,-10); c.closePath(); c.fill(); c.stroke();
+    } else if (h==='cyclops'){
+      circ(c,0,-8,2.6,'#fff',true); circ(c,.4,-8,1.2,INK,false);
+      c.fillStyle='#e8dcc0'; c.beginPath(); c.moveTo(-1.5,-11.5); c.lineTo(0,-16); c.lineTo(1.5,-11.5); c.closePath(); c.fill(); c.stroke();
+    }
     else if (h==='horn'){
       helm(c,-7,5.4,'#a7adb8');
       c.fillStyle='#f3efe4';
@@ -1069,17 +1324,38 @@ function drawHero(c, type, team, t, atk){
     case 'longbow': c.translate(-13,-2); c.scale(1 - atk*.25, 1);
       c.strokeStyle='#5a3a1a'; c.lineWidth=2.2; c.beginPath(); c.arc(4,0,12,Math.PI*.7,Math.PI*1.3); c.stroke();
       c.strokeStyle='#efe6cc'; c.lineWidth=.8; c.beginPath(); c.moveTo(-5.5,-9.6); c.lineTo(-5.5+atk*3,0); c.lineTo(-5.5,9.6); c.stroke(); break;
+    case 'twin': c.rotate(-0.35 + atk*1.9); blade(c,0,0,0,-12,'#eef1f6',1.8); c.restore(); c.save(); c.translate(-7,1); c.scale(-1,1); c.rotate(-0.35 + (1-atk)*1.4); blade(c,0,0,0,-12,'#eef1f6',1.8); break;
+    case 'dagger': c.rotate(-0.6 + atk*2.2); blade(c,0,0,0,-8,'#dfe3ea',1.6); break;
+    case 'xbow': c.translate(-4,-2); blade(c,0,5,0,-8,'#6b4a2a',2);
+      c.strokeStyle='#4a3020'; c.lineWidth=2; c.beginPath(); c.moveTo(-6,-6); c.quadraticCurveTo(0,-11 + atk*2,6,-6); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5; break;
+    case 'flask': c.rotate(-0.4 + atk*1.5); c.fillStyle='#dfe3ea'; c.fillRect(-1.2,-12,2.4,4); circ(c,0,-6,3.6,'#7fe0a0'); break;
+    case 'lance': c.rotate(0.2 - atk*0.5); blade(c,0,8,0,-20,'#dfe3ea',2);
+      c.fillStyle='#eef1f6'; c.beginPath(); c.moveTo(0,-27); c.lineTo(-2.6,-19); c.lineTo(2.6,-19); c.closePath(); c.fill(); c.stroke();
+      c.fillStyle=P.m; c.beginPath(); c.moveTo(0,-18); c.lineTo(6,-16); c.lineTo(0,-13); c.closePath(); c.fill(); break;
+    case 'katana': c.rotate(-0.3 + atk*2.2); blade(c,0,0,0,-16,'#eef1f6',1.7); c.fillStyle='#f5c542'; c.fillRect(-2.2,-1.5,4.4,2); break;
+    case 'trident': c.rotate(0.1 - atk*0.6); blade(c,0,8,0,-17,'#3a2a1a',1.8);
+      c.strokeStyle='#c9a86a'; c.lineWidth=1.6; c.beginPath(); c.moveTo(-4,-22); c.lineTo(-4,-17); c.lineTo(4,-17); c.lineTo(4,-22); c.moveTo(0,-24); c.lineTo(0,-17); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5; break;
+    case 'club': c.rotate(-0.5 + atk*2); blade(c,0,4,0,-11,'#6b4a2a',3); circ(c,0,-14,4.6,'#6b4a2a'); break;
     case 'scythe': c.rotate(-0.3 + atk*1.6); blade(c,0,7,0,-19,'#4a3a2a',1.8);
       c.beginPath(); c.moveTo(0,-19); c.quadraticCurveTo(-13,-21,-15,-10); c.quadraticCurveTo(-8,-16,0,-15.5); c.closePath(); c.fillStyle='#cfd3db'; c.fill(); c.stroke(); break;
   }
   c.restore();
 }
-const PHOENIX = {body:'#ff7a2a', wing:'#ffb347', tip:'#ff3a1a', head:'#ffe08a', beak:'#b8321c', tail:'#ff5a1f', glow:true};
+const BIRDS = {
+  phoenix: {body:'#ff7a2a', wing:'#ffb347', tip:'#ff3a1a', head:'#ffe08a', beak:'#b8321c', tail:'#ff5a1f', glow:true},
+  harpy:   {body:'#8a6aa0', wing:'#b89ad0', tip:'#5a3a7a', head:'#f1c9a1', beak:'#b0402a', tail:'#6a4a80'},
+  gargoyle:{body:'#7a7a80', wing:'#5a5a62', tip:'#3a3a40', head:'#8a8a90', beak:'#3a3a40', tail:'#5a5a62'},
+};
+const DRAGONS = {
+  wyrm:      {s:1.55, body:'#2e2233', wing:'#171019', belly:'#6d2a3a', eye:'#ff3a2a'},
+  frostwyrm: {s:1.08, body:'#8fd8f0', wing:'#3f8fb0', belly:'#e8fbff', eye:'#1a4a6a'},
+  holydragon:{s:1.15, body:'#f4efe0', wing:'#e0b850', belly:'#fff8e0', eye:'#3a7ad0', glow:'#fff2b0'},
+  dragonking:{s:1.95, body:'#3a2a10', wing:'#8a6a1a', belly:'#d9a441', eye:'#ff3a2a', glow:'#ff8a2a'},
+};
 function drawDragon(c, type, team, t, atk){
-  const boss = type==='wyrm', frost = type==='frostwyrm';
-  const s = boss ? 1.55 : frost ? 1.08 : 1;
-  const body = boss ? '#2e2233' : frost ? '#8fd8f0' : PAL[team].m, wing = boss ? '#171019' : frost ? '#3f8fb0' : PAL[team].d;
-  const belly = boss ? '#6d2a3a' : frost ? '#e8fbff' : '#f0d28a', eye = boss ? '#ff3a2a' : frost ? '#1a4a6a' : '#fff4a0';
+  const D = DRAGONS[type] || {s:1, body:PAL[team].m, wing:PAL[team].d, belly:'#f0d28a', eye:'#fff4a0'};
+  const boss = D.s > 1.5, s = D.s, body = D.body, wing = D.wing, belly = D.belly, eye = D.eye;
+  if (D.glow){ c.shadowColor = D.glow; c.shadowBlur = 14; }
   ell(c, 0, 26*s, 13*s, 4*s, 'rgba(0,0,0,.25)');
   c.translate(0, Math.sin(t*3)*2.2 - 6);
   c.scale(s, s);
@@ -1131,6 +1407,54 @@ function drawGriffin(c, team, t, atk, pal){
   circ(c,0,-10,4.6,X.head);
   c.fillStyle=X.beak; c.beginPath(); c.moveTo(-2,-13); c.lineTo(2,-13); c.lineTo(0,-18 - atk*2); c.closePath(); c.fill(); c.stroke();
   c.fillStyle=INK; c.fillRect(-2.8,-11,1.4,1.4); c.fillRect(1.4,-11,1.4,1.4);
+}
+function drawGhost(c, team, t, atk){
+  ell(c, 0, 16, 6, 2.2, 'rgba(0,0,0,.2)');
+  c.translate(Math.sin(t*2)*2, Math.sin(t*3)*2.5 - 6);
+  c.globalAlpha = .88;
+  c.beginPath(); c.arc(0,-3,7,Math.PI,0); c.lineTo(7,7);
+  for (let i=0;i<4;i++){ const x = 7 - (i+1)*3.5; c.quadraticCurveTo(x+1.75, 4 + Math.sin(t*8+i)*2, x, 7); }
+  c.closePath(); c.fillStyle='#e8eeff'; c.fill(); c.strokeStyle=INK; c.lineWidth=1.3; c.stroke();
+  c.globalAlpha = 1;
+  c.fillStyle = team==='e' ? '#7a2019' : '#23508f'; ell(c,-2.5,-4,1.4,2,c.fillStyle); ell(c,2.5,-4,1.4,2,c.fillStyle);
+  ell(c,0,1,1.8,1.2 + atk*1.2,INK);
+}
+function drawTreant(c, team, t, atk){
+  const P = PAL[team];
+  c.strokeStyle=INK; c.lineWidth=1.5;
+  c.save(); c.translate(-9,0); c.rotate(-0.5 - atk*.6); blade(c,0,0,0,-12,'#6b4a2a',2.6); c.restore();
+  c.save(); c.translate(9,0); c.rotate(0.5 + atk*.6); blade(c,0,0,0,-12,'#6b4a2a',2.6); c.restore();
+  rr(c,-8,-8,16,20,4,'#7a5430');
+  c.strokeStyle='rgba(0,0,0,.3)'; c.beginPath(); c.moveTo(-4,-4); c.lineTo(-3,8); c.moveTo(3,-2); c.lineTo(4,10); c.stroke(); c.strokeStyle=INK;
+  c.fillStyle=P.l; c.fillRect(-4,-3,2.4,2.4); c.fillRect(1.6,-3,2.4,2.4);
+  for (const [x,y,r] of [[-8,-13,8],[8,-13,8],[0,-19,9]]) circ(c,x,y,r,'#4f8a3a');
+  c.fillStyle=P.m; for (const [x,y] of [[-9,-15],[6,-19],[2,-12]]) c.fillRect(x,y,2.4,2.4);
+}
+function drawWolf(c, team, t, atk, moving){
+  const P = PAL[team], leg = moving ? Math.sin(t*18)*3 : 0;
+  c.strokeStyle='#7a7e88'; c.lineWidth=2;
+  for (const [lx,ph] of [[-6,1],[-3,-1],[4,-1],[7,1]]){ c.beginPath(); c.moveTo(lx,4); c.lineTo(lx+leg*ph,10); c.stroke(); }
+  c.lineCap='round'; c.lineWidth=3; c.beginPath(); c.moveTo(-9,0); c.quadraticCurveTo(-14,-4,-15,-8+Math.sin(t*6)*2); c.stroke();
+  c.strokeStyle=INK; c.lineWidth=1.5;
+  ell(c,0,1,10,5,'#c8ccd4',true);
+  c.save(); c.translate(9,-3 - atk*2); ell(c,0,0,5,4,'#c8ccd4',true);
+  c.fillStyle='#c8ccd4'; c.beginPath(); c.moveTo(-3,-3); c.lineTo(-1,-8); c.lineTo(1,-3); c.closePath(); c.fill(); c.stroke();
+  ell(c,5,1,3,2,'#c8ccd4',true); c.fillStyle=INK; c.fillRect(1,-1.5,1.6,1.6); c.restore();
+  c.fillStyle=P.m; c.fillRect(5,-2,3,5);
+}
+function drawHydra(c, team, t, atk){
+  const body = '#3f7a5a', P = PAL[team];
+  c.strokeStyle=INK; c.lineWidth=1.5;
+  ell(c,0,5,14,8,body,true);
+  ell(c,0,7,8,4,'#8fb878',false);
+  for (const [hx,hy,ph] of [[-10,-14,0],[0,-19,1.3],[10,-14,2.6]]){
+    const sx = hx + Math.sin(t*3+ph)*2, sy = hy + Math.cos(t*3+ph)*1.5 - atk*2;
+    c.lineCap='round'; c.strokeStyle=INK; c.lineWidth=6; c.beginPath(); c.moveTo(hx*.4,0); c.quadraticCurveTo(hx*.6,-8,sx,sy); c.stroke();
+    c.strokeStyle=body; c.lineWidth=4; c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    ell(c,sx,sy,4,3.4,body,true);
+    c.fillStyle='#ffe24a'; c.fillRect(sx-2.4,sy-1.6,1.5,1.5); c.fillRect(sx+.9,sy-1.6,1.5,1.5);
+  }
+  c.fillStyle=P.m; c.fillRect(-10,9,20,2.5);
 }
 function drawBat(c, team, t, atk){
   ell(c, 0, 16, 6, 2.2, 'rgba(0,0,0,.22)');
@@ -1185,6 +1509,15 @@ function drawCastle(c){
   ctx.restore();
 }
 
+function drawStatus(u, oy){
+  if (u.shieldT > 0){ ctx.strokeStyle='rgba(170,220,255,.8)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(u.x, u.y+oy-2, u.r+4, 0, 7); ctx.stroke(); }
+  if (u.buffT > 0){ ctx.fillStyle='#f5d36a'; ctx.fillRect(u.x+u.r-1, u.y+oy-u.r-6, 3, 3); }
+  if (u.hasteT > 0){ ctx.strokeStyle='rgba(255,243,196,.7)'; ctx.lineWidth=1; for (let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(u.x+i*4, u.y+oy+u.r+2); ctx.lineTo(u.x+i*4, u.y+oy+u.r+8); ctx.stroke(); } }
+  if (u.stunT > 0){
+    const a = performance.now()/200;
+    for (let i=0;i<3;i++){ ctx.fillStyle='#fff27a'; const ang = a + i*2.09; ctx.fillRect(u.x+Math.cos(ang)*8-1.5, u.y+oy-u.r-8+Math.sin(ang)*2.5-1.5, 3, 3); }
+  }
+}
 function drawHP(u){
   if (u.hp >= u.max) return;
   const w = u.type==='wyrm' ? 60 : u.r*2+6, y = u.y - (u.T.hpY || (u.r > 12 ? u.r + 12 : 20));
@@ -1221,6 +1554,7 @@ function render(){
   for (const u of ground){
     drawSprite(ctx, u.type, u.team, u.x, u.y, u.anim, u.atkA, u.moving);
     if (u.slowT > 0){ ctx.globalAlpha=.35; circ(ctx,u.x,u.y,u.r+2,'#9fe8ff',false); ctx.globalAlpha=1; }
+    drawStatus(u, 0);
     if (u.hit > 0){ ctx.globalAlpha = u.hit*4; circ(ctx,u.x,u.y-2,u.r,'rgba(255,255,255,.7)',false); ctx.globalAlpha = 1; }
   }
   for (const p of G.projs) drawProj(p);
@@ -1228,6 +1562,7 @@ function render(){
   for (const u of air){
     drawSprite(ctx, u.type, u.team, u.x, u.y, u.anim, u.atkA, true);
     if (u.slowT > 0){ ctx.globalAlpha=.3; circ(ctx,u.x,u.y-6,u.r,'#9fe8ff',false); ctx.globalAlpha=1; }
+    drawStatus(u, -8);
     if (u.hit > 0){ ctx.globalAlpha = u.hit*3; circ(ctx,u.x,u.y-8,u.r*.8,'rgba(255,255,255,.6)',false); ctx.globalAlpha = 1; }
   }
   for (const u of G.units) drawHP(u);
@@ -1244,9 +1579,16 @@ function render(){
       circ(ctx,mx-3,my-3,4,'#ffb347',false);
     }
   }
+  for (const st of G.strikes){
+    ctx.globalAlpha = .5 + Math.sin(performance.now()/60)*.2;
+    ctx.strokeStyle = st.col; ctx.lineWidth = 1.5; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
   for (const f of G.fx){
     const a = f.life/f.max;
-    if (f.k==='dot'){ ctx.globalAlpha=a; ctx.fillStyle=f.col; ctx.fillRect(f.x-f.s/2, f.y-f.s/2, f.s, f.s); }
+    if (f.k==='flash'){ ctx.globalAlpha=a*.35; ctx.fillStyle=f.col; ctx.fillRect(0,0,W,H); }
+    else if (f.k==='dot'){ ctx.globalAlpha=a; ctx.fillStyle=f.col; ctx.fillRect(f.x-f.s/2, f.y-f.s/2, f.s, f.s); }
     else if (f.k==='ring'){ ctx.globalAlpha=a; ctx.strokeStyle=f.col; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(f.x,f.y,f.r*(1.2-a*.6),0,7); ctx.stroke();
       ctx.globalAlpha=a*.3; ctx.fillStyle=f.col; ctx.fill(); }
     else if (f.k==='smoke'){ ctx.globalAlpha=a*.45; circ(ctx,f.x,f.y,f.s*(1.6-a*.6),'#3a3632',false); }
@@ -1274,6 +1616,15 @@ function drawProj(p){
   } else if (p.kind==='javelin'){
     ctx.rotate(p.ang); ctx.strokeStyle='#8a5a30'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(4,0); ctx.stroke();
     ctx.fillStyle='#e6e9ef'; ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(3,-2.8); ctx.lineTo(3,2.8); ctx.closePath(); ctx.fill();
+  } else if (p.kind==='flask'){
+    ctx.rotate(performance.now()/80); ctx.fillStyle='#dfe3ea'; ctx.fillRect(-1,-6,2,3); ctx.strokeStyle=INK; ctx.lineWidth=1; circ(ctx,0,0,3.4,'#7fe0a0');
+  } else if (p.kind==='wind'){
+    ctx.rotate(performance.now()/60); ctx.strokeStyle='#c8ffe0'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(0,0,5,0,4); ctx.stroke(); ctx.beginPath(); ctx.arc(0,0,2.5,2,6); ctx.stroke();
+  } else if (p.kind==='holy'){
+    ctx.shadowColor='#fff2b0'; ctx.shadowBlur=14; circ(ctx,0,0,5.5,'#fff6c0',false); circ(ctx,0,0,2.5,'#fff',false);
+  } else if (p.kind==='poison'){
+    ctx.shadowColor='#9cf59c'; ctx.shadowBlur=8; circ(ctx,0,0,4.5,'#6fd06a',false); circ(ctx,-1,-1,1.5,'#d8ffd0',false);
   } else if (p.kind==='note'){
     ctx.font='bold 13px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#f5d36a'; ctx.strokeStyle='#000'; ctx.lineWidth=2;
     ctx.strokeText('♪',0,4); ctx.fillText('♪',0,4);
@@ -1318,6 +1669,27 @@ function tagsOf(T){
   if (T.revive) t.push('復活');
   return t;
 }
+function skillDesc(s){
+  switch (s.k){
+    case 'nova': return `周りの敵に攻撃力×${s.m}の範囲攻撃`;
+    case 'blast': return `狙った場所に攻撃力×${s.m}の大範囲攻撃` + (s.heal ? `。周りの味方も${s.heal}回復` : '');
+    case 'multi': return `最大${s.c}体の敵へ同時に攻撃（×${s.m}）`;
+    case 'heal': return `周りの味方の体力を${s.amt}回復`;
+    case 'shield': return s.r > 0 ? `周りの味方の受けるダメージを${s.t}秒間半分にする` : `自分の受けるダメージを${s.t}秒間半分にする`;
+    case 'rally': return `周りの味方の攻撃力を${s.t}秒間1.3倍にする`;
+    case 'haste': return `${s.t}秒間、移動と攻撃が速くなる`;
+    case 'dash': return `敵へ一気に飛び込み攻撃力×${s.m}`;
+    case 'stun': return s.r >= 300 ? `戦場の全ての敵を${s.t}秒間止める` : `周りの敵を${s.t}秒間動けなくする` + (s.m ? `（×${s.m}ダメージ）` : '');
+    case 'execute': return `一撃で攻撃力×${s.m}のダメージ`;
+    case 'rain': return `狙った周辺に${s.c}発の範囲攻撃を降らせる（各×${s.m}）`;
+    case 'drain': return `周りを攻撃し、与えたダメージの半分を回復`;
+    case 'push': return `竜巻で周りの敵を吹き飛ばし攻撃力×${s.m}`;
+    case 'summon': return `${TYPES[s.unit].name}を呼び出す`;
+    case 'mana': return `攻撃中に魔力を${s.amt}盗む`;
+  }
+  return '';
+}
+const skillHTML = T => T.skills.map(s => `<div class="skill"><b>特殊技「${s.n}」</b> ${skillDesc(s)} <small>${s.cd}秒ごと・自動</small></div>`).join('');
 const fmt = n => Math.floor(n).toLocaleString('ja-JP');
 const walletHTML = () => `<span><i class="coin"></i>金 <b>${fmt(save.gold)}</b></span><span><i class="mdl"></i>メダル <b>${save.medals}</b></span>`;
 
@@ -1369,7 +1741,7 @@ function buildCards(deck){
 function updateHint(){
   const h = $('hint');
   if (G.armMeteor) h.textContent = '戦場をタップして隕石を落とす';
-  else if (G.sel){ const T=TYPES[G.sel]; h.textContent = `${T.name}：${tagsOf(T).join('・')}　→ 下側をタップ`; }
+  else if (G.sel){ const T=TYPES[G.sel]; h.textContent = `${T.name}：技「${T.skills[0].n}」・${tagsOf(T).join('・')}　→ 下側をタップ`; }
   else h.textContent = 'カードを選んで、戦場の下側をタップで出撃';
 }
 
@@ -1406,7 +1778,7 @@ function renderTitle(){
     const st = save.modes[k].stars.reduce((a,b)=>a+b,0);
     const b = document.createElement('button'); b.className = 'mbtn' + (save.mode===k ? ' on' : ''); b.id = 'mode-'+k;
     b.style.setProperty('--mc', M.col);
-    b.innerHTML = `${M.name}<small>★ ${st}/15</small>`;
+    b.innerHTML = `${M.name}<small>★ ${st}/${STAGES.length*3}</small>`;
     b.addEventListener('click', () => { save.mode = k; persist(); renderTitle(); tone(600,.05,'square',.03); });
     mb.append(b);
   }
@@ -1417,10 +1789,13 @@ function renderTitle(){
   const box = $('stages'); box.innerHTML = '';
   const P = prog();
   STAGES.forEach((S,i) => {
-    const b = document.createElement('button'); b.className='sbtn'; b.id='stage-'+i;
+    if (S.post && !STAGES[i-1].post){
+      const lb = document.createElement('div'); lb.className = 'postlabel'; lb.textContent = 'ラスボス後の戦場'; box.append(lb);
+    }
+    const b = document.createElement('button'); b.className='sbtn' + (S.post ? ' post' : ''); b.id='stage-'+i;
     const locked = i+1 > P.unlocked;
     b.disabled = locked;
-    b.innerHTML = `<span class="no">${i+1}</span><span class="nm">${S.name}<small>${locked ? '前のステージをクリアで解放' : S.sub}</small></span><span class="stars">${starsHTML(P.stars[i]||0)}</span>`;
+    b.innerHTML = `<span class="no">${i+1}</span><span class="nm">${S.name}<small>${locked ? (S.post && P.unlocked <= 5 ? '魔王城をクリアで解放' : '前のステージをクリアで解放') : S.sub}</small></span><span class="stars">${starsHTML(P.stars[i]||0)}</span>`;
     b.addEventListener('click', () => { ensureAudio(); openForm(i); });
     box.append(b);
   });
@@ -1483,7 +1858,7 @@ function renderForm(){
   if (T){
     const lv = lvOf(F.cur), cost = lvCost(lv), m1 = lvMul(lv+1);
     d.innerHTML = `<h3>${T.name}<small>魔力 ${T.cost}</small></h3><div class="stats">${statTiles(T, lv)}</div>
-      <div class="tags">${rarityTag(T)}${tagsOf(T).map(t=>`<span class="tag">${t}</span>`).join('')}</div>${T.desc}${F.msg ? `<br><span class="warn">${F.msg}</span>` : ''}
+      <div class="tags">${rarityTag(T)}${tagsOf(T).map(t=>`<span class="tag">${t}</span>`).join('')}</div>${T.desc}${skillHTML(T)}${F.msg ? `<span class="warn">${F.msg}</span>` : ''}
       <div class="lvrow"><b>Lv ${lv}</b><span>次のLv：体力 ${Math.round(T.hp*m1)}・攻撃 ${Math.round(T.atk*m1)}</span>
       <button class="lvbtn" id="lvUp" ${save.gold < cost ? 'disabled' : ''}><i class="coin"></i>強化 ${fmt(cost)}</button></div>`;
     $('lvUp').addEventListener('click', ev => {
@@ -1499,8 +1874,8 @@ function renderForm(){
   if (F.stage != null){
     $('fEnemyBox').hidden = false;
     const keys = Object.keys(STAGES[F.stage].pool);
-    if (bossFor(save.mode, F.stage).length) keys.push('wyrm');
-    $('fEnemies').innerHTML = keys.map(k => `<span><img src="${iconURL(k,'e')}" alt="">${TYPES[k].name}</span>`).join('');
+    for (const b of bossFor(save.mode, F.stage)) if (!keys.includes(b.k)) keys.push(b.k);
+    $('fEnemies').innerHTML = keys.map(k => `<span title="${TYPES[k].desc} 技「${TYPES[k].skills.map(s=>s.n).join('・')}」"><img src="${iconURL(k,'e')}" alt="">${TYPES[k].name}</span>`).join('');
   } else $('fEnemyBox').hidden = true;
   const go = $('fGo');
   go.textContent = F.stage==null ? '決定' : '出撃';
@@ -1515,10 +1890,11 @@ $('fGo').addEventListener('click', () => {
 });
 
 // ---------- 画面：ガチャ ----------
+let gBanner = 'v2';
 function rollUnit(){
   let r = Math.random()*100, rar = 'R';
   for (const [k,v] of Object.entries(RARITY)){ r -= v.w; if (r <= 0){ rar = k; break; } }
-  const list = GACHA.filter(k => TYPES[k].gacha === rar);
+  const list = BANNERS[gBanner].units.filter(k => TYPES[k].gacha === rar);
   return list[Math.floor(Math.random()*list.length)];
 }
 function grant(k){
@@ -1532,18 +1908,29 @@ function openGacha(){
   $('gachaOv').querySelector('.panel').scrollTop = 0;
 }
 function renderGacha(){
+  const B = BANNERS[gBanner];
   $('gWallet').innerHTML = walletHTML();
-  $('g1').disabled = save.gold < PULL_COST;
-  $('g10').disabled = save.gold < PULL10_COST;
-  $('gMedal').disabled = save.medals < MEDAL_NEED || save.gold < MEDAL_GOLD;
+  const tabs = $('gTabs'); tabs.innerHTML = '';
+  for (const [k,b] of Object.entries(BANNERS)){
+    const own = b.units.filter(u => save.owned.includes(u)).length;
+    const el = document.createElement('button'); el.className = 'gtab' + (k===gBanner ? ' on' : ''); el.id = 'banner-'+k;
+    el.innerHTML = `${b.name}${b.sub ? `<i>${b.sub}</i>` : ''}<br><small>${own}/${b.units.length}</small>`;
+    el.addEventListener('click', () => { gBanner = k; $('gRes').innerHTML = ''; $('gMsg').textContent = ''; renderGacha(); tone(600,.05,'square',.03); });
+    tabs.append(el);
+  }
+  $('g1c').textContent = `金 ${fmt(B.cost)}`; $('g10c').textContent = `金 ${fmt(B.cost10)}`;
+  $('gMc').textContent = `ハズレメダル${MEDAL_NEED}枚＋金${B.medalGold}・必ずユニットが出る`;
+  $('g1').disabled = save.gold < B.cost;
+  $('g10').disabled = save.gold < B.cost10;
+  $('gMedal').disabled = save.medals < MEDAL_NEED || save.gold < B.medalGold;
   $('gMedalFill').style.width = Math.min(100, save.medals/MEDAL_NEED*100) + '%';
   $('gMedalT').textContent = save.medals >= MEDAL_NEED
     ? `ハズレメダル ${save.medals}枚（確定召喚 ${Math.floor(save.medals/MEDAL_NEED)}回分）`
     : `ハズレメダル ${save.medals}/${MEDAL_NEED}`;
-  $('gOwned').textContent = `${save.owned.length}/${GACHA.length}`;
+  $('gOwned').textContent = `${B.name} ${B.units.filter(u => save.owned.includes(u)).length}/${B.units.length}`;
   const bk = $('gBook'); bk.innerHTML = '';
   const order = {SSR:0, SR:1, R:2};
-  for (const k of GACHA.slice().sort((a,b) => order[TYPES[a].gacha]-order[TYPES[b].gacha] || TYPES[b].cost-TYPES[a].cost)){
+  for (const k of B.units.slice().sort((a,b) => order[TYPES[a].gacha]-order[TYPES[b].gacha] || TYPES[b].cost-TYPES[a].cost)){
     const T = TYPES[k], own = save.owned.includes(k);
     const el = document.createElement('div'); el.className = 'ucard' + (own ? '' : ' lock');
     el.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${own ? T.name : '？？？'}</em><span class="rar" style="--rc:${RARITY[T.gacha].col}">${T.gacha}</span>` + (own ? `<span class="lvb">Lv${lvOf(k)}</span>` : '');
@@ -1574,7 +1961,7 @@ function showPulls(results){
   else if (best) sfx.up(); else tone(200,.25,'triangle',.05,.6);
 }
 function pull(n){
-  const cost = n===10 ? PULL10_COST : PULL_COST;
+  const cost = n===10 ? BANNERS[gBanner].cost10 : BANNERS[gBanner].cost;
   if (save.gold < cost){ $('gMsg').textContent = `金が足りない（必要 ${fmt(cost)}）`; $('gMsg').style.color=''; sfx.no(); return; }
   save.gold -= cost;
   const res = [];
@@ -1587,8 +1974,9 @@ function pull(n){
 $('g1').addEventListener('click', () => pull(1));
 $('g10').addEventListener('click', () => pull(10));
 $('gMedal').addEventListener('click', () => {
-  if (save.medals < MEDAL_NEED || save.gold < MEDAL_GOLD){ sfx.no(); return; }
-  save.medals -= MEDAL_NEED; save.gold -= MEDAL_GOLD;
+  const mg = BANNERS[gBanner].medalGold;
+  if (save.medals < MEDAL_NEED || save.gold < mg){ sfx.no(); return; }
+  save.medals -= MEDAL_NEED; save.gold -= mg;
   const res = [grant(rollUnit())];
   persist(); renderGacha(); showPulls(res);
 });

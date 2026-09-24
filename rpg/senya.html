@@ -1,0 +1,1071 @@
+<title>千夜の語り部</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Shippori+Mincho+B1:wght@400;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ink:#14111c; --panel:#1c1727; --panel-2:#252034; --line:#3a3250; --line-soft:#2c263d;
+  --bone:#ece3cf; --dim:#a59cb7; --faint:#6f6784;
+  --lamp:#e3a94b; --lamp-soft:rgba(227,169,75,.13); --lamp-ink:#1b1420;
+  --blood:#e2625b; --tide:#5cb8a6; --good:#93cf7c; --xp:#b49ae6;
+  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --dot:"DotGothic16","Zen Kaku Gothic New",monospace;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--ink);color:var(--bone);font-family:var(--sans);font-size:15px;line-height:1.7}
+#stars{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding-inline:16px;box-sizing:border-box}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+.dot{font-family:var(--dot);letter-spacing:.04em}
+
+/* ---------- title screen ---------- */
+#screen-title{flex:1;display:grid;grid-template-columns:auto minmax(0,560px);gap:clamp(24px,6vw,88px);justify-content:center;align-items:center;padding-block:32px;overflow:auto}
+.mast{display:flex;gap:18px;align-items:flex-start}
+.mast h1{writing-mode:vertical-rl;font-family:var(--serif);font-weight:800;font-size:clamp(52px,7.4vw,92px);line-height:1.05;letter-spacing:.14em;margin:0;color:var(--bone);text-shadow:0 0 36px rgba(227,169,75,.22)}
+.mast .sub{writing-mode:vertical-rl;font-family:var(--serif);color:var(--lamp);font-size:15px;letter-spacing:.3em;margin-top:8px}
+.mast .lampline{width:1px;align-self:stretch;background:linear-gradient(var(--lamp),transparent)}
+.create{display:flex;flex-direction:column;gap:20px}
+.create .lead{font-family:var(--serif);font-size:17px;line-height:1.95;color:var(--bone);max-width:34em;margin:0}
+.lbl{font-size:12px;letter-spacing:.14em;color:var(--dim);margin-bottom:6px;display:block}
+.field input,.field textarea{width:100%;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;resize:vertical}
+.field textarea{min-height:64px;line-height:1.6}
+.classes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cls{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 10px 9px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.cls b{font-family:var(--serif);font-size:16px}
+.cls small{color:var(--dim);font-size:11.5px;line-height:1.5}
+.cls .st{font-family:var(--dot);font-size:11px;color:var(--faint)}
+.cls[aria-pressed="true"]{border-color:var(--lamp);background:var(--lamp-soft)}
+.cls[aria-pressed="true"] .st{color:var(--lamp)}
+.tiers{display:flex;flex-wrap:wrap;gap:6px}
+.tier{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 12px;font-size:13px;color:var(--dim)}
+.tier[aria-pressed="true"]{border-color:var(--lamp);color:var(--lamp);background:var(--lamp-soft)}
+.tierhint{font-size:12px;color:var(--faint);margin-top:6px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:1px solid var(--lamp);background:var(--lamp);color:var(--lamp-ink);font-weight:700;padding:11px 22px;border-radius:4px;letter-spacing:.08em}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--lamp)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.aistat{font-size:12.5px;color:var(--dim);display:flex;align-items:center;gap:8px}
+.aistat i{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:none}
+.aistat[data-s="on"] i{background:var(--good);box-shadow:0 0 8px var(--good)}
+.aistat[data-s="wait"] i{background:var(--lamp);animation:pulse 1.2s infinite}
+
+/* ---------- game ---------- */
+#screen-game{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding-block:12px}
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 18px;align-items:center;padding:12px 16px;background:var(--panel);border:1px solid var(--line-soft);border-radius:6px;position:relative;overflow:hidden}
+.top::before{content:"";position:absolute;left:-60px;top:-80px;width:260px;height:200px;background:radial-gradient(closest-side,rgba(227,169,75,.2),transparent);animation:flicker 5s infinite;pointer-events:none}
+.wtitle{font-family:var(--serif);font-weight:800;font-size:20px;letter-spacing:.06em;margin:0;text-wrap:balance;position:relative}
+.wquest{font-size:12.5px;color:var(--dim);position:relative}
+.topctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.topctl select{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:4px 6px;font-size:12.5px}
+.link{background:none;border:1px solid var(--line);border-radius:4px;padding:4px 10px;font-size:12.5px;color:var(--dim)}
+.path{grid-column:1/-1;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:4px;position:relative}
+.path li{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--faint);position:relative}
+.path li::before{content:"";position:absolute;top:5px;left:14px;right:-4px;height:1px;background:var(--line)}
+.path li:last-child::before{display:none}
+.path li i{width:11px;height:11px;border-radius:50%;border:1px solid var(--line);background:var(--ink);position:relative;z-index:1}
+.path li.done{color:var(--dim)} .path li.done i{background:var(--dim);border-color:var(--dim)}
+.path li.here{color:var(--lamp)} .path li.here i{background:var(--lamp);border-color:var(--lamp);box-shadow:0 0 10px var(--lamp)}
+.path li.done::before{background:var(--dim)}
+.path span{line-height:1.35}
+.quest{grid-column:1/-1;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim)}
+.quest .track{flex:1}
+
+.main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px}
+.stage{min-height:0;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line-soft);border-radius:6px;overflow:hidden}
+#story{flex:1;min-height:0;overflow-y:auto;padding:22px clamp(16px,4vw,40px) 12px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.e{max-width:40em}
+.e.narr{font-family:var(--serif);font-size:16.5px;line-height:2.0;color:var(--bone)}
+.e.narr p{margin:0 0 .7em}
+.e.narr p:last-child{margin:0}
+.e.narr.opening p:first-child::first-letter{font-size:2.1em;color:var(--lamp);font-weight:800;line-height:1}
+.e.act{align-self:flex-end;text-align:right;color:var(--lamp);font-size:14px;border-right:2px solid var(--lamp);padding:2px 12px 2px 0}
+.e.act .who{display:block;font-size:11px;letter-spacing:.2em;color:var(--dim)}
+.e.sys{font-family:var(--dot);font-size:13px;color:var(--dim);letter-spacing:.04em}
+.e.sys.up{color:var(--xp)}
+.e.cbt{font-size:14px;color:var(--bone);padding-left:12px;border-left:1px solid var(--line)}
+.e.cbt .hit{color:var(--good)} .e.cbt .hurt{color:var(--blood)} .e.cbt .miss{color:var(--faint)}
+.e.note{font-size:13px;color:var(--blood)}
+.e.think{font-family:var(--serif);color:var(--dim);font-size:15px}
+.e.think::after{content:"";display:inline-block;width:1.5em;text-align:left;animation:dots 1.4s steps(4) infinite}
+.e.end{font-family:var(--serif);font-weight:800;font-size:26px;letter-spacing:.2em;color:var(--lamp);align-self:center;margin-block:12px}
+.roll{display:flex;gap:14px;align-items:center;padding:10px 14px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;max-width:26em}
+.die{flex:none;width:50px;height:56px;display:grid;place-items:center;background:var(--lamp);color:var(--lamp-ink);font-family:var(--dot);font-size:22px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.roll.fail .die{background:var(--blood)}
+.roll.spin .die{animation:wob .12s linear infinite}
+.rinfo{font-size:13px;color:var(--dim);line-height:1.6}
+.rinfo b{color:var(--bone);font-weight:700;font-size:14px}
+.rinfo .res{font-family:var(--dot);font-size:15px;letter-spacing:.08em}
+.roll.ok .res{color:var(--good)} .roll.fail .res{color:var(--blood)}
+.foe{border:1px solid var(--blood);border-radius:6px;padding:12px 14px;background:rgba(226,98,91,.07);max-width:32em}
+.foe b{font-family:var(--serif);font-size:18px;color:var(--blood)}
+.foe p{margin:4px 0 6px;font-size:13.5px;color:var(--bone)}
+.foe .dot{font-size:12px;color:var(--dim)}
+
+.dock{border-top:1px solid var(--line-soft);padding:12px clamp(12px,3vw,24px) 14px;display:flex;flex-direction:column;gap:10px;background:var(--panel)}
+#foebar{display:flex;align-items:center;gap:12px;font-size:13px}
+#foebar b{font-family:var(--serif);color:var(--blood);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+#foebar .track{flex:1}
+#foebar .num{font-family:var(--dot);color:var(--dim);white-space:nowrap}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.ch{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:8px 12px;text-align:left;font-size:14px;display:flex;gap:8px;align-items:baseline;max-width:100%}
+.ch:hover:not(:disabled){border-color:var(--lamp);color:var(--lamp)}
+.ch kbd{font-family:var(--dot);font-size:11px;color:var(--faint)}
+.ch.red{border-color:rgba(226,98,91,.55)}
+.ch.red:hover:not(:disabled){border-color:var(--blood);color:var(--blood)}
+.ch:disabled{opacity:.4;cursor:not-allowed}
+.ch small{color:var(--dim);font-size:11.5px}
+#free{display:flex;gap:8px}
+#free input{flex:1;min-width:0;background:var(--ink);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+#free input:disabled{opacity:.5}
+#free .btn{padding:9px 16px}
+#stop{border-color:var(--blood);background:transparent;color:var(--blood)}
+.hint{font-size:11.5px;color:var(--faint)}
+
+.sheet{min-height:0;overflow-y:auto;background:var(--panel);border:1px solid var(--line-soft);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.who .nm{font-family:var(--serif);font-weight:800;font-size:20px;letter-spacing:.05em}
+.who .cl{font-size:12.5px;color:var(--dim)}
+.bar{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;font-family:var(--dot);font-size:12px;color:var(--dim)}
+.bar .num{font-variant-numeric:tabular-nums;color:var(--bone)}
+.track{height:7px;background:var(--ink);border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.track i{display:block;height:100%;width:0;transition:width .5s ease}
+.hp .track i,#foebar .track i{background:var(--blood)}
+.mp .track i{background:var(--tide)}
+.xp .track i{background:var(--xp)}
+.quest .track i{background:var(--lamp)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.stat{background:var(--panel-2);border-radius:4px;padding:6px 4px;text-align:center;display:flex;flex-direction:column}
+.stat span{font-size:11px;color:var(--dim)}
+.stat b{font-family:var(--dot);font-size:18px;font-weight:400}
+.stat small{font-family:var(--dot);font-size:11px;color:var(--lamp)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin:0}
+.kv dt{color:var(--dim)} .kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+details{border-top:1px solid var(--line-soft);padding-top:10px}
+summary{cursor:pointer;font-size:12px;letter-spacing:.16em;color:var(--dim);list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";color:var(--faint)}
+details[open] summary::before{content:"▾ "}
+#items{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+#items li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;font-size:13px;align-items:start}
+#items li small{grid-column:1;color:var(--dim);font-size:11.5px;line-height:1.5}
+#items li button{grid-row:1/3;grid-column:2;align-self:center;border:1px solid var(--line);background:transparent;border-radius:4px;font-size:12px;padding:3px 9px;color:var(--tide)}
+#items li button:disabled{opacity:.4;cursor:not-allowed}
+#chron{margin:8px 0 0;padding-left:1.3em;font-size:12.5px;color:var(--dim);display:flex;flex-direction:column;gap:4px;font-family:var(--serif)}
+.empty{font-size:12.5px;color:var(--faint)}
+
+@keyframes pulse{50%{opacity:.35}}
+@keyframes flicker{0%,100%{opacity:.9}40%{opacity:.7}45%{opacity:1}70%{opacity:.8}}
+@keyframes dots{0%{content:""}25%{content:"・"}50%{content:"・・"}75%{content:"・・・"}}
+@keyframes wob{0%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-8deg)}}
+@keyframes rise{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+.e{animation:rise .35s ease both}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#story{scroll-behavior:auto}}
+
+@media (max-width:900px){
+  #app{height:auto;min-height:100%}
+  #screen-title{grid-template-columns:1fr;justify-content:stretch;overflow:visible}
+  .mast h1,.mast .sub{writing-mode:horizontal-tb}
+  .mast{flex-direction:column;gap:6px}
+  .mast h1{font-size:44px;letter-spacing:.1em}
+  .mast .lampline{display:none}
+  .classes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .main{grid-template-columns:1fr}
+  .stage{order:1}
+  .sheet{order:2}
+  #story{height:58svh;flex:none}
+  .top{grid-template-columns:1fr}
+  .topctl{justify-content:flex-start}
+}
+</style>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+<div id="app">
+
+<section id="screen-title">
+  <div class="mast">
+    <h1>千夜の語り部</h1>
+    <div class="lampline"></div>
+    <div class="sub">あなたの一言で、物語は枝分かれする</div>
+  </div>
+  <form class="create" id="create" autocomplete="off">
+    <p class="lead">語り部（Claude）が、あなたの望む世界をその場で紡ぎます。選択肢を選んでも、思いついた行動を自由に書いてもかまいません。成否は二十面ダイスが決め、戦いは剣と数字で決着します。</p>
+    <div class="field">
+      <label class="lbl" for="f-name">名前</label>
+      <input id="f-name" maxlength="16" value="リオ">
+    </div>
+    <div>
+      <span class="lbl">生業</span>
+      <div class="classes" id="classes"></div>
+    </div>
+    <div class="field">
+      <label class="lbl" for="f-theme">どんな世界を旅したいか</label>
+      <textarea id="f-theme" maxlength="200">霧に沈んだ港町と、海の底で眠る古い神。灯台守たちが何かを隠している。</textarea>
+    </div>
+    <div class="field">
+      <label class="lbl" for="f-past">主人公の過去か願い（任意）</label>
+      <textarea id="f-past" maxlength="160">嵐の夜に消えた姉を探している。姉が最後に残したのは、錆びた真鍮の鍵ひとつ。</textarea>
+    </div>
+    <div>
+      <span class="lbl">語りの深さ</span>
+      <div class="tiers" id="tiers"></div>
+      <div class="tierhint" id="tierhint"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" type="submit" id="go">物語を始める</button>
+      <button class="btn ghost" type="button" id="cont" hidden></button>
+    </div>
+    <div class="aistat" id="aistat" data-s="wait"><i></i><span>語り部を呼んでいます…</span></div>
+  </form>
+</section>
+
+<section id="screen-game" hidden>
+  <header class="top">
+    <div>
+      <h2 class="wtitle" id="w-title"></h2>
+      <div class="wquest" id="w-quest"></div>
+    </div>
+    <div class="topctl">
+      <label class="hint" for="tier-sel">語り</label>
+      <select id="tier-sel">
+        <option value="quick">迅速</option>
+        <option value="default">標準</option>
+        <option value="complex">深淵</option>
+      </select>
+      <button class="link" type="button" id="to-title">表紙へ</button>
+    </div>
+    <ol class="path" id="path"></ol>
+    <div class="quest"><span>物語の進み</span><div class="track"><i id="q-fill"></i></div><span class="dot" id="q-num">0%</span></div>
+  </header>
+
+  <div class="main">
+    <div class="stage">
+      <div id="story" aria-live="polite"></div>
+      <div class="dock">
+        <div id="foebar" hidden><b id="fb-name"></b><div class="track"><i id="fb-fill"></i></div><span class="num" id="fb-num"></span></div>
+        <div class="choices" id="choices"></div>
+        <form id="free" autocomplete="off">
+          <input id="f-act" maxlength="160" placeholder="自由に行動を書く（例: 灯台守に姉の鍵を見せてみる）">
+          <button class="btn" type="submit" id="f-send">行動</button>
+          <button class="btn" type="button" id="stop" hidden>止める</button>
+        </form>
+        <div class="hint" id="dockhint"></div>
+      </div>
+    </div>
+
+    <aside class="sheet" aria-label="主人公">
+      <div class="who"><div class="nm" id="h-name"></div><div class="cl" id="h-class"></div></div>
+      <div class="bar hp"><span>HP</span><div class="track"><i id="hp-fill"></i></div><span class="num" id="hp-num"></span></div>
+      <div class="bar mp"><span>MP</span><div class="track"><i id="mp-fill"></i></div><span class="num" id="mp-num"></span></div>
+      <div class="bar xp"><span>EXP</span><div class="track"><i id="xp-fill"></i></div><span class="num" id="xp-num"></span></div>
+      <div class="stats" id="stats"></div>
+      <dl class="kv">
+        <dt>金貨</dt><dd id="h-gold"></dd>
+        <dt>武器</dt><dd id="h-weapon"></dd>
+        <dt>守り (AC)</dt><dd id="h-ac"></dd>
+        <dt>技</dt><dd id="h-skill"></dd>
+      </dl>
+      <details open><summary>持ち物</summary><ul id="items"></ul></details>
+      <details><summary>年代記</summary><ol id="chron"></ol></details>
+    </aside>
+  </div>
+</section>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const d = n => 1 + Math.floor(Math.random() * n);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const mod = v => Math.floor((v - 10) / 2);
+const sgn = n => (n >= 0 ? '+' : '−') + Math.abs(n);
+const num = (v, lo, hi, def = 0) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? clamp(n, lo, hi) : def; };
+const str = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+const STATS = ['STR', 'INT', 'DEX', 'CHA'];
+const STAT_JA = { STR: '力', INT: '知', DEX: '技', CHA: '魅' };
+const CLASSES = {
+  warrior: { label: '戦士', blurb: '頑丈で一撃が重い', stats: { STR: 16, INT: 8, DEX: 12, CHA: 10 }, hp: 34, mp: 6, atk: 'STR', grow: 'STR',
+    weapon: { name: '使い込んだ長剣', power: 8 }, skill: { name: '渾身の一撃', cost: 3, desc: '命中で二倍の傷' } },
+  mage: { label: '魔導士', blurb: '必中の星火を放つ', stats: { STR: 8, INT: 16, DEX: 12, CHA: 11 }, hp: 22, mp: 18, atk: 'STR', grow: 'INT',
+    weapon: { name: '樫の杖', power: 4 }, skill: { name: '星火', cost: 4, desc: '必中 2d8+知×2' } },
+  rogue: { label: '盗賊', blurb: '素早く急所を突く', stats: { STR: 10, INT: 11, DEX: 16, CHA: 12 }, hp: 26, mp: 8, atk: 'DEX', grow: 'DEX',
+    weapon: { name: '双刃の短剣', power: 6 }, skill: { name: '影討ち', cost: 3, desc: '二度振り 18以上で会心' } },
+  bard: { label: '吟遊詩人', blurb: '言葉と歌で道を拓く', stats: { STR: 9, INT: 12, DEX: 12, CHA: 16 }, hp: 26, mp: 12, atk: 'DEX', grow: 'CHA',
+    weapon: { name: '細身の剣', power: 5 }, skill: { name: '癒しの調べ', cost: 4, desc: '2d6+魅 を回復' } },
+};
+const TIERS = {
+  quick: { label: '迅速', hint: '返事が速い。テンポ重視で遊びたいときに。' },
+  default: { label: '標準', hint: '考えてから語る。一手ごとに数秒〜数十秒。' },
+  complex: { label: '深淵', hint: '最も深く考える。伏線と余韻を重視。一手に時間がかかります。' },
+};
+const SAVE_KEY = 'senya-kataribe-v1';
+
+// ---------- Claude (sample) ----------
+let sample = null;
+const sampleReady = (async () => {
+  try { sample = window.claude && window.claude.use ? await window.claude.use('sample') : null; }
+  catch { sample = null; }
+  return sample;
+})();
+const PERMANENT = new Set(['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed']);
+
+// ---------- state ----------
+let S = null;
+let busy = false, ctl = null;
+const ui = { cls: 'rogue', tier: 'default' };
+
+function fresh() {
+  return { v: 1, phase: 'explore', tier: ui.tier, ai: true, world: null, hero: null, region: 0, visited: [0], quest: 0,
+    chronicle: [], story: [], choices: [], enemy: null, lastNarr: '', lastEvent: '', ending: null, rested: -1 };
+}
+function newHero(name, cls, past) {
+  const c = CLASSES[cls];
+  return { name, cls, past, lv: 1, xp: 0, hp: c.hp, maxHp: c.hp, mp: c.mp, maxMp: c.mp, gold: 15, stats: { ...c.stats },
+    weapon: { ...c.weapon }, items: [{ name: '癒しの水薬', desc: '傷を12癒す', type: 'heal', power: 12, qty: 2 }] };
+}
+const ac = h => 10 + mod(h.stats.DEX);
+const xpNeed = h => h.lv * 60;
+
+const noEl = (k, v) => (k === '_el' ? undefined : v);
+function save() { try { if (S && !S.ending) localStorage.setItem(SAVE_KEY, JSON.stringify(S, noEl)); } catch {} }
+function loadSave() { try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return s && s.hero && s.world ? s : null; } catch { return null; } }
+function dropSave() { try { localStorage.removeItem(SAVE_KEY); } catch {} }
+
+// ---------- preset world (used offline or when generation fails) ----------
+const PRESET = {
+  title: '灰燼の王冠',
+  premise: '百年降り続いた雪が、ある冬から灰に変わった北の王国。灰は人の記憶を少しずつ埋めていき、王都ではもう誰も自分の名前を覚えていない。',
+  quest: '灰を降らせる王冠を砕き、失われた名を取り戻す',
+  regions: [
+    { name: '灯守りの村', desc: '最後まで火を絶やさない小さな村。灰除けの鐘が鳴る', danger: 1 },
+    { name: '囁きの白樺林', desc: '灰を被った白樺が、忘れられた名前を囁き合う森', danger: 2 },
+    { name: '沈鐘の湖', desc: '湖底に沈んだ大聖堂の鐘が、夜ごと水面を震わせる', danger: 3 },
+    { name: '灰冠の城', desc: '王冠の主が眠らずに座す、音のない城', danger: 4 },
+  ],
+  boss: { name: '灰冠の王オルヴェイン', desc: '自らの名を忘れた王。王冠から絶えず灰がこぼれ落ちている' },
+  opening: '灯守りの村の鐘が、灰の降る空に三度鳴った。あなたは外套の灰を払い、村でただ一軒灯りのともる宿の扉を押す。\n\n暖炉の前で、片目の老婆があなたを見上げた。「北から来たのかい。なら、あんたもまだ名前を覚えているんだね」。窓の外では、灰が音もなく積もり続けている。',
+  choices: ['老婆に灰の話を聞く', '村の鐘楼に登ってみる', '宿の掲示板を調べる'],
+};
+const FOES = {
+  1: [{ name: '灰狼', desc: '毛並みの代わりに灰をまとった痩せた狼', hp: 14, atk: 5, def: 11 },
+      { name: '骨の番兵', desc: '錆びた槍を握ったまま歩き続ける骸骨', hp: 16, atk: 5, def: 12 },
+      { name: '沼の小鬼', desc: '光り物に目がない、すばしこい小鬼', hp: 12, atk: 4, def: 11 }],
+  2: [{ name: '灰色熊', desc: '眠りを忘れた巨大な熊', hp: 26, atk: 7, def: 12 },
+      { name: '野盗の頭目', desc: '三日月形の刀を二本下げた男', hp: 22, atk: 7, def: 13 },
+      { name: '呪われた甲冑', desc: '中身のない甲冑が、主の名を求めて歩く', hp: 26, atk: 6, def: 14 }],
+  3: [{ name: '鉤爪の飛竜', desc: '翼膜の破れた、執念深い若い竜', hp: 36, atk: 9, def: 13 },
+      { name: '硝子の魔女', desc: '体の半分が透き通った魔女', hp: 30, atk: 10, def: 14 },
+      { name: '墓守の巨人', desc: '墓標を棍棒のように振るう巨人', hp: 42, atk: 8, def: 12 }],
+  4: [{ name: '深淵の騎士', desc: '顔のない兜の奥で、青い火が揺れる', hp: 46, atk: 11, def: 15 },
+      { name: '千目の蛇', desc: '鱗の一枚一枚が目になっている大蛇', hp: 42, atk: 12, def: 14 }],
+};
+
+// ---------- boot / title ----------
+function buildTitle() {
+  const box = $('#classes');
+  for (const [k, c] of Object.entries(CLASSES)) {
+    const b = el('button', 'cls'); b.type = 'button'; b.dataset.k = k; b.id = 'cls-' + k;
+    b.append(el('b', null, c.label), el('small', null, c.blurb),
+      el('span', 'st', `HP${c.hp} MP${c.mp} ${STAT_JA[c.grow]}${c.stats[c.grow]}`));
+    b.onclick = () => { ui.cls = k; syncTitle(); };
+    box.append(b);
+  }
+  const tb = $('#tiers');
+  for (const [k, t] of Object.entries(TIERS)) {
+    const b = el('button', 'tier', t.label); b.type = 'button'; b.id = 'tier-' + k;
+    b.onclick = () => { ui.tier = k; syncTitle(); };
+    tb.append(b);
+  }
+  syncTitle();
+  const sv = loadSave();
+  const cont = $('#cont');
+  if (sv) {
+    cont.hidden = false;
+    cont.textContent = `続きから — ${sv.hero.name} Lv${sv.hero.lv}・${sv.world.title}`;
+    cont.onclick = () => { S = sv; ui.tier = S.tier; enterGame(); };
+  }
+  $('#create').onsubmit = e => { e.preventDefault(); startGame(); };
+  const stat = $('#aistat');
+  sampleReady.then(fn => {
+    stat.dataset.s = fn ? 'on' : 'off';
+    stat.querySelector('span').textContent = fn
+      ? '語り部（Claude）が待っています。最初の一手で利用の許可を尋ねます。'
+      : '語り部を呼べない環境です。定められた物語「灰燼の王冠」を選択肢で遊べます。';
+  });
+}
+function syncTitle() {
+  document.querySelectorAll('.cls').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === ui.cls)));
+  for (const k in TIERS) $('#tier-' + k).setAttribute('aria-pressed', String(k === ui.tier));
+  $('#tierhint').textContent = TIERS[ui.tier].hint;
+}
+
+async function startGame() {
+  const name = $('#f-name').value.trim() || '名もなき旅人';
+  const theme = $('#f-theme').value.trim();
+  const past = $('#f-past').value.trim();
+  S = fresh();
+  S.hero = newHero(name, ui.cls, past);
+  S.world = { title: '……', premise: '', quest: '世界を紡いでいます', regions: PRESET.regions.map(r => ({ ...r, name: '？' })), boss: { name: '', desc: '' } };
+  S.phase = 'loading';
+  enterGame();
+  const fn = await sampleReady;
+  let world = null, note = '';
+  if (fn) {
+    const think = addThink('語り部が世界を紡いでいます');
+    const lines = ['星図を広げています', '地名を刻んでいます', '宿敵に名を与えています', '最初の一行を探しています'];
+    let i = 0; const timer = setInterval(() => { think.textContent = lines[i++ % lines.length]; }, 2600);
+    setBusy(true, 'world');
+    const my = ctl = new AbortController();
+    try {
+      const w = await fn.json(worldPrompt(theme), { modelTier: S.tier, cache: false, signal: my.signal });
+      world = cleanWorld(w);
+      if (!world) note = '語り部の地図が読み取れなかったため、定められた物語で始めます。';
+    } catch (e) {
+      if (PERMANENT.has(e && e.code)) { S.ai = false; note = '語り部（Claude）の利用が許可されなかったため、定められた物語を選択肢で遊びます。'; }
+      else if (e && e.code === 'cancelled') note = '定められた物語で始めます。語り部は引き続きあなたの行動を語ります。';
+      else if (e && e.code === 'rate_limited') note = '語り部が混み合っています。定められた物語で始めます。';
+      else note = '世界を紡ぐ途中で糸が切れました。定められた物語で始めます。';
+    } finally { clearInterval(timer); think.remove(); S.story = S.story.filter(x => x.kind !== 'think'); setBusy(false); }
+  } else S.ai = false;
+  if (!world) world = JSON.parse(JSON.stringify(PRESET));
+  S.world = world;
+  S.phase = 'explore';
+  if (note) addEntry({ kind: 'note', text: note });
+  addEntry({ kind: 'narr', text: world.opening, opening: true });
+  S.lastNarr = world.opening;
+  S.choices = world.choices;
+  S.chronicle.push(`${world.regions[0].name}から旅が始まった`);
+  delete S.world.opening; delete S.world.choices;
+  if (!S.ai) S.choices = offlineChoices();
+  render(); save();
+}
+
+function worldPrompt(theme) {
+  const h = S.hero;
+  return `あなたは卓上RPGの世界設計者です。30〜40分で遊び切れる短い冒険の舞台を、日本語で作ってください。
+
+プレイヤーの望む世界: ${theme || '（おまかせ。王道だが一ひねりある幻想世界）'}
+主人公: ${h.name}（${CLASSES[h.cls].label}）
+主人公の過去・願い: ${h.past || '（なし）'}
+
+条件:
+- 地域は4つ。1番目が出発地(危険度1)で、順に危険度が上がり、4番目が宿敵の待つ最終地(危険度4)。
+- 地名・宿敵名は固有で印象に残るものに。ありがちな言葉の組み合わせを避ける。
+- 主人公の過去や願いを、主目的と宿敵に必ず絡める。
+- opening は二人称「あなた」の語り。200〜300字、2〜3段落（段落は\\nで区切る）。五感の描写と、話しかけてくる人物を一人入れる。
+- choices は最初に取れる具体的な行動を3つ、各20字以内。
+
+JSONのみで返答:
+{"title":"物語の題(12字以内)","premise":"世界の概要(100字以内)","quest":"主人公の主目的(40字以内)","regions":[{"name":"","desc":"40字以内","danger":1},{"name":"","desc":"","danger":2},{"name":"","desc":"","danger":3},{"name":"","desc":"","danger":4}],"boss":{"name":"","desc":"60字以内"},"opening":"","choices":["","",""]}`;
+}
+function cleanWorld(w) {
+  if (!w || typeof w !== 'object' || !Array.isArray(w.regions) || w.regions.length < 3) return null;
+  const regions = w.regions.slice(0, 5).map((r, i, a) => ({ name: str(r && r.name, 24) || `第${i + 1}の地`, desc: str(r && r.desc, 80), danger: num(r && r.danger, 1, 4, Math.min(4, 1 + Math.round(i * 3 / (a.length - 1)))) }));
+  const opening = str(w.opening, 1200);
+  if (!opening) return null;
+  const ch = Array.isArray(w.choices) ? w.choices.map(c => str(c, 40)).filter(Boolean).slice(0, 3) : [];
+  return { title: str(w.title, 24) || '名もなき物語', premise: str(w.premise, 200), quest: str(w.quest, 80) || '宿敵を討つ',
+    regions, boss: { name: str(w.boss && w.boss.name, 30) || '名もなき宿敵', desc: str(w.boss && w.boss.desc, 120) },
+    opening, choices: ch.length ? ch : ['辺りを見回す', '近くの人に話しかける', '先へ進む'] };
+}
+
+// ---------- screens ----------
+function enterGame() {
+  $('#screen-title').hidden = true;
+  $('#screen-game').hidden = false;
+  $('#tier-sel').value = S.tier;
+  rebuildStory();
+  render();
+}
+$('#to-title').onclick = () => { if (ctl) ctl.abort(); save(); location.reload(); };
+$('#tier-sel').onchange = e => { if (S) { S.tier = e.target.value; save(); } };
+
+// ---------- story log ----------
+const story = $('#story');
+function rebuildStory() { story.textContent = ''; for (const x of S.story) story.append(entryEl(x, false)); scrollDown(); }
+function addEntry(x) {
+  S.story.push(x); if (S.story.length > 90) S.story.splice(0, S.story.length - 90);
+  const n = entryEl(x, true); x._el = n; story.append(n); scrollDown(); return x;
+}
+function scrollDown() { requestAnimationFrame(() => { story.scrollTop = story.scrollHeight; }); }
+function setParas(n, text) {
+  n.textContent = '';
+  for (const p of String(text || '').split(/\n\s*\n|\n/).map(s => s.trim()).filter(Boolean)) n.append(el('p', null, p.replace(/^#+\s*/, '').replace(/\*\*/g, '')));
+}
+function entryEl(x, live) {
+  let n;
+  switch (x.kind) {
+    case 'narr': n = el('div', 'e narr' + (x.opening ? ' opening' : '')); setParas(n, x.text); break;
+    case 'act': n = el('div', 'e act'); n.append(el('span', 'who', 'あなた'), el('span', null, x.text)); break;
+    case 'roll': n = rollEl(x, live); break;
+    case 'foe': {
+      n = el('div', 'e foe'); n.append(el('b', null, x.name), el('p', null, x.desc),
+        el('span', 'dot', `${x.boss ? '宿敵 ・ ' : ''}HP ${x.hp} ・ 攻 ${x.atk} ・ 防 ${x.def}`)); break;
+    }
+    case 'cbt': { n = el('div', 'e cbt'); for (const [t, c] of x.parts) n.append(c ? el('span', c, t) : document.createTextNode(t)); break; }
+    case 'think': n = el('div', 'e think', x.text); break;
+    default: n = el('div', 'e ' + x.kind, x.text);
+  }
+  return n;
+}
+function rollEl(x, live) {
+  const m = mod(S.hero.stats[x.stat]) ;
+  const total = x.roll + (x.mod != null ? x.mod : m);
+  const crit = x.roll === 20, fumble = x.roll === 1;
+  const ok = crit || (!fumble && total >= x.dc);
+  const n = el('div', 'e roll ' + (ok ? 'ok' : 'fail'));
+  const die = el('div', 'die', String(x.roll));
+  const info = el('div', 'rinfo');
+  const res = el('span', 'res', crit ? '大成功' : fumble ? '大失敗' : ok ? '成功' : '失敗');
+  info.append(el('b', null, `${STAT_JA[x.stat]}（${x.stat}）判定`), document.createTextNode(`　難易度 ${x.dc}`), el('br'),
+    document.createTextNode(`出目 ${x.roll} ${sgn(x.mod != null ? x.mod : m)} = ${total}　`), res);
+  n.append(die, info);
+  if (live && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    n.classList.add('spin'); info.style.visibility = 'hidden';
+    let k = 0; const t = setInterval(() => { die.textContent = String(d(20)); if (++k > 9) { clearInterval(t); die.textContent = String(x.roll); n.classList.remove('spin'); info.style.visibility = ''; } }, 60);
+  }
+  return n;
+}
+function addThink(text) { const x = addEntry({ kind: 'think', text }); return x._el; }
+const sys = (text, cls) => addEntry({ kind: cls || 'sys', text });
+
+// ---------- render ----------
+function render() {
+  if (!S) return;
+  const h = S.hero, w = S.world;
+  $('#w-title').textContent = w.title;
+  $('#w-quest').textContent = w.quest ? '目的 ── ' + w.quest : '';
+  const path = $('#path'); path.textContent = ''; path.style.setProperty('--n', w.regions.length);
+  w.regions.forEach((r, i) => {
+    const li = el('li', i === S.region ? 'here' : S.visited.includes(i) ? 'done' : '');
+    li.append(el('i'), el('span', null, r.name)); li.title = r.desc; path.append(li);
+  });
+  $('#q-fill').style.width = S.quest + '%'; $('#q-num').textContent = S.quest + '%';
+  $('#h-name').textContent = h.name;
+  $('#h-class').textContent = `${CLASSES[h.cls].label} ・ レベル ${h.lv}`;
+  $('#hp-fill').style.width = (100 * h.hp / h.maxHp) + '%'; $('#hp-num').textContent = `${h.hp}/${h.maxHp}`;
+  $('#mp-fill').style.width = (100 * h.mp / Math.max(1, h.maxMp)) + '%'; $('#mp-num').textContent = `${h.mp}/${h.maxMp}`;
+  $('#xp-fill').style.width = (100 * h.xp / xpNeed(h)) + '%'; $('#xp-num').textContent = `${h.xp}/${xpNeed(h)}`;
+  const st = $('#stats'); st.textContent = '';
+  for (const k of STATS) { const c = el('div', 'stat'); c.append(el('span', null, STAT_JA[k]), el('b', null, String(h.stats[k])), el('small', null, sgn(mod(h.stats[k])))); st.append(c); }
+  $('#h-gold').textContent = h.gold;
+  $('#h-weapon').textContent = `${h.weapon.name}（d${h.weapon.power}）`;
+  $('#h-ac').textContent = ac(h);
+  const sk = CLASSES[h.cls].skill; $('#h-skill').textContent = `${sk.name} MP${sk.cost}`;
+  const items = $('#items'); items.textContent = '';
+  if (!h.items.length) items.append(el('li', 'empty', '何も持っていない'));
+  for (const it of h.items) {
+    const li = el('li'); li.append(el('span', null, it.name + (it.qty > 1 ? ` ×${it.qty}` : '')), el('small', null, it.desc || ''));
+    if (it.type === 'heal' || it.type === 'mana') {
+      const b = el('button', null, '使う'); b.type = 'button'; b.disabled = busy || !!S.ending || S.phase === 'loading';
+      b.onclick = () => useItem(it.name); li.append(b);
+    }
+    items.append(li);
+  }
+  const ch = $('#chron'); ch.textContent = '';
+  for (const c of S.chronicle.slice(-30)) ch.append(el('li', null, c));
+  renderDock();
+}
+function renderDock() {
+  const box = $('#choices'); box.textContent = '';
+  const inCombat = !!S.enemy;
+  $('#foebar').hidden = !inCombat;
+  const input = $('#f-act');
+  if (S.ending) {
+    const b = el('button', 'btn', '新しい物語を始める'); b.type = 'button'; b.onclick = () => { dropSave(); location.reload(); };
+    box.append(b);
+    $('#free').hidden = true; $('#dockhint').textContent = '';
+    return;
+  }
+  $('#free').hidden = false;
+  if (inCombat) {
+    const e = S.enemy, h = S.hero, sk = CLASSES[h.cls].skill;
+    $('#fb-name').textContent = e.name;
+    $('#fb-fill').style.width = (100 * e.hp / e.maxHp) + '%';
+    $('#fb-num').textContent = `${e.hp}/${e.maxHp}`;
+    const opts = [['攻撃', `${h.weapon.name}`, () => combat('attack')],
+      [sk.name, `MP${sk.cost}・${sk.desc}`, () => combat('skill'), h.mp < sk.cost]];
+    const potion = h.items.find(i => i.type === 'heal');
+    if (potion) opts.push([potion.name, `HP+${potion.power}`, () => useItem(potion.name)]);
+    if (!e.boss) opts.push(['逃げる', '技 難易度12', () => combat('flee')]);
+    opts.forEach(([t, sub, fn, dis], i) => {
+      const b = el('button', 'ch red'); b.type = 'button'; b.append(el('kbd', null, String(i + 1)), el('span', null, t), el('small', null, sub));
+      b.disabled = busy || !!dis; b.onclick = fn; box.append(b);
+    });
+    input.placeholder = S.ai ? '奇策を書く（例: 天井の鎖を切って敵の上に落とす）' : 'オフラインでは奇策は使えません';
+    $('#f-send').textContent = '奇策';
+    $('#dockhint').textContent = S.ai ? '奇策は語り部が判定します。状況に合った大胆な工夫ほど効きます。' : '';
+  } else {
+    S.choices.forEach((c, i) => {
+      const b = el('button', 'ch'); b.type = 'button'; b.append(el('kbd', null, String(i + 1)), el('span', null, c));
+      b.disabled = busy || S.phase === 'loading'; b.onclick = () => act(c); box.append(b);
+    });
+    input.placeholder = S.ai ? '自由に行動を書く（例: 見張りに古い歌を歌って聞かせる）' : 'オフラインでは選択肢から行動します';
+    $('#f-send').textContent = '行動';
+    $('#dockhint').textContent = S.ai ? '選択肢の番号キー、または自由な行動で。成否が不確かな行動には判定が入ります。' : '語り部なしの定められた物語です。';
+  }
+  input.disabled = busy || !S.ai || S.phase === 'loading';
+  $('#f-send').disabled = input.disabled;
+  $('#f-send').hidden = busy; $('#stop').hidden = !busy;
+}
+function setBusy(b) { busy = b; if (!b) ctl = null; render(); }
+$('#stop').onclick = () => { if (ctl) ctl.abort(); };
+$('#free').onsubmit = e => {
+  e.preventDefault();
+  const v = $('#f-act').value.trim(); if (!v || busy) return;
+  $('#f-act').value = '';
+  if (S.enemy) improvise(v); else act(v);
+};
+document.addEventListener('keydown', e => {
+  if (!S || busy || S.ending || $('#screen-game').hidden) return;
+  if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement && document.activeElement.tagName)) return;
+  const i = Number(e.key) - 1;
+  const btns = [...document.querySelectorAll('#choices .ch')];
+  if (i >= 0 && i < btns.length && !btns[i].disabled) { e.preventDefault(); btns[i].click(); }
+});
+
+// ---------- GM protocol ----------
+function brief() {
+  const h = S.hero, w = S.world;
+  const items = h.items.map(i => i.name + (i.qty > 1 ? `×${i.qty}` : '')).join('、') || 'なし';
+  return [
+    `【世界】「${w.title}」${w.premise}`,
+    `【主目的】${w.quest}`,
+    `【地域】\n` + w.regions.map((r, i) => `${i + 1}. ${r.name}（危険度${r.danger}）${i === S.region ? ' ←現在地' : ''}: ${r.desc}`).join('\n'),
+    `【宿敵】${w.boss.name}: ${w.boss.desc}`,
+    `【主人公】${h.name}（${CLASSES[h.cls].label} Lv${h.lv}）HP ${h.hp}/${h.maxHp} MP ${h.mp}/${h.maxMp} 金貨${h.gold} 武器:${h.weapon.name}`,
+    `能力値(修正値): ` + STATS.map(k => `${k} ${h.stats[k]}(${sgn(mod(h.stats[k]))})`).join(' / '),
+    `所持品: ${items}`,
+    h.past ? `【主人公の過去・願い】${h.past}` : '',
+    `【物語の進み】${S.quest}/100`,
+    `【年代記（古い順）】\n` + (S.chronicle.slice(-14).map(x => '- ' + x).join('\n') || '- なし'),
+    S.lastEvent ? `【直前の出来事】${S.lastEvent}` : '',
+    `【直前の語り】${S.lastNarr.slice(-700)}`,
+  ].filter(Boolean).join('\n');
+}
+function explorePrompt(action, roll) {
+  const h = S.hero, dg = S.world.regions[S.region].danger, last = S.region === S.world.regions.length - 1;
+  return `あなたは卓上RPG「千夜の語り部」のゲームマスターです。プレイヤーの行動を受けて、次の場面を日本語で語ってください。
+
+${brief()}
+
+【プレイヤーの行動】「${action}」
+【このターンのd20の出目】${roll}（すでに振られています。判定をするならこの値を使うこと）
+
+ルール:
+- 成否が不確かで、失敗に意味がある行動にだけ能力判定をする。STR=力ずく、INT=知識や魔術、DEX=身のこなしや隠密、CHA=説得や歌。難易度DCは8(易)〜18(至難)。合計=出目+修正値。合計がDC以上で成功。出目20は大成功、1は大失敗。
+- 判定したなら、その結果に忠実に語る。成功には報いを、失敗には代償かひねりを。判定しない行動は自然に進める。
+- プレイヤーの行動が世界の理に反するなら、無理のない形で受け止めて語る。主人公の気持ちや次の決断を勝手に決めない。
+- 語りは二人称「あなた」、150〜280字、2〜3段落。五感の描写と、固有名のある人物の台詞を交える。伏線は後で回収する。
+- 報酬と罰は控えめに: hpは-8〜+10、goldは0〜40、xpは0〜25。
+- 戦闘を始めるときは encounter を返し、語りは敵が立ちはだかる瞬間で止める。現在の危険度は${dg}。敵の強さの目安: hp ${8 + dg * 7 + h.lv * 3}前後、atk ${3 + dg * 2}前後、def ${10 + dg}前後。戦闘は3〜4手に1回程度。
+- quest は主目的への前進量(0〜20)。地域を移るのはプレイヤーが望んだときだけ（region に地名）。
+- ${last ? (S.quest >= 80 ? `物語は終盤。主人公が宿敵に迫る行動をとったら、宿敵「${S.world.boss.name}」との対決を encounter(boss:true, hp ${70 + h.lv * 8}, atk ${10 + h.lv}, def 15) で始める。` : '宿敵の居所にはまだ届かない。手がかりや試練を与える。') : '宿敵とはまだ戦わせない。'}
+- choices は次に取れる具体的な行動を3つ、各20字以内。うち1つは危険だが見返りの大きい行動にする。
+
+出力形式（厳守）:
+1行目: CHECK: <STR|INT|DEX|CHA> <DC>　または　CHECK: NONE
+2行目以降: 語り本文（見出しや記号の装飾なし）
+本文のあとに「@@@」だけの行、続けてJSONを1つ:
+{"hp":0,"mp":0,"gold":0,"xp":0,"quest":0,"addItems":[],"removeItems":[],"region":null,"encounter":null,"log":"年代記に残す一行(30字以内)","choices":["","",""]}
+addItems の要素: {"name":"","desc":"20字以内","type":"heal|mana|weapon|relic","power":数値(heal/manaは回復量8〜20、weaponはダメージ面数6〜12)}
+encounter: {"name":"","desc":"40字以内","hp":数値,"atk":数値,"def":数値,"boss":false}`;
+}
+function improvPrompt(action, roll) {
+  const e = S.enemy, h = S.hero;
+  return `あなたは卓上RPG「千夜の語り部」のゲームマスターです。戦闘中、プレイヤーが奇策に出ました。結果を日本語で短く語ってください。
+
+${brief()}
+
+【敵】${e.name}（${e.desc}）HP ${e.hp}/${e.maxHp} 攻${e.atk} 防${e.def}${e.boss ? ' ※宿敵' : ''}
+【プレイヤーの奇策】「${action}」
+【このターンのd20の出目】${roll}
+
+ルール:
+- 奇策には必ず能力判定をする。場面に合った大胆で具体的な工夫ほどDCを下げる(8〜16)。無理筋ならDC18。合計=出目+修正値。
+- 成功: 敵に ${8 + h.lv * 3}〜${14 + h.lv * 4} のダメージ（enemyHp に負の数）。大成功なら最大 ${20 + h.lv * 5}。状況しだいで逃走(fled:true)も可、ただし宿敵からは逃げられない。
+- 失敗: 敵へのダメージは0〜小。hpを0〜-6失うなどの代償。
+- 語りは二人称「あなた」、80〜180字。敵の反撃は描写しない（このあと別に処理される）。
+
+出力形式（厳守）:
+1行目: CHECK: <STR|INT|DEX|CHA> <DC>
+2行目以降: 語り本文
+本文のあとに「@@@」だけの行、続けてJSONを1つ:
+{"hp":0,"mp":0,"enemyHp":0,"fled":false,"log":"年代記に残す一行(30字以内)"}`;
+}
+
+function splitGM(text) {
+  const t = text.replace(/^\s+/, '');
+  let check = null, body = t, pending = false;
+  const m = t.match(/^CHECK\s*[:：]\s*([^\n]*)\n/i);
+  if (m) {
+    body = t.slice(m[0].length);
+    const mm = m[1].match(/(STR|INT|DEX|CHA)\s*(?:DC)?\s*(\d+)/i);
+    if (mm) check = { stat: mm[1].toUpperCase(), dc: clamp(+mm[2], 5, 25) };
+  } else if (/^CHECK/i.test(t) || ('CHECK'.startsWith(t.toUpperCase()) && t.length)) { pending = true; body = ''; }
+  const at = body.indexOf('@@@');
+  const narr = (at >= 0 ? body.slice(0, at) : body.replace(/@{1,2}\s*$/, '')).trim();
+  return { check, pending, narr, json: at >= 0 ? body.slice(at + 3) : '' };
+}
+function parseLoose(s) {
+  if (!s) return null;
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a < 0 || b < a) return null;
+  try { return JSON.parse(s.slice(a, b + 1)); } catch { return null; }
+}
+
+// One streamed GM turn: rolls the die card once the CHECK line is known, streams narration after it.
+async function gmTurn(prompt, roll) {
+  const think = addThink(pick(['語り部が筆を執っています', '語り部が頁をめくっています', '語り部が耳を澄ませています']));
+  setBusy(true);
+  const my = ctl = new AbortController();
+  let rolled = false, narr = null;
+  const flow = sp => {
+    if (!rolled && !sp.pending && (sp.narr || sp.check)) {
+      rolled = true;
+      think.remove(); S.story = S.story.filter(x => x.kind !== 'think');
+      if (sp.check) addEntry({ kind: 'roll', stat: sp.check.stat, dc: sp.check.dc, roll, mod: mod(S.hero.stats[sp.check.stat]) });
+    }
+    if (rolled && sp.narr) {
+      if (!narr) narr = addEntry({ kind: 'narr', text: '' });
+      narr.text = sp.narr; setParas(narr._el, sp.narr); scrollDown();
+    }
+  };
+  try {
+    const res = await sample(prompt, { modelTier: S.tier, cache: false, signal: my.signal, onText: ({ text }) => flow(splitGM(text)) });
+    const sp = splitGM(res.text); sp.pending = false; flow(sp);
+    if (!narr) narr = addEntry({ kind: 'narr', text: '……（語り部は黙って頷いた）' });
+    if (res.truncated) sys('語りが長すぎて途中で切れました。', 'note');
+    S.lastNarr = sp.narr || S.lastNarr;
+    return { fx: parseLoose(sp.json) || {}, check: sp.check };
+  } catch (e) {
+    think.remove(); S.story = S.story.filter(x => x.kind !== 'think');
+    const code = (e && e.code) || 'upstream_error';
+    if (code === 'refused' && narr) { narr._el.remove(); S.story = S.story.filter(x => x !== narr); }
+    if (PERMANENT.has(code)) { S.ai = false; S.choices = offlineChoices(); sys('語り部（Claude）を使えなくなったため、ここからは選択肢で旅を続けます。', 'note'); }
+    else if (code === 'rate_limited') sys('語り部が息を整えています。少し待ってから、もう一度同じ行動を。', 'note');
+    else if (code === 'refused') sys('語り部はこの行動を語れませんでした。別の言い方で試してください。', 'note');
+    else if (code === 'session_expired') sys('ログインが切れています。サインインし直してから続けてください。', 'note');
+    else if (code !== 'cancelled') sys('語りが途中で途切れました。もう一度試してください。', 'note');
+    return null;
+  } finally { setBusy(false); }
+}
+
+// ---------- exploration ----------
+async function act(text) {
+  if (busy || S.ending || S.enemy) return;
+  addEntry({ kind: 'act', text });
+  if (!S.ai) { offlineAct(text); return; }
+  const roll = d(20);
+  const out = await gmTurn(explorePrompt(text, roll), roll);
+  if (!out) { render(); return; }
+  S.lastEvent = '';
+  applyFx(out.fx);
+  render(); save();
+}
+
+function applyFx(fx) {
+  const h = S.hero, parts = [];
+  const dh = num(fx.hp, -20, 30);
+  if (dh) { const b = h.hp; h.hp = clamp(h.hp + dh, 0, h.maxHp); if (h.hp !== b) parts.push(`HP ${sgn(h.hp - b)}`); }
+  const dm = num(fx.mp, -20, 30);
+  if (dm) { const b = h.mp; h.mp = clamp(h.mp + dm, 0, h.maxMp); if (h.mp !== b) parts.push(`MP ${sgn(h.mp - b)}`); }
+  const dg = num(fx.gold, -500, 120);
+  if (dg) { const b = h.gold; h.gold = Math.max(0, h.gold + dg); if (h.gold !== b) parts.push(`金貨 ${sgn(h.gold - b)}`); }
+  const dq = num(fx.quest, 0, 25);
+  if (dq) { S.quest = clamp(S.quest + dq, 0, 100); parts.push(`物語 +${dq}%`); }
+  if (Array.isArray(fx.removeItems)) for (const n of fx.removeItems) { if (removeItem(String(n))) parts.push(`${n}を失った`); }
+  if (Array.isArray(fx.addItems)) for (const it of fx.addItems.slice(0, 3)) { const r = addItem(it); if (r) parts.push(r); }
+  if (typeof fx.region === 'string' && fx.region.trim()) {
+    const q = fx.region.trim();
+    const i = S.world.regions.findIndex(r => r.name === q || q.includes(r.name) || r.name.includes(q));
+    if (i >= 0 && i !== S.region) { S.region = i; if (!S.visited.includes(i)) S.visited.push(i); parts.push(`${S.world.regions[i].name}へ`); }
+  }
+  const lg = str(fx.log, 50); if (lg) S.chronicle.push(lg);
+  if (Array.isArray(fx.choices)) { const c = fx.choices.map(x => str(x, 40)).filter(Boolean).slice(0, 3); if (c.length) S.choices = c; }
+  if (!S.choices.length) S.choices = ['辺りを調べる', '先へ進む', '誰かに話しかける'];
+  if (parts.length) sys(parts.join('　・　'));
+  const dx = num(fx.xp, 0, 60); if (dx) gainXp(dx);
+  if (h.hp <= 0) return finish('death', '傷が深すぎた');
+  const en = fx.encounter;
+  if (en && typeof en === 'object' && str(en.name, 30)) startCombat(en);
+}
+function addItem(it) {
+  if (!it || typeof it !== 'object') return '';
+  const name = str(it.name, 24); if (!name) return '';
+  const type = ['heal', 'mana', 'weapon', 'relic'].includes(it.type) ? it.type : 'relic';
+  const h = S.hero;
+  if (type === 'weapon') {
+    const p = num(it.power, 4, 12, 6);
+    if (p > h.weapon.power) { h.weapon = { name, power: p }; return `${name}を装備（d${p}）`; }
+    return `${name}を得たが、今の武器のほうが手に馴染む`;
+  }
+  const power = type === 'relic' ? 0 : num(it.power, 4, 30, 10);
+  const desc = str(it.desc, 40) || (type === 'heal' ? `傷を${power}癒す` : type === 'mana' ? `MPを${power}回復` : '');
+  const ex = h.items.find(x => x.name === name);
+  if (ex) ex.qty = (ex.qty || 1) + 1; else h.items.push({ name, desc, type, power, qty: 1 });
+  return `${name}を得た`;
+}
+function removeItem(name) {
+  const h = S.hero; const i = h.items.findIndex(x => x.name === name || name.includes(x.name));
+  if (i < 0) return false;
+  if (h.items[i].qty > 1) h.items[i].qty--; else h.items.splice(i, 1);
+  return true;
+}
+function gainXp(n) {
+  const h = S.hero; h.xp += n; sys(`経験 +${n}`);
+  while (h.xp >= xpNeed(h)) {
+    h.xp -= xpNeed(h); h.lv++;
+    h.maxHp += 7 + Math.max(0, mod(h.stats.STR)); h.maxMp += 3;
+    const g = CLASSES[h.cls].grow; h.stats[g]++;
+    h.hp = h.maxHp; h.mp = h.maxMp;
+    sys(`レベル ${h.lv} に上がった。${STAT_JA[g]}が伸び、傷と魔力がすべて戻った。`, 'sys up');
+  }
+}
+function useItem(name) {
+  if (busy || S.ending) return;
+  const h = S.hero, it = h.items.find(x => x.name === name); if (!it) return;
+  if (it.type === 'heal') { if (h.hp >= h.maxHp) { sys('いまは傷を負っていない。'); return; } const b = h.hp; h.hp = Math.min(h.maxHp, h.hp + it.power); sys(`${it.name}を使った。HP ${sgn(h.hp - b)}`); }
+  else if (it.type === 'mana') { if (h.mp >= h.maxMp) { sys('魔力は満ちている。'); return; } const b = h.mp; h.mp = Math.min(h.maxMp, h.mp + it.power); sys(`${it.name}を使った。MP ${sgn(h.mp - b)}`); }
+  else return;
+  removeItem(it.name);
+  if (S.enemy) enemyTurn();
+  render(); save();
+}
+
+// ---------- combat ----------
+function startCombat(en) {
+  const h = S.hero, dg = S.world.regions[S.region].danger;
+  const boss = !!en.boss;
+  const hp = num(en.hp, 6, boss ? 220 : 120, 10 + dg * 7);
+  S.enemy = { name: str(en.name, 30), desc: str(en.desc, 80), hp, maxHp: hp, atk: num(en.atk, 2, boss ? 18 : 15, 3 + dg * 2), def: num(en.def, 8, 18, 10 + dg), boss };
+  S.phase = 'combat';
+  addEntry({ kind: 'foe', name: S.enemy.name, desc: S.enemy.desc, hp, atk: S.enemy.atk, def: S.enemy.def, boss });
+  sys(boss ? '宿敵との決戦が始まった。逃げ場はない。' : '戦闘が始まった。');
+}
+function cbt(parts) { addEntry({ kind: 'cbt', parts }); }
+function combat(kind) {
+  if (busy || !S.enemy) return;
+  const h = S.hero, e = S.enemy, c = CLASSES[h.cls];
+  if (kind === 'flee') {
+    const r = d(20), t = r + mod(h.stats.DEX);
+    if (t >= 12) { cbt([[`あなたは身を翻して逃げ出した（出目${r}${sgn(mod(h.stats.DEX))}=${t}）。`, 'hit']]); endCombat(false, `${e.name}から逃げ延びた`); return; }
+    cbt([[`逃げ道を塞がれた（出目${r}${sgn(mod(h.stats.DEX))}=${t}）。`, 'miss']]);
+    enemyTurn(); render(); save(); return;
+  }
+  const skill = kind === 'skill';
+  if (skill) { if (h.mp < c.skill.cost) return; h.mp -= c.skill.cost; }
+  if (skill && h.cls === 'bard') {
+    const v = d(6) + d(6) + mod(h.stats.CHA), b = h.hp; h.hp = Math.min(h.maxHp, h.hp + Math.max(3, v));
+    cbt([['「癒しの調べ」。旋律が傷口を閉じていく。', ''], [` HP ${sgn(h.hp - b)}`, 'hit']]);
+  } else if (skill && h.cls === 'mage') {
+    const dmg = Math.max(4, d(8) + d(8) + 2 * mod(h.stats.INT));
+    e.hp = Math.max(0, e.hp - dmg);
+    cbt([['「星火」。指先から落ちた星が敵を焼く。', ''], [` ${dmg} の傷`, 'hit']]);
+  } else {
+    const am = mod(h.stats[c.atk]);
+    let r = d(20); if (skill && h.cls === 'rogue') r = Math.max(r, d(20));
+    const tot = r + am, crit = r === 20 || (skill && h.cls === 'rogue' && r >= 18);
+    const hit = crit || (r !== 1 && tot >= e.def);
+    const label = skill ? `「${c.skill.name}」` : '攻撃';
+    if (!hit) cbt([[`${label}（出目${r}${sgn(am)}=${tot} 対 防${e.def}）`, ''], [' 外れた', 'miss']]);
+    else {
+      let dmg = Math.max(1, d(h.weapon.power) + am);
+      if (skill && h.cls === 'warrior') dmg *= 2;
+      if (crit) dmg *= 2;
+      e.hp = Math.max(0, e.hp - dmg);
+      cbt([[`${label}（出目${r}${sgn(am)}=${tot} 対 防${e.def}）`, ''], [` ${crit ? '会心！ ' : ''}${dmg} の傷`, 'hit']]);
+    }
+  }
+  if (e.hp <= 0) return winCombat();
+  enemyTurn(); render(); save();
+}
+function enemyTurn() {
+  const h = S.hero, e = S.enemy; if (!e) return;
+  const r = d(20), bonus = Math.floor(e.atk / 3) + 1, A = ac(h);
+  const crit = r === 20, hit = crit || (r !== 1 && r + bonus >= A);
+  if (!hit) cbt([[`${e.name}の反撃（出目${r}+${bonus} 対 守${A}）`, ''], [' かわした', 'miss']]);
+  else {
+    let dmg = d(e.atk) + Math.floor(e.atk / 4); if (crit) dmg *= 2;
+    h.hp = Math.max(0, h.hp - dmg);
+    cbt([[`${e.name}の反撃（出目${r}+${bonus} 対 守${A}）`, ''], [` ${crit ? '痛恨！ ' : ''}${dmg} の傷を受けた`, 'hurt']]);
+  }
+  if (h.hp <= 0) finish('death', `${e.name}に倒された`);
+}
+function winCombat() {
+  const e = S.enemy;
+  cbt([[`${e.name}は崩れ落ちた。`, 'hit']]);
+  if (e.boss) { S.quest = 100; S.chronicle.push(`${e.name}を討ち果たした`); S.enemy = null; return finish('victory', `${e.name}を討った`); }
+  const gold = Math.round(e.maxHp / 2 + d(8)), xp = Math.round(e.maxHp * 1.1 + e.atk * 2);
+  S.hero.gold += gold; sys(`金貨 +${gold}`);
+  gainXp(xp);
+  endCombat(true, `${e.name}を倒した`);
+}
+function endCombat(won, log) {
+  const h = S.hero;
+  S.chronicle.push(log);
+  S.lastEvent = `${log}（残りHP ${h.hp}/${h.maxHp}）。いまは戦いの直後。`;
+  S.enemy = null; S.phase = 'explore';
+  S.choices = S.ai ? (won ? ['倒した敵の持ち物を調べる', '傷の手当てをしてから先へ', '辺りに潜む気配を探る'] : ['身を隠して息を整える', '別の道を探す', '来た道を引き返す']) : offlineChoices();
+  render(); save();
+}
+async function improvise(text) {
+  if (busy || !S.enemy || !S.ai) return;
+  addEntry({ kind: 'act', text });
+  const roll = d(20);
+  const out = await gmTurn(improvPrompt(text, roll), roll);
+  if (!out) { render(); return; }
+  const fx = out.fx, h = S.hero, e = S.enemy; if (!e) return;
+  const cap = 20 + h.lv * 5;
+  const de = num(fx.enemyHp, -cap, 0);
+  const parts = [];
+  if (de) { e.hp = Math.max(0, e.hp + de); parts.push(`${e.name}に ${-de} の傷`); }
+  const dh = num(fx.hp, -12, 10); if (dh) { const b = h.hp; h.hp = clamp(h.hp + dh, 0, h.maxHp); parts.push(`HP ${sgn(h.hp - b)}`); }
+  const dm = num(fx.mp, -10, 10); if (dm) { const b = h.mp; h.mp = clamp(h.mp + dm, 0, h.maxMp); parts.push(`MP ${sgn(h.mp - b)}`); }
+  if (parts.length) sys(parts.join('　・　'));
+  const lg = str(fx.log, 50);
+  if (h.hp <= 0) { render(); return finish('death', `${e.name}との戦いで力尽きた`); }
+  if (e.hp <= 0) { if (lg) S.chronicle.push(lg); return winCombat(); }
+  if (fx.fled === true && !e.boss) { endCombat(false, lg || `機転を利かせて${e.name}から逃れた`); return; }
+  if (lg) S.chronicle.push(lg);
+  enemyTurn(); render(); save();
+}
+
+// ---------- ending ----------
+async function finish(kind, why) {
+  S.ending = kind; S.enemy = null; S.phase = 'end';
+  dropSave();
+  render();
+  addEntry({ kind: 'end', text: kind === 'victory' ? '終幕' : '暗転' });
+  const h = S.hero, w = S.world;
+  if (S.ai && sample) {
+    const think = addThink('語り部が最後の頁を綴っています');
+    setBusy(true);
+    const my = ctl = new AbortController();
+    let narr = null;
+    try {
+      await sample(`あなたは卓上RPG「千夜の語り部」のゲームマスターです。冒険が${kind === 'victory' ? '勝利で' : '主人公の死で'}幕を閉じました。エピローグを日本語で語ってください。
+
+${brief()}
+
+【結末】${why}
+
+条件: 二人称「あなた」。300〜450字、3〜4段落。年代記の出来事や出会った人物に具体的に触れ、主人公の過去・願いがどう決着したかを描く。${kind === 'victory' ? '勝利の代償や余韻も忘れずに。' : '死を無意味にしない。誰かが何かを受け継ぐ。'}最後の一文は短く。本文のみを出力。`,
+        { modelTier: S.tier, cache: false, signal: my.signal, onText: ({ text }) => {
+          if (!narr) { think.remove(); S.story = S.story.filter(x => x.kind !== 'think'); narr = addEntry({ kind: 'narr', text: '' }); }
+          narr.text = text; setParas(narr._el, text); scrollDown();
+        } });
+    } catch (e) {
+      if (!narr) { think.remove(); S.story = S.story.filter(x => x.kind !== 'think'); addEntry({ kind: 'narr', text: offlineEpilogue(kind) }); }
+    } finally { setBusy(false); }
+  } else addEntry({ kind: 'narr', text: offlineEpilogue(kind) });
+  sys(`${h.name} ・ ${CLASSES[h.cls].label} Lv${h.lv} ・ 物語の進み ${S.quest}% ・ 金貨 ${h.gold}`);
+  render();
+}
+function offlineEpilogue(kind) {
+  const h = S.hero, w = S.world;
+  return kind === 'victory'
+    ? `${w.boss.name}が膝をついたとき、長く続いた災いは嘘のように静まった。あなたは剣を下ろし、ようやく自分の息の音を聞く。\n\n${w.regions[0].name}に戻る道すがら、人々はあなたの名を口々に呼んだ。${h.name}。その名は、この旅がなければ誰も知らなかった名前だ。\n\n年代記の最後の頁に、あなたは一行だけ書き足す。「${w.quest}」。そして、ペンを置いた。`
+    : `視界が暗くなっていく。${w.regions[S.region].name}の冷たい地面が、思いのほか柔らかい。\n\nあなたの旅は、ここで途切れた。けれど、あなたが通った道には足跡が残り、あなたと言葉を交わした誰かが、いつかその続きを歩くだろう。\n\n${h.name}。その名を、語り部は忘れない。`;
+}
+
+// ---------- offline engine ----------
+function offlineChoices() {
+  const r = S.region, n = S.world.regions.length, last = r === n - 1;
+  const c = ['辺りを探索する', '焚き火を起こして休む'];
+  if (last) c.push(S.quest >= 85 ? `${S.world.boss.name}のもとへ踏み込む` : '宿敵の手がかりを探す');
+  else if (S.quest >= Math.round((r + 1) * 80 / (n - 1))) c.push(`${S.world.regions[r + 1].name}へ向かう`);
+  else c.push('人の気配を追う');
+  return c;
+}
+function offlineFoe() {
+  const dg = S.world.regions[S.region].danger, lv = S.hero.lv;
+  const f = pick(FOES[clamp(dg, 1, 4)]);
+  return { ...f, hp: f.hp + (lv - 1) * 4 };
+}
+function offlineAct(text) {
+  const w = S.world, r = w.regions[S.region], h = S.hero;
+  const narr = t => { addEntry({ kind: 'narr', text: t }); S.lastNarr = t; };
+  if (text.includes('休む')) {
+    if (S.rested === S.region) narr('火を起こそうとしたが、湿った枝ばかりで煙しか上がらない。この地ではもう休めそうにない。');
+    else {
+      S.rested = S.region;
+      const bh = h.hp, bm = h.mp;
+      h.hp = Math.min(h.maxHp, h.hp + Math.ceil(h.maxHp / 2)); h.mp = Math.min(h.maxMp, h.mp + Math.ceil(h.maxMp / 2));
+      narr(pick([`${r.name}の片隅で小さな火を起こす。爆ぜる薪の音を聞きながら、あなたは浅い眠りに落ちた。`, `岩陰に身を寄せ、外套にくるまる。夢の中で、誰かがあなたの名を呼んでいた。`]));
+      sys(`HP ${sgn(h.hp - bh)}　・　MP ${sgn(h.mp - bm)}`);
+      if (Math.random() < 0.25) { sys('……眠りを破る物音がした。'); startCombat(offlineFoe()); }
+    }
+  } else if (text.includes('へ向かう')) {
+    S.region = Math.min(w.regions.length - 1, S.region + 1); if (!S.visited.includes(S.region)) S.visited.push(S.region);
+    const nr = w.regions[S.region];
+    narr(`あなたは${r.name}を後にし、${nr.name}へと足を踏み入れた。${nr.desc}。空気が変わったのが、肌でわかる。`);
+    S.chronicle.push(`${nr.name}に着いた`);
+  } else if (text.includes('のもとへ踏み込む')) {
+    narr(`最奥の扉が、音もなく開いた。${w.boss.name}がそこにいる。${w.boss.desc}。あなたは武器を握り直した。`);
+    startCombat({ name: w.boss.name, desc: w.boss.desc, hp: 70 + h.lv * 8, atk: 10 + h.lv, def: 15, boss: true });
+  } else {
+    const roll = Math.random();
+    S.quest = Math.min(100, S.quest + 9);
+    if (roll < 0.4) {
+      narr(pick([`${r.name}を進むうち、背後の気配が濃くなっていく。振り返ったとき、それはもう目の前にいた。`, `足跡を辿った先で、あなたは獲物を待っていたものと鉢合わせした。`]));
+      startCombat(offlineFoe());
+    } else if (roll < 0.65) {
+      const g = d(10) + r.danger * 6;
+      h.gold += g;
+      narr(pick([`${r.name}の崩れた石垣の隙間に、布に包まれた小袋が押し込まれていた。`, `倒木の洞を覗くと、誰かが隠した荷がそのまま残っていた。持ち主はもう戻らないだろう。`]));
+      const got = [`金貨 +${g}`];
+      if (Math.random() < 0.5) got.push(addItem({ name: '癒しの水薬', type: 'heal', power: 12, desc: '傷を12癒す' }));
+      sys(got.join('　・　'));
+    } else if (roll < 0.82) {
+      const dc = 10 + r.danger, rr = d(20);
+      narr(pick(['足元の土が、ふいに沈んだ。', '頭上で何かが軋む音がした。']));
+      addEntry({ kind: 'roll', stat: 'DEX', dc, roll: rr, mod: mod(h.stats.DEX) });
+      const ok = rr === 20 || (rr !== 1 && rr + mod(h.stats.DEX) >= dc);
+      if (ok) narr('あなたは寸前で身をかわした。仕掛けは空を切り、静けさが戻る。');
+      else { const dmg = d(4 + r.danger * 2); h.hp = Math.max(0, h.hp - dmg); narr('避けきれなかった。鋭い痛みが走る。'); sys(`HP −${dmg}`); }
+    } else {
+      S.quest = Math.min(100, S.quest + 8);
+      narr(pick([`${r.name}で出会った旅の商人が、声をひそめて言った。「${w.boss.name}のことを聞いて回っているのは、あんたかい」。彼が語った噂は、あなたの旅路を確かに照らした。`, `朽ちた石碑に、古い文字が刻まれていた。読み解くと、それは${w.boss.name}について書かれた警告だった。`]));
+      S.chronicle.push(`${r.name}で宿敵の手がかりを得た`);
+      sys('物語 +17%');
+    }
+    gainXp(6 + r.danger * 2);
+  }
+  if (h.hp <= 0 && !S.ending) { render(); return finish('death', '旅の途中で力尽きた'); }
+  if (!S.enemy) S.choices = offlineChoices();
+  render(); save();
+}
+
+// ---------- starfield ----------
+function stars() {
+  const c = $('#stars'), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = innerWidth, H = innerHeight; c.width = W * dpr; c.height = H * dpr;
+  const g = c.getContext('2d'); g.scale(dpr, dpr);
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < Math.round(W * H / 5200); i++) {
+    const x = rnd() * W, y = rnd() * H, r = rnd() < 0.08 ? 1.3 : 0.6, a = 0.15 + rnd() * 0.45;
+    g.fillStyle = rnd() < 0.15 ? `rgba(227,169,75,${a})` : `rgba(236,227,207,${a})`;
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+  }
+}
+addEventListener('resize', () => { clearTimeout(stars.t); stars.t = setTimeout(stars, 200); });
+
+function boot(data) {
+  stars();
+  buildTitle();
+  if (data && data.S && data.S.hero && data.S.world) { S = data.S; ui.tier = S.tier; enterGame(); }
+}
+try { window.claude && window.claude.hot && window.claude.hot.snapshot && window.claude.hot.snapshot(() => ({ S: S && JSON.parse(JSON.stringify(S, noEl)) })); } catch {}
+const hot = window.claude && window.claude.hot;
+if (hot && hot.ready) hot.ready(boot); else boot((hot && hot.data) || {});
+})();
+</script>

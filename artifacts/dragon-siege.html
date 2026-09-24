@@ -206,7 +206,7 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
 .postlabel::before,.postlabel::after{content:"";flex:1;height:1px;background:#a3261d55}
 .sbtn.post{background:linear-gradient(90deg,#3a1420,#2a1a2a)}
 .sbtn.post .no{color:#ff8a7a}
-.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.gtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
 .gtab{padding:8px 4px;border-radius:10px;border:1px solid #000;background:#0000001a;font-weight:800;font-size:13px;color:#4a3920}
 .gtab.on{background:linear-gradient(100deg,#5b36c4,#a3322b);color:#fff}
 .gtab i{font-style:normal;font-size:9px;background:#e8b04a;color:var(--ink);border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:2px}
@@ -428,6 +428,23 @@ const TYPES = {
   swordmaster:{name:'剣聖',gacha:'SSR', ver:2, cost:8, hp:900, atk:80, rate:0.7, range:10, speed:44, r:10, leech:.15, hero:{head:'band', weapon:'sword', blade:'#fff4c0', cape:'#eef1f6', body:'#2a2a36'}, desc:'剣を極めた者。千の刃で周りを斬り刻む。'},
   holydragon:{name:'神竜', gacha:'SSR', ver:2, cost:10,hp:1400,atk:75, rate:1.4, range:90, speed:24, r:18, air:true, hitsAir:true, proj:'holy', splash:55, hpY:40, desc:'聖なる竜。光の息吹で敵を焼き、味方を癒す。'},
   chrono:  {name:'時の魔女',gacha:'SSR', ver:2, cost:8, hp:300, atk:40, rate:1.3, range:110,speed:24, r:8,  hitsAir:true, proj:'orb', hero:{head:'wizard', hat:'#5a2a8a', weapon:'staff', orb:'#e0c0ff', cape:'#2a1a3a'}, desc:'時を操る魔女。戦場の全ての敵を止める。'},
+  // ガチャ第3弾（プレイヤー専用）
+  monk:    {name:'武僧',   gacha:'R', ver:3, cost:3, hp:220, atk:26, rate:0.7, range:6,  speed:40, r:9,  hero:{head:'bald', weapon:'quarter', body:'#c07a2a'}, desc:'棒術で素早く打ち据える修行僧。'},
+  falconer:{name:'鷹匠',   gacha:'R', ver:3, cost:3, hp:120, atk:20, rate:1.0, range:120,speed:30, r:8,  hitsAir:true, proj:'falcon', hero:{head:'hood', hood:'#5a4a2a', weapon:'falcon'}, desc:'鷹を放って遠くの敵を襲わせる。空にも届く。'},
+  sapper:  {name:'工兵',   gacha:'R', ver:3, cost:3, hp:200, atk:24, rate:1.1, range:6,  speed:30, r:9,  castleMul:2.5, hero:{head:'helm', helmCol:'#e8b04a', weapon:'pick'}, desc:'つるはしで城壁を崩す。城に2.5倍ダメージ。'},
+  dancer:  {name:'踊り子', gacha:'R', ver:3, cost:3, hp:110, atk:8,  rate:1.0, range:70, speed:30, r:8,  hitsAir:true, proj:'note', buff:{radius:80}, hero:{head:'flower', weapon:'fan', body:'#d05a8a'}, desc:'舞で周りの味方の攻撃力を1.3倍にする。'},
+  slinger: {name:'投石兵', gacha:'R', ver:3, cost:2, hp:90,  atk:16, rate:1.2, range:105,speed:32, r:7,  proj:'rock', splash:18, hero:{head:'band', weapon:'sling'}, desc:'安い投石兵。小さな範囲攻撃。地上のみ。'},
+  onmyoji: {name:'陰陽師', gacha:'SR', ver:3, cost:5, hp:150, atk:26, rate:1.3, range:110,speed:26, r:8,  hitsAir:true, proj:'talisman', hero:{head:'eboshi', weapon:'ofuda', body:'#f3efe4'}, desc:'札を飛ばす術者。封印の札で敵を止める。'},
+  mechknight:{name:'機甲兵',gacha:'SR', ver:3, cost:6, hp:800, atk:30, rate:1.2, range:6,  speed:22, r:12, hero:{head:'visor', weapon:'drill', body:'#8a929e'}, desc:'鋼の鎧に身を包んだ兵。装甲で周りを守る。'},
+  gatling: {name:'ガトリング兵',gacha:'SR', ver:3, cost:5, hp:160, atk:9, rate:0.22, range:115,speed:26, r:9, hitsAir:true, proj:'bullet', hero:{head:'goggle', weapon:'gatling'}, desc:'弾をばらまき続ける連射兵。空にも届く。'},
+  sylph:   {name:'風の精霊',gacha:'SR', ver:3, cost:5, hp:160, atk:18, rate:1.0, range:90, speed:34, r:8,  air:true, hitsAir:true, proj:'wind', hpY:26, heal:{amt:25,radius:70,every:2.5}, desc:'空を舞う小さな精霊。風で味方を癒す。'},
+  mammoth: {name:'マンモス',gacha:'SR', ver:3, cost:7, hp:1300,atk:40, rate:1.4, range:8,  speed:18, r:17, hpY:34, desc:'巨大な牙獣。大地を踏み鳴らして敵を止める。'},
+  kunoichi:{name:'くノ一', gacha:'SR', ver:3, cost:4, hp:140, atk:30, rate:0.5, range:6,  speed:62, r:8,  hero:{head:'ponytail', weapon:'dagger', body:'#5a2a5a'}, desc:'霞のように間合いを詰める女忍者。'},
+  kirin:   {name:'麒麟',   gacha:'SSR', ver:3, cost:8, hp:900, atk:55, rate:1.0, range:10, speed:58, r:13, heal:{amt:25,radius:60,every:2}, desc:'雷をまとう霊獣。駆けながら味方を癒す。'},
+  susanoo: {name:'武神',   gacha:'SSR', ver:3, cost:9, hp:1100,atk:90, rate:1.1, range:10, speed:32, r:13, splash:30, hpY:40, hero:{head:'kabuto', weapon:'katana', body:'#a3261d', cape:'#2a2a36', scale:1.35}, desc:'戦の神。巨大な刀で周りを薙ぎ払う。'},
+  archmage:{name:'大賢者', gacha:'SSR', ver:3, cost:9, hp:400, atk:60, rate:1.6, range:125,speed:24, r:9,  hitsAir:true, proj:'orb', splash:45, hero:{head:'wizard', hat:'#f3efe4', weapon:'staff', body:'#3a4a8a', cape:'#e8b04a', orb:'#ffd27a'}, desc:'全ての魔法を極めた者。流星を降らせる。'},
+  leviathan:{name:'海竜',  gacha:'SSR', ver:3, cost:10,hp:1500,atk:60, rate:1.4, range:95, speed:24, r:18, air:true, hitsAir:true, proj:'water', splash:50, hpY:42, desc:'空を泳ぐ海の竜。大津波で敵を押し流す。'},
+  automaton:{name:'機神',  gacha:'SSR', ver:3, cost:10,hp:1800,atk:70, rate:1.8, range:10, speed:14, r:18, siege:true, castleMul:2, splash:30, hpY:46, hero:{head:'visor', weapon:'drill', body:'#6a727e', scale:1.6}, desc:'城だけを狙う鋼の巨神。ミサイルを撃ち込む。'},
   // 新たな敵
   ghost:   {name:'亡霊',   cost:3, hp:70,  atk:14, rate:0.9, range:6,  speed:40, r:8,  count:2, air:true, hitsAir:true, hpY:24, enemyOnly:true, desc:'2体で漂う霊。'},
   harpy:   {name:'ハーピー',cost:4, hp:110, atk:18, rate:0.7, range:8,  speed:55, r:9,  count:2, air:true, hitsAir:true, hpY:28, enemyOnly:true, desc:'素早い鳥人の群れ。'},
@@ -462,6 +479,12 @@ const SKILLS = {
   valkyrie:{n:'戦士の鼓舞',k:'rally',cd:12,r:110,t:5}, wolf:{n:'遠吠え',k:'haste',cd:10,t:4}, saint:{n:'聖域',k:'shield',cd:12,r:110,t:5},
   thunderemp:{n:'神鳴',k:'rain',cd:9,c:6,r:45,m:1.4}, swordmaster:{n:'千刃',k:'nova',cd:6,r:60,m:2.5}, holydragon:{n:'聖光の息吹',k:'blast',cd:9,r:90,m:2.5,heal:120},
   chrono:{n:'時間停止',k:'stun',cd:14,r:400,t:3,m:0},
+  monk:{n:'百烈拳',k:'execute',cd:7,m:2.5}, falconer:{n:'鷹の群れ',k:'multi',cd:7,c:3,m:1.2}, sapper:{n:'城崩し',k:'execute',cd:8,m:3},
+  dancer:{n:'剣の舞',k:'rally',cd:11,r:110,t:5}, slinger:{n:'石つぶて',k:'rain',cd:9,c:3,r:25,m:1,col:'#c9b48a'}, onmyoji:{n:'封印の札',k:'stun',cd:10,r:55,t:2.2,m:.8},
+  mechknight:{n:'装甲展開',k:'shield',cd:11,r:70,t:5}, gatling:{n:'弾幕',k:'multi',cd:8,c:5,m:1.5}, sylph:{n:'癒しの風',k:'heal',cd:8,r:100,amt:70},
+  mammoth:{n:'大地踏み',k:'stun',cd:9,r:60,t:1.5,m:1.2}, kunoichi:{n:'霞斬り',k:'dash',cd:6,d:100,m:2.2}, kirin:{n:'天雷',k:'rain',cd:9,c:5,r:40,m:1.4,col:'#fff27a'},
+  susanoo:{n:'天叢雲',k:'nova',cd:8,r:75,m:2.8}, archmage:{n:'流星群',k:'rain',cd:10,c:8,r:50,m:1.2}, leviathan:{n:'大海嘯',k:'push',cd:10,r:80,d:80,m:2},
+  automaton:{n:'ミサイル斉射',k:'rain',cd:9,c:6,r:45,m:1.3},
   ghost:{n:'呪縛',k:'stun',cd:10,r:30,t:1,m:.5}, harpy:{n:'急襲',k:'dash',cd:8,d:90,m:1.8}, gargoyle:{n:'石化',k:'shield',cd:10,r:0,t:4},
   lich:{n:'死者召喚',k:'summon',cd:12,unit:'skeleton'}, darkknight:{n:'闇の突進',k:'dash',cd:8,d:100,m:2}, demon:{n:'獄炎',k:'nova',cd:8,r:50,m:1.8},
   shadow:{n:'影走り',k:'haste',cd:9,t:3}, cyclops:{n:'岩投げ',k:'blast',cd:9,r:45,m:2,reach:140}, icegiant:{n:'氷河の咆哮',k:'stun',cd:10,r:70,t:1.8,m:1},
@@ -473,7 +496,7 @@ for (const k in TYPES) TYPES[k].skills = [SKILLS[k], SKILLS2[k]].filter(Boolean)
 // 元の体力と火力の比率は残す（盾兵やゴーレムは硬く、忍や狙撃手は脆い）。攻撃力は上の値のまま
 // 回復・強化が本業の支援役と、自爆する爆弾兵は元の値のまま。ボス(コスト0)も対象外
 const HP_PER_COST = 80, DPS_PER_COST = 9;
-const KEEP_ORIGINAL = ['priest','bard','saint','angel','alchemist','bomber'];
+const KEEP_ORIGINAL = ['priest','bard','saint','angel','alchemist','bomber','dancer'];
 for (const k in TYPES){
   const T = TYPES[k], n = T.count || 1;
   if (!T.cost || KEEP_ORIGINAL.includes(k)) continue;
@@ -484,13 +507,15 @@ const dpsOf = T => T.bomb ? 0 : Math.round(T.atk / T.rate * (T.count || 1));
 const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23},
   unicorn:{s:1.1,oy:23}, cannon:{s:.95,oy:22}, phoenix:{s:.78,oy:16}, angel:{s:.85,oy:25}, frostwyrm:{s:.56,oy:14}, titan:{s:.62,oy:29}, reaper:{s:1.2,oy:24}, sniper:{s:1.2,oy:23},
   ghost:{s:1.3,oy:20}, harpy:{s:.8,oy:16}, gargoyle:{s:.75,oy:16}, holydragon:{s:.52,oy:14}, dragonking:{s:.3,oy:14}, hades:{s:.5,oy:31}, cyclops:{s:.7,oy:28},
-  icegiant:{s:.68,oy:28}, hydra:{s:.8,oy:26}, treant:{s:.85,oy:26}, wolf:{s:1.2,oy:22}, valkyrie:{s:.9,oy:25}, dragoon:{s:1.2,oy:25}, lich:{s:1.25,oy:24}, thunderemp:{s:1.2,oy:25}};
+  icegiant:{s:.68,oy:28}, hydra:{s:.8,oy:26}, treant:{s:.85,oy:26}, wolf:{s:1.2,oy:22}, valkyrie:{s:.9,oy:25}, dragoon:{s:1.2,oy:25}, lich:{s:1.25,oy:24}, thunderemp:{s:1.2,oy:25},
+  mammoth:{s:.8,oy:25}, kirin:{s:1.05,oy:23}, susanoo:{s:1,oy:27}, leviathan:{s:.5,oy:14}, automaton:{s:.72,oy:30}, sylph:{s:1.3,oy:20}, archmage:{s:1.2,oy:25}, gatling:{s:1.25,oy:24}};
 const PLAYABLE = Object.keys(TYPES).filter(k => !TYPES[k].enemyOnly && !TYPES[k].gacha);
 const GACHA = Object.keys(TYPES).filter(k => TYPES[k].gacha);
 const RARITY = {R:{w:65, col:'#4f7fb0'}, SR:{w:28, col:'#9a4fc8'}, SSR:{w:7, col:'#d99a14'}};
 const BANNERS = {
-  v2:{name:'第2弾', sub:'NEW', cost:300, cost10:2700, medalGold:150, units:GACHA.filter(k => TYPES[k].ver===2)},
-  v1:{name:'第1弾', sub:'', cost:200, cost10:1800, medalGold:100, units:GACHA.filter(k => TYPES[k].ver!==2)},
+  v3:{name:'第3弾', sub:'NEW', cost:400, cost10:3600, medalGold:200, units:GACHA.filter(k => TYPES[k].ver===3)},
+  v2:{name:'第2弾', sub:'', cost:300, cost10:2700, medalGold:150, units:GACHA.filter(k => TYPES[k].ver===2)},
+  v1:{name:'第1弾', sub:'', cost:200, cost10:1800, medalGold:100, units:GACHA.filter(k => !TYPES[k].ver)},
 };
 const MEDAL_NEED = 10, HIT_RATE = .4;
 const lvCost = L => 40 + 25*(L-1) + 3*(L-1)*(L-1);   // Lv L → L+1 に必要な金
@@ -877,7 +902,7 @@ function castSkill(u, s, tg, dist, atk){
     case 'rain': {
       if (!inRange(30)) return false;
       const p = tgPos(tg, u);
-      for (let i=0;i<s.c;i++) G.strikes.push({x:clamp(p.x+rand(-s.r,s.r),10,W-10), y:p.y+rand(-s.r*.7,s.r*.7), t:.35+i*.16, r:s.r*.7, dmg:atk*s.m, team, col:T.proj==='bolt'?'#fff27a':'#ff7a2a', cm:(T.castleMul||1)*.4});
+      for (let i=0;i<s.c;i++) G.strikes.push({x:clamp(p.x+rand(-s.r,s.r),10,W-10), y:p.y+rand(-s.r*.7,s.r*.7), t:.35+i*.16, r:s.r*.7, dmg:atk*s.m, team, col:s.col || (T.proj==='bolt'?'#fff27a':'#ff7a2a'), cm:(T.castleMul||1)*.4});
       break; }
     case 'drain': {
       if (!tg || dist > s.r) return false;
@@ -910,7 +935,7 @@ function castSkill(u, s, tg, dist, atk){
 }
 
 function shoot(kind, x, y, target, dmg, team, o={}){
-  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165, bullet:520, bolt:420, javelin:290, note:200, flask:200, wind:260, holy:210, poison:220}[kind];
+  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165, bullet:520, bolt:420, javelin:290, note:200, flask:200, wind:260, holy:210, poison:220, talisman:260, water:220, falcon:300}[kind];
   const tx = target.isCastle ? x : target.x, ty = target.isCastle ? target.front + (team==='p'?-6:6) : target.y;
   G.projs.push({kind, x, y, tx, ty, target, dmg, team, splash:o.splash||0, hitsAir:!!o.hitsAir, castleMul:o.castleMul||1, slow:o.slow||0,
     speed, life:3, d0:Math.hypot(tx-x, ty-y)||1});
@@ -1126,17 +1151,19 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
   if (type==='griffin' || BIRDS[type]){ drawGriffin(c, team, t, atk, BIRDS[type]); c.restore(); return; }
   if (type==='bat'){ drawBat(c, team, t, atk); c.restore(); return; }
   if (type==='ghost'){ drawGhost(c, team, t, atk); c.restore(); return; }
+  if (type==='sylph'){ drawSylph(c, team, t, atk); c.restore(); return; }
   if (TT.hero && TT.air){
     ell(c, 0, 20, 10, 3.5, 'rgba(0,0,0,.25)'); c.strokeStyle=INK;
     c.translate(0, Math.sin(t*3)*2 - 10); drawHero(c, type, team, t, atk); c.restore(); return;
   }
-  const big = {cavalry:14, unicorn:14, catapult:15, cannon:15, golem:16, troll:15, titan:22, treant:16, hydra:20, wolf:12, cyclops:20, icegiant:20, hades:30}[type] || 8;
+  const big = {mammoth:18, kirin:14, susanoo:13, automaton:18, cavalry:14, unicorn:14, catapult:15, cannon:15, golem:16, troll:15, titan:22, treant:16, hydra:20, wolf:12, cyclops:20, icegiant:20, hades:30}[type] || 8;
   ell(c, 0, big>8?(big>16?17:11):9, big, big>8?4:3, 'rgba(0,0,0,.32)'); c.strokeStyle=INK;
   c.translate(0, (type==='catapult' || type==='cannon') ? 0 : bob);
   if (TT.hero){ drawHero(c, type, team, t, atk); c.restore(); return; }
   if (type==='treant'){ drawTreant(c, team, t, atk); c.restore(); return; }
   if (type==='wolf'){ drawWolf(c, team, t, atk, moving); c.restore(); return; }
   if (type==='hydra'){ drawHydra(c, team, t, atk); c.restore(); return; }
+  if (type==='mammoth'){ drawMammoth(c, team, t, atk, moving); c.restore(); return; }
   if (type==='knight'){
     circ(c,0,1,7,P.m);
     c.fillStyle=P.d; c.fillRect(-7,1,14,2.5);
@@ -1203,8 +1230,9 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
     c.fillStyle=P.m; c.fillRect(-5,-11,10,2);
     c.strokeStyle=P.m; c.lineWidth=1.4; c.beginPath(); c.moveTo(-5,-10); c.lineTo(-10,-8 + Math.sin(t*12)*2); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
     c.save(); c.translate(6,1); c.rotate(-0.8 + atk*2.4); blade(c,0,0,0,-10,'#e6e9ef',1.8); c.restore();
-  } else if (type==='cavalry' || type==='unicorn'){
-    const uni = type==='unicorn', horse = uni ? '#f4f1ea' : '#8a5a35', mane = uni ? '#f0c24a' : '#3a2414';
+  } else if (type==='cavalry' || type==='unicorn' || type==='kirin'){
+    const kirin = type==='kirin', uni = type==='unicorn' || kirin;
+    const horse = kirin ? '#e8c060' : uni ? '#f4f1ea' : '#8a5a35', mane = kirin ? '#ff8a2a' : uni ? '#f0c24a' : '#3a2414';
     const leg = moving ? Math.sin(t*18)*3 : 0;
     c.strokeStyle= uni ? '#b9b2a2' : '#3a2414'; c.lineWidth=2;
     for (const [lx,ph] of [[-7,1],[-4,-1],[5,-1],[8,1]]){ c.beginPath(); c.moveTo(lx,5); c.lineTo(lx+leg*ph,11); c.stroke(); }
@@ -1213,10 +1241,17 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
     c.save(); c.translate(10,-2); c.rotate(-.5); ell(c,0,0,5.5,3.2,horse,true); c.restore();
     if (uni){ c.fillStyle='#ffe9a0'; c.beginPath(); c.moveTo(13,-6); c.lineTo(19,-12); c.lineTo(14.5,-4); c.closePath(); c.fill(); c.stroke(); }
     c.fillStyle=mane; c.fillRect(6,-6,3,5);
-    c.fillStyle=P.m; c.fillRect(-6,-1,10,5); c.strokeRect(-6,-1,10,5);
-    circ(c,-1,-5,5,uni ? '#dfe3ea' : P.m);
-    circ(c,-1,-12,4,P.skin); helm(c,-12,4.4, uni ? '#f5d36a' : '#b9bec8');
-    blade(c,-5,-3 + atk*2, 17 + atk*5,-15, uni ? '#fff4c0' : '#dfe3ea',1.8);
+    if (kirin){
+      c.fillStyle='rgba(160,110,20,.5)'; for (let i=-6;i<=4;i+=4){ c.beginPath(); c.arc(i,2,2,0,Math.PI); c.fill(); }
+      c.save(); c.shadowColor='#fff27a'; c.shadowBlur=8; c.strokeStyle='#ff8a2a'; c.lineWidth=2;
+      c.beginPath(); c.moveTo(-10,2); c.quadraticCurveTo(-16,-4+Math.sin(t*8)*2,-18,2); c.stroke(); c.restore();
+      c.fillStyle=P.m; c.fillRect(-3,-3,6,3); c.strokeStyle=INK; c.lineWidth=1.5;
+    } else {
+      c.fillStyle=P.m; c.fillRect(-6,-1,10,5); c.strokeRect(-6,-1,10,5);
+      circ(c,-1,-5,5,uni ? '#dfe3ea' : P.m);
+      circ(c,-1,-12,4,P.skin); helm(c,-12,4.4, uni ? '#f5d36a' : '#b9bec8');
+      blade(c,-5,-3 + atk*2, 17 + atk*5,-15, uni ? '#fff4c0' : '#dfe3ea',1.8);
+    }
   } else if (type==='cannon'){
     c.fillStyle='#5a3a1a'; c.fillRect(-12,0,22,6); c.strokeRect(-12,0,22,6);
     circ(c,-7,7,4.6,'#3a2414'); circ(c,6,7,4.6,'#3a2414');
@@ -1311,6 +1346,19 @@ function drawHero(c, type, team, t, atk){
       circ(c,0,-7,5,'#ece6d4');
       c.fillStyle='#9cf59c'; c.fillRect(-2.6,-8,1.8,1.8); c.fillRect(.8,-8,1.8,1.8);
       c.fillStyle='#b8a040'; c.beginPath(); c.moveTo(-5,-10); c.lineTo(-5,-15); c.lineTo(-2,-12); c.lineTo(0,-16); c.lineTo(2,-12); c.lineTo(5,-15); c.lineTo(5,-10); c.closePath(); c.fill(); c.stroke();
+    } else if (h==='bald'){
+      c.fillStyle='rgba(0,0,0,.35)'; c.fillRect(-2,-11,1.2,1.2); c.fillRect(0,-11.5,1.2,1.2); c.fillRect(2,-11,1.2,1.2);
+    } else if (h==='eboshi'){
+      c.fillStyle='#1a1a1a'; c.beginPath(); c.moveTo(-4.5,-10); c.lineTo(-3,-19); c.quadraticCurveTo(2,-21,4.5,-16); c.lineTo(4.5,-10); c.closePath(); c.fill(); c.stroke();
+    } else if (h==='visor'){
+      circ(c,0,-7,5.4,S.helmCol||'#9aa2ae'); c.fillStyle=P.l; c.shadowColor=P.l; c.shadowBlur=4; c.fillRect(-3.8,-8,7.6,1.8); c.shadowBlur=0;
+    } else if (h==='flower'){
+      c.beginPath(); c.arc(0,-7,5.3,Math.PI,0); c.closePath(); c.fillStyle='#3a2a1a'; c.fill(); c.stroke();
+      for (let i=0;i<5;i++){ const a=i*1.256; circ(c,4+Math.cos(a)*1.8,-11+Math.sin(a)*1.8,1.4,'#ff9ac0',false); } circ(c,4,-11,1,'#f5c542',false);
+    } else if (h==='ponytail'){
+      c.beginPath(); c.arc(0,-7,5.3,Math.PI,0); c.closePath(); c.fillStyle='#2a1a2a'; c.fill(); c.stroke();
+      c.strokeStyle='#2a1a2a'; c.lineWidth=2.6; c.lineCap='round'; c.beginPath(); c.moveTo(-4,-10); c.quadraticCurveTo(-10,-10+Math.sin(t*8),-9,-3); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+      c.fillStyle=P.m; c.fillRect(-5,-9,10,1.6);
     } else if (h==='cyclops'){
       circ(c,0,-8,2.6,'#fff',true); circ(c,.4,-8,1.2,INK,false);
       c.fillStyle='#e8dcc0'; c.beginPath(); c.moveTo(-1.5,-11.5); c.lineTo(0,-16); c.lineTo(1.5,-11.5); c.closePath(); c.fill(); c.stroke();
@@ -1369,6 +1417,26 @@ function drawHero(c, type, team, t, atk){
     case 'katana': c.rotate(-0.3 + atk*2.2); blade(c,0,0,0,-16,'#eef1f6',1.7); c.fillStyle='#f5c542'; c.fillRect(-2.2,-1.5,4.4,2); break;
     case 'trident': c.rotate(0.1 - atk*0.6); blade(c,0,8,0,-17,'#3a2a1a',1.8);
       c.strokeStyle='#c9a86a'; c.lineWidth=1.6; c.beginPath(); c.moveTo(-4,-22); c.lineTo(-4,-17); c.lineTo(4,-17); c.lineTo(4,-22); c.moveTo(0,-24); c.lineTo(0,-17); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5; break;
+    case 'quarter': c.rotate(-0.6 + atk*1.4); blade(c,0,9,0,-15,'#8a5a30',1.8); break;
+    case 'falcon': c.translate(-2,-6);
+      if (atk < .5){ ell(c,0,0,3.6,2.6,'#8a6a3a',true); circ(c,2.2,-2.4,1.8,'#efe6cc'); c.fillStyle='#f0b030'; c.fillRect(3.4,-2.8,1.6,1); }
+      else { c.fillStyle='#8a6a3a'; c.beginPath(); c.moveTo(-6,-2); c.lineTo(0,1); c.lineTo(6,-2); c.lineTo(0,-1); c.closePath(); c.fill(); }
+      break;
+    case 'pick': c.rotate(-0.5 + atk*2); blade(c,0,4,0,-12,'#8a5a30',1.8);
+      c.strokeStyle=INK; c.lineWidth=3.6; c.beginPath(); c.moveTo(-6,-9); c.quadraticCurveTo(0,-15,6,-9); c.stroke();
+      c.strokeStyle='#b9bec8'; c.lineWidth=2; c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5; break;
+    case 'fan': c.rotate(-0.4 + Math.sin(t*5)*.25 + atk*.6);
+      c.beginPath(); c.moveTo(0,0); c.arc(0,0,8,-2.3,-0.8); c.closePath(); c.fillStyle='#ffe0ec'; c.fill(); c.stroke();
+      c.strokeStyle='#d05a8a'; c.beginPath(); c.moveTo(0,0); c.lineTo(-3.3,-7.3); c.moveTo(0,0); c.lineTo(2.4,-7.6); c.stroke(); c.strokeStyle=INK; break;
+    case 'sling': c.rotate(atk > .1 ? t*25 : 0); c.strokeStyle='#8a5a30'; c.lineWidth=1; c.beginPath(); c.moveTo(0,0); c.lineTo(0,-8); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5; circ(c,0,-9,2,'#77736a'); break;
+    case 'ofuda': c.rotate(-0.3 + atk*1.2); c.fillStyle='#f7f0d0'; c.fillRect(-2.2,-14,4.4,9); c.strokeRect(-2.2,-14,4.4,9);
+      c.strokeStyle='#c0302a'; c.beginPath(); c.moveTo(0,-12.5); c.lineTo(0,-6.5); c.moveTo(-1.2,-10); c.lineTo(1.2,-10); c.stroke(); c.strokeStyle=INK; break;
+    case 'drill': c.rotate(-0.3 + atk*.9);
+      c.beginPath(); c.moveTo(-3.8,0); c.lineTo(3.8,0); c.lineTo(0,-15); c.closePath(); c.fillStyle='#b9bec8'; c.fill(); c.stroke();
+      c.strokeStyle='rgba(0,0,0,.4)'; for (let i=0;i<3;i++){ const y = -3 - ((t*30 + i*4) % 12); const w = 3.8*(1 + y/15); c.beginPath(); c.moveTo(-w,y); c.lineTo(w,y-1.5); c.stroke(); } c.strokeStyle=INK; break;
+    case 'gatling': c.rotate(-0.2 - atk*.1); rr(c,-3.2,-16,6.4,16,2,'#3c3c44');
+      c.strokeStyle='#8a8a96'; c.lineWidth=.8; for (const x of [-1.6,0,1.6]){ c.beginPath(); c.moveTo(x,-15); c.lineTo(x,-4); c.stroke(); } c.strokeStyle=INK; c.lineWidth=1.5;
+      if (atk > .5) circ(c,0,-19,2.6,'#ffe28a',false); break;
     case 'club': c.rotate(-0.5 + atk*2); blade(c,0,4,0,-11,'#6b4a2a',3); circ(c,0,-14,4.6,'#6b4a2a'); break;
     case 'scythe': c.rotate(-0.3 + atk*1.6); blade(c,0,7,0,-19,'#4a3a2a',1.8);
       c.beginPath(); c.moveTo(0,-19); c.quadraticCurveTo(-13,-21,-15,-10); c.quadraticCurveTo(-8,-16,0,-15.5); c.closePath(); c.fillStyle='#cfd3db'; c.fill(); c.stroke(); break;
@@ -1383,6 +1451,7 @@ const BIRDS = {
 const DRAGONS = {
   wyrm:      {s:1.55, body:'#2e2233', wing:'#171019', belly:'#6d2a3a', eye:'#ff3a2a'},
   frostwyrm: {s:1.08, body:'#8fd8f0', wing:'#3f8fb0', belly:'#e8fbff', eye:'#1a4a6a'},
+  leviathan: {s:1.25, body:'#2a8a9a', wing:'#1a5a6a', belly:'#b0f0e0', eye:'#fff27a', glow:'#7fe0f0'},
   holydragon:{s:1.15, body:'#f4efe0', wing:'#e0b850', belly:'#fff8e0', eye:'#3a7ad0', glow:'#fff2b0'},
   dragonking:{s:1.95, body:'#3a2a10', wing:'#8a6a1a', belly:'#d9a441', eye:'#ff3a2a', glow:'#ff8a2a'},
 };
@@ -1489,6 +1558,37 @@ function drawHydra(c, team, t, atk){
     c.fillStyle='#ffe24a'; c.fillRect(sx-2.4,sy-1.6,1.5,1.5); c.fillRect(sx+.9,sy-1.6,1.5,1.5);
   }
   c.fillStyle=P.m; c.fillRect(-10,9,20,2.5);
+}
+function drawSylph(c, team, t, atk){
+  const P = PAL[team];
+  ell(c, 0, 16, 5, 2, 'rgba(0,0,0,.2)');
+  c.translate(Math.sin(t*2.5)*2, Math.sin(t*4)*2.5 - 8);
+  const f = Math.abs(Math.sin(t*14));
+  c.globalAlpha = .7;
+  for (const sd of [-1,1]){ ell(c, sd*6, -3, 5, 2.2 + f*2, '#dcfff0', false); ell(c, sd*5, 3, 3.5, 1.6 + f, '#dcfff0', false); }
+  c.globalAlpha = 1;
+  c.save(); c.shadowColor='#c8ffe0'; c.shadowBlur=10;
+  c.strokeStyle=INK; c.lineWidth=1.2;
+  c.beginPath(); c.moveTo(-4,6); c.lineTo(4,6); c.lineTo(0,-2); c.closePath(); c.fillStyle=P.m; c.fill(); c.stroke();
+  circ(c,0,-4,3.4,P.skin);
+  c.beginPath(); c.arc(0,-4.5,3.8,Math.PI,0); c.closePath(); c.fillStyle='#6ad0a0'; c.fill(); c.stroke();
+  c.restore();
+  if (atk > .5) circ(c,5,-2,2*atk,'#c8ffe0',false);
+}
+function drawMammoth(c, team, t, atk, moving){
+  const P = PAL[team], leg = moving ? Math.sin(t*10)*2.5 : 0, fur = '#7a5a3a';
+  c.strokeStyle=INK; c.lineWidth=1.5;
+  for (const [lx,ph] of [[-10,1],[-5,-1],[5,-1],[10,1]]) rr(c, lx-2.5 + leg*ph*.4, 3, 5, 10, 2, '#6a4a2a');
+  ell(c,0,0,16,11,fur,true);
+  c.strokeStyle='rgba(0,0,0,.25)'; for (let i=-10;i<=10;i+=5){ c.beginPath(); c.moveTo(i,4); c.lineTo(i-2,10); c.stroke(); } c.strokeStyle=INK;
+  c.fillStyle=P.m; c.fillRect(-9,-10,14,7); c.strokeRect(-9,-10,14,7);
+  c.fillStyle=P.l; c.fillRect(-7,-8,10,1.6);
+  c.save(); c.translate(14,-3 - atk*3); circ(c,0,0,7.5,fur);
+  c.lineCap='round'; c.strokeStyle=INK; c.lineWidth=4.6; c.beginPath(); c.moveTo(4,3); c.quadraticCurveTo(9 + atk*4,8,6,15); c.stroke();
+  c.strokeStyle=fur; c.lineWidth=3; c.stroke();
+  c.strokeStyle='#f3efe4'; c.lineWidth=2.4; c.beginPath(); c.moveTo(2,4); c.quadraticCurveTo(10,6,11,0); c.stroke();
+  c.strokeStyle=INK; c.lineWidth=1.5; c.fillStyle=INK; c.fillRect(1,-3,1.8,1.8);
+  c.restore();
 }
 function drawBat(c, team, t, atk){
   ell(c, 0, 16, 6, 2.2, 'rgba(0,0,0,.22)');
@@ -1650,6 +1750,15 @@ function drawProj(p){
   } else if (p.kind==='javelin'){
     ctx.rotate(p.ang); ctx.strokeStyle='#8a5a30'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(4,0); ctx.stroke();
     ctx.fillStyle='#e6e9ef'; ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(3,-2.8); ctx.lineTo(3,2.8); ctx.closePath(); ctx.fill();
+  } else if (p.kind==='talisman'){
+    ctx.rotate(performance.now()/90); ctx.fillStyle='#f7f0d0'; ctx.strokeStyle=INK; ctx.lineWidth=1; ctx.fillRect(-2.5,-4,5,8); ctx.strokeRect(-2.5,-4,5,8);
+    ctx.fillStyle='#c0302a'; ctx.fillRect(-.5,-3,1,6);
+  } else if (p.kind==='water'){
+    ctx.shadowColor='#7fe0f0'; ctx.shadowBlur=10; circ(ctx,0,0,5.5,'#4ab8d8',false); circ(ctx,-1.5,-1.5,1.8,'#e0fbff',false);
+  } else if (p.kind==='falcon'){
+    ctx.rotate(p.ang); const f = Math.sin(performance.now()/40)*2;
+    ctx.fillStyle='#8a6a3a'; ctx.beginPath(); ctx.moveTo(6,0); ctx.lineTo(-2,-5-f); ctx.lineTo(-4,0); ctx.lineTo(-2,5+f); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#efe6cc'; ctx.fillRect(3,-1,3,2);
   } else if (p.kind==='flask'){
     ctx.rotate(performance.now()/80); ctx.fillStyle='#dfe3ea'; ctx.fillRect(-1,-6,2,3); ctx.strokeStyle=INK; ctx.lineWidth=1; circ(ctx,0,0,3.4,'#7fe0a0');
   } else if (p.kind==='wind'){
@@ -1843,7 +1952,7 @@ $('deckBtn').addEventListener('click', () => openForm(null));
 $('gachaBtn').addEventListener('click', () => { ensureAudio(); openGacha(); });
 
 // ---------- 画面：パスワード ----------
-const PASSWORDS = { aaaa: {gold:10000} };
+const PASSWORDS = { aaaa: {gold:10000}, bbbb: {unlockAll:true} };
 $('pwBtn').addEventListener('click', () => {
   ensureAudio();
   $('title').hidden = true; $('pwOv').hidden = false;
@@ -1854,8 +1963,22 @@ $('pwForm').addEventListener('submit', e => {
   const code = $('pwIn').value.trim().toLowerCase(), reward = PASSWORDS[code], msg = $('pwMsg');
   if (!code){ msg.textContent = 'パスワードを入力してください'; msg.style.color = '#a3261d'; return; }
   if (!reward){ msg.textContent = 'パスワードが違います'; msg.style.color = '#a3261d'; sfx.no(); return; }
-  save.gold += reward.gold; persist();
-  msg.textContent = `金 +${fmt(reward.gold)} を獲得した！`; msg.style.color = '#8a5a0a';
+  if (reward.gold){
+    save.gold += reward.gold;
+    msg.textContent = `金 +${fmt(reward.gold)} を獲得した！`;
+  } else if (reward.unlockAll){
+    const missing = GACHA.filter(k => !save.owned.includes(k));
+    if (missing.length){
+      save.owned = save.owned.concat(missing);
+      msg.textContent = `全ユニットを解放した（新たに${missing.length}体）`;
+    } else {
+      // すでに全解放済みなら全ユニットをLv5へ（Lv5より高いものは下げない）
+      let n = 0;
+      for (const k of available()) if (lvOf(k) < 5){ save.lv[k] = 5; n++; }
+      msg.textContent = n ? `全ユニット解放済みのため、全ユニットをLv5にした（${n}体を強化）` : '全ユニットがすでにLv5以上です';
+    }
+  }
+  persist(); msg.style.color = '#8a5a0a';
   $('pwIn').value = ''; $('pwWallet').innerHTML = walletHTML();
   [660,880,1175].forEach((f,i)=>setTimeout(()=>tone(f,.15,'square',.05),i*90));
 });
@@ -1943,7 +2066,7 @@ $('fGo').addEventListener('click', () => {
 });
 
 // ---------- 画面：ガチャ ----------
-let gBanner = 'v2';
+let gBanner = 'v3';
 function rollUnit(){
   let r = Math.random()*100, rar = 'R';
   for (const [k,v] of Object.entries(RARITY)){ r -= v.w; if (r <= 0){ rar = k; break; } }

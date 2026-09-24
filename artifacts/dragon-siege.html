@@ -155,6 +155,51 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
 .erow span{display:flex;flex-direction:column;align-items:center;width:44px;font-size:9px;font-weight:800;color:#5a4527;text-align:center;line-height:1.2}
 .erow img{width:40px;aspect-ratio:46/40;border-radius:6px;background:#0000001f}
 .fbtns{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px;position:sticky;bottom:-18px;padding:8px 0 4px;background:linear-gradient(#d6c08e00,var(--parch2) 30%)}
+/* 金・レベル・ガチャ */
+.wallet{display:flex;align-items:center;justify-content:center;gap:12px;font-size:12px;font-weight:800;color:#4a3920;font-variant-numeric:tabular-nums}
+.wallet b{font-size:15px;color:var(--ink)}
+.wallet span{display:inline-flex;align-items:center;gap:4px}
+.coin,.mdl{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #000;flex:none}
+.coin{background:radial-gradient(circle at 35% 30%,#fff3b0,#e8b04a 55%,#a8741a)}
+.mdl{background:radial-gradient(circle at 35% 30%,#e6e6ea,#9a9aa6 55%,#5d5d68)}
+.fhead .wallet{justify-content:flex-end}
+.lvb{position:absolute;top:-5px;right:-3px;font-size:9px;font-weight:800;line-height:14px;padding:0 4px;border-radius:6px;background:var(--ink);color:var(--gold);border:1px solid #000;font-variant-numeric:tabular-nums}
+.rar{position:absolute;bottom:17px;right:2px;font-size:8px;font-weight:800;line-height:12px;padding:0 3px;border-radius:4px;color:#fff;background:var(--rc)}
+.gachabtn{width:100%;margin-top:6px;padding:10px 12px;border-radius:10px;border:1px solid #000;background:linear-gradient(100deg,#5b36c4,#a3322b);color:#fff;
+  font-family:var(--disp);font-size:17px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left}
+.gachabtn small{font-family:var(--ui);font-size:11px;font-weight:800;color:#f3e6ff}
+.lvrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid #0002}
+.lvrow b{font-size:16px;font-variant-numeric:tabular-nums}
+.lvrow span{flex:1;font-size:10px;color:#5a4527;font-variant-numeric:tabular-nums;line-height:1.3}
+.lvbtn{flex:none;padding:7px 10px;border-radius:9px;border:1px solid #000;background:linear-gradient(#f3c75a,#c98a14);color:var(--ink);font-weight:800;font-size:12px;
+  display:flex;align-items:center;gap:4px}
+.lvbtn[disabled]{filter:grayscale(.7);opacity:.6;cursor:default}
+.altar{margin-top:10px;padding:12px;border-radius:12px;background:radial-gradient(ellipse at 50% 0%,#4a2d7a,#1f1530);border:1px solid #000;color:var(--parch);display:flex;flex-direction:column;gap:8px}
+.rates{margin:0;font-size:11px;line-height:1.6;text-align:center;color:#d9ccff}
+.rates b{color:#fff}
+.gbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gbtns .btn,.btn.medal{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px}
+.btn small{font-size:10px;font-weight:800;opacity:.85}
+.btn.medal{background:linear-gradient(#b8b8c4,#6d6d7a);color:#15151a}
+.medalbar{position:relative;height:16px;border-radius:8px;background:#0008;border:1px solid #000;overflow:hidden}
+.medalbar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(#e6e6ea,#8a8a96)}
+.medalbar span{position:relative;display:block;text-align:center;font-size:10px;font-weight:800;line-height:14px;color:#fff;text-shadow:0 1px 1px #000}
+.gmsg{margin:8px 0 0;font-size:12px;font-weight:800;text-align:center;color:#a3261d;min-height:1.2em}
+.gres{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+.gres:empty{display:none}
+.gitem{position:relative;border-radius:9px;border:2px solid var(--rc,#555);background:#fff8;padding:4px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  font-size:9px;font-weight:800;text-align:center;line-height:1.2;animation:pop .45s both;min-width:0}
+.gitem img{width:100%;max-width:46px;aspect-ratio:46/40}
+.gitem.ssr{box-shadow:0 0 12px #e8b04a;background:linear-gradient(#fff4c8,#f3d27a)}
+.gitem.miss{border-color:#77777f;background:#0000001a;color:#5d5d68}
+.gitem .big{width:30px;height:30px;margin:5px 0 4px}
+.gitem em{font-style:normal;color:#a3261d}
+@keyframes pop{0%{opacity:0;transform:scale(.4) rotateY(90deg)}100%{opacity:1;transform:none}}
+.ucard.lock img{filter:brightness(0) opacity(.35)}
+.ucard.lock em{color:#7a6a50}
+.fbtns.one{grid-template-columns:1fr}
+.res .gold{font-size:15px;font-weight:800;color:#8a5a0a;margin:0 0 12px;display:flex;align-items:center;justify-content:center;gap:6px}
+@media (prefers-reduced-motion:reduce){.gitem{animation:none}}
 @media (prefers-reduced-motion:reduce){.banner.show{animation-duration:.01s}.meteor.arm{animation:none}.card{transition:none}}
 </style>
 
@@ -194,16 +239,19 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
     <div class="panel">
       <div class="logo"><small>SIEGE OF THE DRAGON KEEP</small><h1>竜城<span>攻防戦</span></h1></div>
       <p class="lead">兵を送り、竜を放ち、敵の城を落とせ。<br>自分の城が崩れる前に。</p>
+      <div class="wallet" id="tWallet"></div>
       <div class="label">難易度</div>
       <div class="modes" id="modes"></div>
       <p class="mdesc" id="mdesc"></p>
       <div class="label">編成</div>
-      <button class="deckbtn" id="deckBtn"><b>部隊</b><span class="mini" id="deckMini"></span><small>変更 ›</small></button>
+      <button class="deckbtn" id="deckBtn"><b>部隊</b><span class="mini" id="deckMini"></span><small>編成・強化 ›</small></button>
+      <button class="gachabtn" id="gachaBtn">召喚ガチャ<small id="gachaSub">新ユニットを手に入れる ›</small></button>
       <div class="label">ステージ</div>
       <div class="stages" id="stages"></div>
       <div class="how">
         <b>遊び方</b><br>
-        ・ステージを選ぶと編成画面へ。14種から6体を選んで出撃<br>
+        ・ステージを選ぶと編成画面へ。所持ユニットから6体を選んで出撃<br>
+        ・クリアすると<b>金</b>がもらえる。編成画面でユニットをレベルアップ（上限なし）、召喚ガチャで新ユニットを入手<br>
         ・カードを選び、戦場の下側をタップした位置に兵が出る<br>
         ・<b>飛行ユニット</b>は「対空」持ちでしか攻撃できない<br>
         ・「魔力Lv」を上げると魔力の回復が速くなる<br>
@@ -214,7 +262,8 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
 
   <div class="ov" id="formOv" hidden>
     <div class="panel">
-      <div class="fhead"><h2>編成</h2><span id="fStage"></span></div>
+      <div class="fhead"><h2>編成</h2><div class="wallet" id="fWallet"></div></div>
+      <div class="fcount" style="margin:2px 2px 0"><b id="fStage"></b></div>
       <div class="fslots" id="fSlots"></div>
       <div class="fcount"><span>枠をタップで外す・下から選んで入れる</span><b id="fCount">6/6</b></div>
       <div class="detail" id="fDetail"></div>
@@ -231,11 +280,32 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
     </div>
   </div>
 
+  <div class="ov" id="gachaOv" hidden>
+    <div class="panel">
+      <div class="fhead"><h2>召喚</h2><div class="wallet" id="gWallet"></div></div>
+      <div class="altar">
+        <p class="rates">当たり <b>40%</b>（R 65%・SR 28%・SSR 7%）<br>ハズレ <b>60%</b> … ユニットは出ず、ハズレメダル1枚<br>持っているユニットが出たら、そのユニットがLv+1</p>
+        <div class="gbtns">
+          <button class="btn pri" id="g1">1回召喚<small>金 200</small></button>
+          <button class="btn pri" id="g10">10回召喚<small>金 1800</small></button>
+        </div>
+        <button class="btn medal" id="gMedal">メダル確定召喚<small>ハズレメダル10枚＋金100・必ずユニットが出る</small></button>
+        <div class="medalbar"><i id="gMedalFill"></i><span id="gMedalT">0/10</span></div>
+      </div>
+      <p class="gmsg" id="gMsg"></p>
+      <div class="gres" id="gRes"></div>
+      <div class="label">ガチャユニット図鑑 <b id="gOwned"></b></div>
+      <div class="ugrid" id="gBook"></div>
+      <div class="fbtns one"><button class="btn" id="gBack">戻る</button></div>
+    </div>
+  </div>
+
   <div class="ov" id="result" hidden>
     <div class="panel res">
       <h2 id="rTitle" class="win">勝利</h2>
       <div class="bigstars" id="rStars"></div>
       <p id="rInfo"></p>
+      <p class="gold" id="rGold" hidden></p>
       <div class="btns">
         <button class="btn pri" id="rNext">次のステージへ</button>
         <button class="btn" id="rRetry">もう一度</button>
@@ -283,14 +353,37 @@ const TYPES = {
   catapult:{name:'投石機',cost:6, hp:230, atk:60, rate:3.0, range:175, speed:16, r:13, proj:'rock', splash:34, castleMul:2, desc:'超長射程の範囲攻撃。城に2倍ダメージ。地上のみ。'},
   golem:  {name:'ゴーレム',cost:7, hp:1500,atk:85, rate:1.7, range:8,   speed:16, r:15, siege:true, castleMul:1.3, desc:'敵兵を無視して城だけを狙う石の巨人。'},
   dragon: {name:'ドラゴン',cost:8, hp:760, atk:58, rate:1.5, range:75,  speed:25, r:16, air:true, hitsAir:true, proj:'fire', splash:42, hpY:34, desc:'空を飛び、炎で広い範囲を焼く切り札。'},
+  // ガチャ産（プレイヤー専用）
+  axeman:  {name:'斧戦士',  gacha:'R', cost:3, hp:220, atk:34, rate:1.0, range:6,  speed:32, r:9,  splash:22, hero:{head:'horn', weapon:'axe'}, desc:'斧の一振りで近くの敵をまとめて斬る。'},
+  javelin: {name:'投槍兵',  gacha:'R', cost:3, hp:130, atk:28, rate:1.2, range:95, speed:32, r:8,  proj:'javelin', hero:{head:'band', weapon:'javelin'}, desc:'槍を投げる中距離兵。地上の敵のみ。'},
+  hammer:  {name:'鉄槌兵',  gacha:'R', cost:4, hp:320, atk:40, rate:1.4, range:6,  speed:24, r:10, slow:1.2, hero:{head:'helm', weapon:'hammer', body:'#8d94a3'}, desc:'重い一撃で敵の動きと攻撃を遅くする。'},
+  musket:  {name:'銃士',    gacha:'R', cost:4, hp:120, atk:42, rate:1.8, range:130,speed:28, r:8,  hitsAir:true, proj:'bullet', hero:{head:'hat', weapon:'gun'}, desc:'長い射程の銃撃。空の敵も撃てる。'},
+  bard:    {name:'吟遊詩人', gacha:'R', cost:3, hp:130, atk:8,  rate:1.2, range:80, speed:28, r:8,  hitsAir:true, proj:'note', buff:{radius:85}, hero:{head:'beret', weapon:'lute'}, desc:'歌で周りの味方の攻撃力を1.3倍にする。'},
+  paladin: {name:'聖騎士',  gacha:'SR', cost:6, hp:720, atk:44, rate:1.0, range:6,  speed:26, r:11, heal:{amt:22,radius:60,every:2.5}, hero:{head:'crown', weapon:'sword', cape:'#f5d36a', body:'#dfe3ea', blade:'#ffe9a0'}, desc:'硬く、周りの味方を少しずつ癒す聖なる騎士。'},
+  berserker:{name:'狂戦士', gacha:'SR', cost:5, hp:420, atk:50, rate:0.6, range:6,  speed:46, r:10, leech:.25, hero:{head:'horn', weapon:'dual', body:'#8a3a2a'}, desc:'双斧で猛攻。与えたダメージの一部で回復する。'},
+  sniper:  {name:'狙撃手',  gacha:'SR', cost:5, hp:110, atk:85, rate:2.6, range:210,speed:24, r:8,  hitsAir:true, proj:'arrow', hero:{head:'hood', weapon:'longbow', hood:'#3f5a3a'}, desc:'戦場の端から端まで届く一矢。'},
+  thunder: {name:'雷術師',  gacha:'SR', cost:6, hp:140, atk:52, rate:1.8, range:115,speed:26, r:8,  hitsAir:true, proj:'bolt', splash:42, hero:{head:'wizard', weapon:'staff', hat:'#3a3a8a', orb:'#fff27a'}, desc:'雷を落として広い範囲を攻撃する。'},
+  unicorn: {name:'一角獣騎士',gacha:'SR', cost:6, hp:420, atk:46, rate:0.9, range:8,  speed:64, r:12, heal:{amt:18,radius:55,every:2}, desc:'白き一角獣で駆ける。周りの味方を癒す。'},
+  cannon:  {name:'大砲',    gacha:'SR', cost:7, hp:300, atk:95, rate:3.2, range:160,speed:15, r:13, proj:'cannon', splash:30, castleMul:3, desc:'城に3倍ダメージの攻城兵器。地上のみ。'},
+  phoenix: {name:'不死鳥',  gacha:'SSR', cost:8, hp:600, atk:52, rate:1.3, range:70, speed:40, r:14, air:true, hitsAir:true, proj:'fire', splash:40, revive:true, hpY:30, desc:'倒れても一度だけ炎の中から蘇る。'},
+  angel:   {name:'大天使',  gacha:'SSR', cost:9, hp:800, atk:40, rate:1.2, range:100,speed:26, r:12, air:true, hitsAir:true, proj:'orb', heal:{amt:55,radius:105,every:2}, hpY:34, hero:{head:'halo', weapon:'staff', body:'#f7f3e8', wings:true, orb:'#fff6c0'}, desc:'空から広い範囲の味方を大きく回復する。'},
+  frostwyrm:{name:'氷竜',   gacha:'SSR', cost:9, hp:900, atk:55, rate:1.5, range:85, speed:24, r:17, air:true, hitsAir:true, proj:'ice', splash:48, slow:2.5, hpY:38, desc:'凍てつく息で広い範囲の敵を遅くする竜。'},
+  titan:   {name:'巨人王',  gacha:'SSR', cost:10,hp:3200,atk:110,rate:1.8, range:10, speed:14, r:20, splash:34, hpY:44, hero:{head:'crown', weapon:'hammer', body:'#6d5a8a', skin:'#d9b48a', scale:1.7}, desc:'城のような巨体。大槌で周りをまとめて叩き潰す。'},
+  reaper:  {name:'死神',    gacha:'SSR', cost:7, hp:520, atk:68, rate:1.0, range:10, speed:40, r:10, splash:34, leech:.3, hero:{head:'reaper', weapon:'scythe', body:'#26222e'}, desc:'大鎌で周りの敵を刈り、命を吸い取る。'},
   // 敵専用
   skeleton:{name:'骸骨兵',cost:3, hp:60,  atk:14, rate:0.9, range:6,   speed:36, r:7,  count:3, enemyOnly:true, desc:'3体まとめて現れる。'},
   bat:    {name:'大蝙蝠', cost:3, hp:45,  atk:9,  rate:0.8, range:8,   speed:50, r:7,  count:3, air:true, hitsAir:true, hpY:22, enemyOnly:true, desc:'3匹の群れで飛来する。'},
   troll:  {name:'トロル', cost:6, hp:950, atk:46, rate:1.3, range:8,   speed:20, r:13, regen:10, enemyOnly:true, desc:'体力が自然回復する巨体。'},
   wyrm:   {name:'黒竜',   cost:0, hp:2600,atk:90, rate:1.6, range:88,  speed:17, r:26, air:true, hitsAir:true, proj:'fire', splash:56, hpY:60, enemyOnly:true, desc:'ボス。'},
 };
-const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23}};
-const PLAYABLE = Object.keys(TYPES).filter(k => !TYPES[k].enemyOnly);
+const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23},
+  unicorn:{s:1.1,oy:23}, cannon:{s:.95,oy:22}, phoenix:{s:.78,oy:16}, angel:{s:.85,oy:25}, frostwyrm:{s:.56,oy:14}, titan:{s:.62,oy:29}, reaper:{s:1.2,oy:24}, sniper:{s:1.2,oy:23}};
+const PLAYABLE = Object.keys(TYPES).filter(k => !TYPES[k].enemyOnly && !TYPES[k].gacha);
+const GACHA = Object.keys(TYPES).filter(k => TYPES[k].gacha);
+const RARITY = {R:{w:65, col:'#4f7fb0'}, SR:{w:28, col:'#9a4fc8'}, SSR:{w:7, col:'#d99a14'}};
+const PULL_COST = 200, PULL10_COST = 1800, MEDAL_GOLD = 100, MEDAL_NEED = 10, HIT_RATE = .4;
+const lvCost = L => 40 + 25*(L-1) + 3*(L-1)*(L-1);   // Lv L → L+1 に必要な金
+const lvMul = L => 1 + 0.1*(L-1);                     // 体力・攻撃の倍率
 const DEFAULT_DECK = ['knight','archer','shield','mage','cavalry','dragon'];
 const bossTimes = (start, every) => { const a=[]; for (let t=start; t<900; t+=every) a.push(t); return a; };
 const P1 = {knight:4,archer:3,shield:2,spear:2,skeleton:2};
@@ -307,9 +400,9 @@ const STAGES = [
 ];
 // 難易度：rate=敵の魔力回復間隔の倍率(小さいほど多く出る)、dup/dup2=同じ兵がおまけで追加出撃する確率
 const MODES = {
-  normal:  {name:'ノーマル', col:'#3f7fcf', desc:'基本の難易度。まずはここから。', rate:1,   mul:1,    hpMul:1,    cap:28, dup:0,   dup2:0,  surge:45, bonus:6,  start:5},
-  hard:    {name:'ハード',   col:'#c98a14', desc:'敵の出撃が約1.4倍＋同時出撃。総攻撃も頻繁に。', rate:.72, mul:1.1, hpMul:1.2, cap:42, dup:.35, dup2:0,  surge:36, bonus:8,  start:6},
-  ultimate:{name:'アルティメット', col:'#a3261d', desc:'敵の出撃が約2〜3倍の大軍勢。全ステージに黒竜が襲来。', rate:.52, mul:1.22, hpMul:1.45, cap:56, dup:.6, dup2:.3, surge:28, bonus:10, start:7},
+  normal:  {name:'ノーマル', col:'#3f7fcf', gold:1, desc:'基本の難易度。まずはここから。', rate:1,   mul:1,    hpMul:1,    cap:28, dup:0,   dup2:0,  surge:45, bonus:6,  start:5},
+  hard:    {name:'ハード',   col:'#c98a14', gold:1.6, desc:'敵の出撃が約1.4倍＋同時出撃。総攻撃も頻繁に。', rate:.72, mul:1.1, hpMul:1.2, cap:42, dup:.35, dup2:0,  surge:36, bonus:8,  start:6},
+  ultimate:{name:'アルティメット', col:'#a3261d', gold:2.5, desc:'敵の出撃が約2〜3倍の大軍勢。全ステージに黒竜が襲来。', rate:.52, mul:1.22, hpMul:1.45, cap:56, dup:.6, dup2:.3, surge:28, bonus:10, start:7},
 };
 function bossFor(mode, i){
   const S = STAGES[i];
@@ -328,14 +421,21 @@ const INK = '#1d150d';
 
 // ---------- セーブ ----------
 const emptyProg = () => ({unlocked:1, stars:[0,0,0,0,0]});
-let save = {mode:'normal', deck:DEFAULT_DECK.slice(), muted:false, modes:{normal:emptyProg(), hard:emptyProg(), ultimate:emptyProg()}};
+let save = {mode:'normal', deck:DEFAULT_DECK.slice(), muted:false, modes:{normal:emptyProg(), hard:emptyProg(), ultimate:emptyProg()},
+  gold:500, medals:0, lv:{}, owned:[]};
+const available = () => PLAYABLE.concat(save.owned);
+const lvOf = k => save.lv[k] || 1;
 try {
   const s = JSON.parse(localStorage.getItem('ryujo-save')||'null');
   if (s){
+    if (Number.isFinite(s.gold) && s.gold >= 0) save.gold = Math.floor(s.gold);
+    if (Number.isFinite(s.medals) && s.medals >= 0) save.medals = Math.floor(s.medals);
+    if (Array.isArray(s.owned)) save.owned = s.owned.filter((k,i,a) => GACHA.includes(k) && a.indexOf(k)===i);
+    if (s.lv && typeof s.lv === 'object') for (const k in s.lv) if (TYPES[k] && Number.isFinite(s.lv[k]) && s.lv[k] >= 1) save.lv[k] = Math.floor(s.lv[k]);
     if (s.modes) for (const m in MODES) if (s.modes[m]) save.modes[m] = Object.assign(emptyProg(), s.modes[m]);
     if (!s.modes && s.unlocked) save.modes.normal = {unlocked:s.unlocked, stars:s.stars||[0,0,0,0,0]};
     if (MODES[s.mode]) save.mode = s.mode;
-    if (Array.isArray(s.deck) && s.deck.length===6 && new Set(s.deck).size===6 && s.deck.every(k => PLAYABLE.includes(k))) save.deck = s.deck;
+    if (Array.isArray(s.deck) && s.deck.length===6 && new Set(s.deck).size===6 && s.deck.every(k => available().includes(k))) save.deck = s.deck;
     save.muted = !!s.muted;
   }
 } catch(e){}
@@ -457,7 +557,7 @@ function makeBG(){
 function teamCount(team){ let n=0; for (const u of G.units) if (u.team===team) n++; return n; }
 function spawn(team, type, x, y){
   const T = TYPES[type];
-  const mul = team==='e' ? STAGES[G.stage].mul * G.M.mul : 1;
+  const mul = team==='e' ? STAGES[G.stage].mul * G.M.mul : lvMul(lvOf(type));
   const u = {id:++uid, team, type, T, x, y, mul, hp:T.hp*mul, max:T.hp*mul, atk:T.atk*mul, cd:Math.random()*.3,
     air:!!T.air, r:T.r, dir: team==='p'?-1:1, anim:Math.random()*6, atkA:0, hit:0, moving:true, slowT:0, healT:T.heal?T.heal.every:0};
   G.units.push(u);
@@ -502,6 +602,15 @@ function updateUnit(u, dt){
       if (any) G.fx.push({k:'ring', x:u.x, y:u.y, r:T.heal.radius*.8, life:.5, max:.5, col:'#8cf08c'});
     }
   }
+  if (u.buffT > 0) u.buffT -= dt;
+  if (T.buff){
+    u.buffTick = (u.buffTick||0) - dt;
+    if (u.buffTick <= 0){
+      u.buffTick = .5;
+      for (const v of G.units) if (v.team===u.team && v!==u && Math.hypot(v.x-u.x, v.y-u.y) < T.buff.radius) v.buffT = 1;
+    }
+  }
+  const atkNow = u.atk * (u.buffT > 0 ? 1.3 : 1);
   const aggro = Math.max(T.range + 60, 110);
   let best = null, bd = 1e9;
   if (!T.siege) for (const v of G.units){
@@ -525,8 +634,19 @@ function updateUnit(u, dt){
         u.hp = 0; G.shake = Math.max(G.shake, 3); if (!G.demo) sfx.boom();
         return;
       }
-      if (T.proj) shoot(T.proj, u.x, u.y - (u.air?8:4), target, u.atk, u.team, {splash:T.splash||0, hitsAir:T.hitsAir, castleMul:T.castleMul||1, slow:T.slow||0});
-      else { damage(target, u.atk*dmgMul(T, target), u.team); spark(target.isCastle ? u.x : (u.x+target.x)/2, target.isCastle ? target.front : (u.y+target.y)/2, '#fff3c4', 4); }
+      if (T.proj) shoot(T.proj, u.x, u.y - (u.air?8:4), target, atkNow, u.team, {splash:T.splash||0, hitsAir:T.hitsAir, castleMul:T.castleMul||1, slow:T.slow||0});
+      else {
+        const tx = target.isCastle ? u.x : target.x, ty = target.isCastle ? target.front : target.y;
+        if (T.splash){
+          areaDamage(tx, ty, T.splash, atkNow, u.team, !!T.hitsAir, T.castleMul||1, T.slow||0);
+          G.fx.push({k:'ring', x:tx, y:ty, r:T.splash*.8, life:.25, max:.25, col:'#fff3c4'});
+        } else {
+          damage(target, atkNow*dmgMul(T, target));
+          if (T.slow && !target.isCastle) target.slowT = T.slow;
+        }
+        if (T.leech) u.hp = Math.min(u.max, u.hp + atkNow*T.leech);
+        spark(target.isCastle ? u.x : (u.x+target.x)/2, target.isCastle ? target.front : (u.y+target.y)/2, '#fff3c4', 4);
+      }
     }
   } else if (target && !target.isCastle){
     const dx = target.x-u.x, dy = target.y-u.y, d = Math.hypot(dx,dy)||1;
@@ -541,7 +661,7 @@ function updateUnit(u, dt){
 }
 
 function shoot(kind, x, y, target, dmg, team, o={}){
-  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165}[kind];
+  const speed = {arrow:330, orb:220, fire:190, cannon:260, ice:240, rock:165, bullet:520, bolt:420, javelin:290, note:200}[kind];
   const tx = target.isCastle ? x : target.x, ty = target.isCastle ? target.front + (team==='p'?-6:6) : target.y;
   G.projs.push({kind, x, y, tx, ty, target, dmg, team, splash:o.splash||0, hitsAir:!!o.hitsAir, castleMul:o.castleMul||1, slow:o.slow||0,
     speed, life:3, d0:Math.hypot(tx-x, ty-y)||1});
@@ -576,7 +696,7 @@ function updateProj(p, dt){
     p.dead = true;
     if (p.splash){
       areaDamage(p.tx, p.ty, p.splash, p.dmg, p.team, p.hitsAir, p.castleMul, p.slow);
-      const col = p.kind==='fire' ? '#ff8a2a' : p.kind==='ice' ? '#aeeeff' : p.kind==='rock' ? '#c9b48a' : (p.team==='p'?'#bfdcff':'#ffb0a3');
+      const col = p.kind==='fire' ? '#ff8a2a' : p.kind==='ice' ? '#aeeeff' : p.kind==='rock' ? '#c9b48a' : p.kind==='bolt' ? '#fff27a' : p.kind==='cannon' ? '#ffb347' : (p.team==='p'?'#bfdcff':'#ffb0a3');
       boom(p.tx, p.ty, col, p.splash*.7);
       if (p.kind==='rock') G.shake = Math.max(G.shake, 1.5);
     } else {
@@ -698,6 +818,11 @@ function update(dt){
   G.meteors = G.meteors.filter(m => m.t > -0.3);
 
   for (const u of G.units) if (u.hp <= 0 && !u.gone){
+    if (u.T.revive && !u.revived){
+      u.revived = true; u.hp = u.max*.6;
+      boom(u.x, u.y, '#ffb347', 44); floatText(u.x, u.y-30, '復活！', '#ffd27a');
+      continue;
+    }
     u.gone = true; puff(u.x, u.y, '#d9d2c0', u.air?14:8);
     if (u.type==='wyrm'){ boom(u.x,u.y,'#b04aff',50); G.shake = 8; if (!G.demo){ sfx.boom(); banner('黒竜 撃破！'); } }
   }
@@ -735,12 +860,18 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
   c.save(); c.translate(x, y);
   c.lineWidth = 1.5; c.strokeStyle = INK; c.lineJoin = 'round';
   const bob = moving ? Math.abs(Math.sin(t*9))*-1.6 : 0;
-  if (type==='dragon' || type==='wyrm'){ drawDragon(c, type, team, t, atk); c.restore(); return; }
-  if (type==='griffin'){ drawGriffin(c, team, t, atk); c.restore(); return; }
+  const TT = TYPES[type];
+  if (type==='dragon' || type==='wyrm' || type==='frostwyrm'){ drawDragon(c, type, team, t, atk); c.restore(); return; }
+  if (type==='griffin' || type==='phoenix'){ drawGriffin(c, team, t, atk, type==='phoenix' ? PHOENIX : null); c.restore(); return; }
   if (type==='bat'){ drawBat(c, team, t, atk); c.restore(); return; }
-  const big = {cavalry:14, catapult:15, golem:16, troll:15}[type] || 8;
-  ell(c, 0, big>8?11:9, big, big>8?4:3, 'rgba(0,0,0,.32)'); c.strokeStyle=INK;
-  c.translate(0, type==='catapult' ? 0 : bob);
+  if (TT.hero && TT.air){
+    ell(c, 0, 20, 10, 3.5, 'rgba(0,0,0,.25)'); c.strokeStyle=INK;
+    c.translate(0, Math.sin(t*3)*2 - 10); drawHero(c, type, team, t, atk); c.restore(); return;
+  }
+  const big = {cavalry:14, unicorn:14, catapult:15, cannon:15, golem:16, troll:15, titan:22}[type] || 8;
+  ell(c, 0, big>8?(big>16?17:11):9, big, big>8?4:3, 'rgba(0,0,0,.32)'); c.strokeStyle=INK;
+  c.translate(0, (type==='catapult' || type==='cannon') ? 0 : bob);
+  if (TT.hero){ drawHero(c, type, team, t, atk); c.restore(); return; }
   if (type==='knight'){
     circ(c,0,1,7,P.m);
     c.fillStyle=P.d; c.fillRect(-7,1,14,2.5);
@@ -807,18 +938,31 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
     c.fillStyle=P.m; c.fillRect(-5,-11,10,2);
     c.strokeStyle=P.m; c.lineWidth=1.4; c.beginPath(); c.moveTo(-5,-10); c.lineTo(-10,-8 + Math.sin(t*12)*2); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
     c.save(); c.translate(6,1); c.rotate(-0.8 + atk*2.4); blade(c,0,0,0,-10,'#e6e9ef',1.8); c.restore();
-  } else if (type==='cavalry'){
+  } else if (type==='cavalry' || type==='unicorn'){
+    const uni = type==='unicorn', horse = uni ? '#f4f1ea' : '#8a5a35', mane = uni ? '#f0c24a' : '#3a2414';
     const leg = moving ? Math.sin(t*18)*3 : 0;
-    c.strokeStyle='#3a2414'; c.lineWidth=2;
+    c.strokeStyle= uni ? '#b9b2a2' : '#3a2414'; c.lineWidth=2;
     for (const [lx,ph] of [[-7,1],[-4,-1],[5,-1],[8,1]]){ c.beginPath(); c.moveTo(lx,5); c.lineTo(lx+leg*ph,11); c.stroke(); }
     c.strokeStyle=INK; c.lineWidth=1.5;
-    ell(c,0,3,11,5.5,'#8a5a35',true);
-    c.save(); c.translate(10,-2); c.rotate(-.5); ell(c,0,0,5.5,3.2,'#8a5a35',true); c.restore();
-    c.fillStyle='#3a2414'; c.fillRect(6,-6,3,5);
+    ell(c,0,3,11,5.5,horse,true);
+    c.save(); c.translate(10,-2); c.rotate(-.5); ell(c,0,0,5.5,3.2,horse,true); c.restore();
+    if (uni){ c.fillStyle='#ffe9a0'; c.beginPath(); c.moveTo(13,-6); c.lineTo(19,-12); c.lineTo(14.5,-4); c.closePath(); c.fill(); c.stroke(); }
+    c.fillStyle=mane; c.fillRect(6,-6,3,5);
     c.fillStyle=P.m; c.fillRect(-6,-1,10,5); c.strokeRect(-6,-1,10,5);
-    circ(c,-1,-5,5,P.m);
-    circ(c,-1,-12,4,P.skin); helm(c,-12,4.4);
-    blade(c,-5,-3 + atk*2, 17 + atk*5,-15,'#dfe3ea',1.8);
+    circ(c,-1,-5,5,uni ? '#dfe3ea' : P.m);
+    circ(c,-1,-12,4,P.skin); helm(c,-12,4.4, uni ? '#f5d36a' : '#b9bec8');
+    blade(c,-5,-3 + atk*2, 17 + atk*5,-15, uni ? '#fff4c0' : '#dfe3ea',1.8);
+  } else if (type==='cannon'){
+    c.fillStyle='#5a3a1a'; c.fillRect(-12,0,22,6); c.strokeRect(-12,0,22,6);
+    circ(c,-7,7,4.6,'#3a2414'); circ(c,6,7,4.6,'#3a2414');
+    c.fillStyle='#c9a86a'; c.fillRect(-8,6,2,2); c.fillRect(5,6,2,2);
+    c.save(); c.translate(-2 + atk*3, -1); c.rotate(-.55);
+    rr(c,-3,-3.8,21,7.6,3,'#3c3c44'); c.fillStyle='#1a1a1e'; c.fillRect(16,-2.6,2.5,5.2);
+    c.fillStyle='rgba(255,255,255,.2)'; c.fillRect(0,-2.8,15,1.6);
+    c.restore();
+    if (atk > .6){ c.globalAlpha = atk; circ(c,16,-11,5*atk,'#dcd6c8',false); c.globalAlpha = 1; }
+    blade(c,-11,0,-11,-13,'#5a3a1a',1.2);
+    c.fillStyle=P.m; c.beginPath(); c.moveTo(-11,-13); c.lineTo(-3,-11); c.lineTo(-11,-8); c.closePath(); c.fill(); c.stroke();
   } else if (type==='catapult'){
     c.fillStyle='#7a5230'; c.fillRect(-13,0,26,6); c.strokeRect(-13,0,26,6);
     circ(c,-8,7,4.2,'#4a3220'); circ(c,8,7,4.2,'#4a3220');
@@ -856,11 +1000,86 @@ function drawSprite(c, type, team, x, y, t, atk, moving=true){
   }
   c.restore();
 }
+function drawHero(c, type, team, t, atk){
+  const S = TYPES[type].hero, P = PAL[team];
+  const body = S.body || P.m, skin = S.skin || P.skin;
+  if (S.scale) c.scale(S.scale, S.scale);
+  c.lineWidth = 1.5; c.strokeStyle = INK;
+  if (S.wings){
+    const f = Math.sin(t*6);
+    for (const sd of [-1,1]){
+      c.beginPath(); c.moveTo(sd*3,-4); c.quadraticCurveTo(sd*16,-18-f*4, sd*20,-4+f*3);
+      c.quadraticCurveTo(sd*14,0, sd*12,6); c.quadraticCurveTo(sd*7,2, sd*3,3); c.closePath();
+      c.fillStyle='#fffaf0'; c.fill(); c.stroke();
+      c.strokeStyle='rgba(180,160,120,.6)'; c.beginPath(); c.moveTo(sd*6,-2); c.lineTo(sd*16,-5); c.moveTo(sd*6,1); c.lineTo(sd*13,2); c.stroke(); c.strokeStyle=INK;
+    }
+  }
+  if (S.cape){ c.beginPath(); c.moveTo(-6,-3); c.lineTo(6,-3); c.lineTo(8.5,10); c.lineTo(-8.5,10); c.closePath(); c.fillStyle=S.cape; c.fill(); c.stroke(); }
+  circ(c,0,1,7,body);
+  c.fillStyle=P.d; c.fillRect(-7,1,14,2.5);
+  if (S.head==='reaper'){
+    c.beginPath(); c.arc(0,-7,6.2,Math.PI*.8,Math.PI*2.2); c.lineTo(0,-.5); c.closePath(); c.fillStyle='#1a1720'; c.fill(); c.stroke();
+    circ(c,0,-6.2,3.6,'#ece6d4',false);
+    c.fillStyle=INK; c.fillRect(-2.2,-7.4,1.5,1.5); c.fillRect(.7,-7.4,1.5,1.5);
+    c.fillStyle='#b04aff'; c.globalAlpha=.6 + Math.sin(t*6)*.3; c.fillRect(-2.2,-7.4,1.5,1.5); c.fillRect(.7,-7.4,1.5,1.5); c.globalAlpha=1;
+  } else {
+    circ(c,0,-7,5,skin);
+    const h = S.head;
+    if (h==='helm') helm(c,-7,5.4);
+    else if (h==='horn'){
+      helm(c,-7,5.4,'#a7adb8');
+      c.fillStyle='#f3efe4';
+      for (const sd of [-1,1]){ c.beginPath(); c.moveTo(sd*4.5,-9); c.quadraticCurveTo(sd*9,-11,sd*8,-16); c.quadraticCurveTo(sd*6.5,-12,sd*3,-11); c.closePath(); c.fill(); c.stroke(); }
+    } else if (h==='crown'){
+      c.fillStyle='#f5c542'; c.beginPath(); c.moveTo(-5,-10); c.lineTo(-5,-15.5); c.lineTo(-2.5,-12.5); c.lineTo(0,-16.5); c.lineTo(2.5,-12.5); c.lineTo(5,-15.5); c.lineTo(5,-10); c.closePath(); c.fill(); c.stroke();
+    } else if (h==='hood'){
+      c.beginPath(); c.arc(0,-7,5.6,Math.PI*.85,Math.PI*2.15); c.lineTo(0,-3); c.closePath(); c.fillStyle=S.hood||P.d; c.fill(); c.stroke();
+    } else if (h==='hat'){
+      ell(c,0,-10,8.5,2.2,'#3a2a1a',true); c.fillStyle='#3a2a1a'; c.fillRect(-4,-15,8,5); c.strokeRect(-4,-15,8,5);
+      c.strokeStyle=P.m; c.lineWidth=2; c.beginPath(); c.moveTo(3,-14); c.quadraticCurveTo(9,-19,11,-15); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    } else if (h==='beret'){
+      ell(c,1,-11,6.2,2.8,P.m,true);
+      c.strokeStyle='#f5d36a'; c.lineWidth=1.6; c.beginPath(); c.moveTo(5,-12); c.quadraticCurveTo(10,-17,9,-20); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    } else if (h==='wizard'){
+      ell(c,0,-9.5,8,2.4,S.hat||P.d,true);
+      c.beginPath(); c.moveTo(-5,-10); c.lineTo(5,-10); c.lineTo(3,-22); c.closePath(); c.fillStyle=S.hat||P.d; c.fill(); c.stroke();
+      c.fillStyle='#fff27a'; c.fillRect(0,-17,2,2);
+    } else if (h==='band'){ c.fillStyle=P.m; c.fillRect(-5,-10,10,2.2); }
+    else if (h==='halo'){
+      c.fillStyle='#f5d36a'; c.beginPath(); c.arc(0,-8,5.2,Math.PI,0); c.fill();
+      c.strokeStyle='#f5d36a'; c.lineWidth=1.8; c.beginPath(); c.ellipse(0,-15,5.5,1.8,0,0,7); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
+    }
+  }
+  const axe = () => {
+    blade(c,0,3,0,-14,'#8a5a30',1.8);
+    c.beginPath(); c.moveTo(0,-14); c.quadraticCurveTo(8,-13,7,-6); c.lineTo(0,-8); c.closePath(); c.fillStyle='#d8dce4'; c.fill(); c.stroke();
+  };
+  c.save(); c.translate(7,1);
+  switch (S.weapon){
+    case 'sword': c.rotate(-0.35 + atk*1.9); blade(c,0,0,0,-14,S.blade||'#eef1f6'); c.fillStyle='#e8b04a'; c.fillRect(-3,-1.5,6,2.5); break;
+    case 'axe': c.rotate(-0.4 + atk*1.9); axe(); break;
+    case 'dual': c.rotate(-0.4 + atk*1.9); axe(); c.restore(); c.save(); c.translate(-7,1); c.scale(-1,1); c.rotate(-0.4 + (1-atk)*1.2); axe(); break;
+    case 'hammer': c.rotate(-0.5 + atk*2); blade(c,0,3,0,-13,'#8a5a30',2); rr(c,-4.5,-19,9,6.5,1.5,'#9aa0aa'); break;
+    case 'javelin': c.rotate(0.2 - atk*0.7); blade(c,0,6,0,-15,'#8a5a30',1.6);
+      c.fillStyle='#e6e9ef'; c.beginPath(); c.moveTo(0,-21); c.lineTo(-2.4,-14); c.lineTo(2.4,-14); c.closePath(); c.fill(); c.stroke(); break;
+    case 'gun': c.rotate(-0.25 - atk*0.2); blade(c,0,5,0,-15,'#5a3a1a',2.6); c.fillStyle='#3c3c44'; c.fillRect(-1.2,-19,2.4,6);
+      if (atk > .7){ circ(c,0,-22,2.5,'#ffe28a',false); } break;
+    case 'lute': c.translate(-4,3); c.rotate(-0.5 + Math.sin(t*8)*0.1); blade(c,0,-3,0,-13,'#6b4a2a',1.6); ell(c,0,0,4.5,5.5,'#c08a3a',true); circ(c,0,0,1.4,INK,false); break;
+    case 'staff': blade(c,1,7,1,-12,'#8a5a30',1.8); c.shadowColor=S.orb||P.l; c.shadowBlur=6 + atk*10; circ(c,1,-14,3 + atk*1.5,S.orb||P.l); c.shadowBlur=0; break;
+    case 'longbow': c.translate(-13,-2); c.scale(1 - atk*.25, 1);
+      c.strokeStyle='#5a3a1a'; c.lineWidth=2.2; c.beginPath(); c.arc(4,0,12,Math.PI*.7,Math.PI*1.3); c.stroke();
+      c.strokeStyle='#efe6cc'; c.lineWidth=.8; c.beginPath(); c.moveTo(-5.5,-9.6); c.lineTo(-5.5+atk*3,0); c.lineTo(-5.5,9.6); c.stroke(); break;
+    case 'scythe': c.rotate(-0.3 + atk*1.6); blade(c,0,7,0,-19,'#4a3a2a',1.8);
+      c.beginPath(); c.moveTo(0,-19); c.quadraticCurveTo(-13,-21,-15,-10); c.quadraticCurveTo(-8,-16,0,-15.5); c.closePath(); c.fillStyle='#cfd3db'; c.fill(); c.stroke(); break;
+  }
+  c.restore();
+}
+const PHOENIX = {body:'#ff7a2a', wing:'#ffb347', tip:'#ff3a1a', head:'#ffe08a', beak:'#b8321c', tail:'#ff5a1f', glow:true};
 function drawDragon(c, type, team, t, atk){
-  const boss = type==='wyrm';
-  const s = boss ? 1.55 : 1;
-  const body = boss ? '#2e2233' : PAL[team].m, wing = boss ? '#171019' : PAL[team].d;
-  const belly = boss ? '#6d2a3a' : '#f0d28a', eye = boss ? '#ff3a2a' : '#fff4a0';
+  const boss = type==='wyrm', frost = type==='frostwyrm';
+  const s = boss ? 1.55 : frost ? 1.08 : 1;
+  const body = boss ? '#2e2233' : frost ? '#8fd8f0' : PAL[team].m, wing = boss ? '#171019' : frost ? '#3f8fb0' : PAL[team].d;
+  const belly = boss ? '#6d2a3a' : frost ? '#e8fbff' : '#f0d28a', eye = boss ? '#ff3a2a' : frost ? '#1a4a6a' : '#fff4a0';
   ell(c, 0, 26*s, 13*s, 4*s, 'rgba(0,0,0,.25)');
   c.translate(0, Math.sin(t*3)*2.2 - 6);
   c.scale(s, s);
@@ -888,25 +1107,29 @@ function drawDragon(c, type, team, t, atk){
   c.fillStyle=eye; c.fillRect(-2.6,-16,1.6,1.6); c.fillRect(1,-16,1.6,1.6);
   if (atk > .5) circ(c,0,-24,3*atk,'rgba(255,170,60,.85)',false);
 }
-function drawGriffin(c, team, t, atk){
-  const P = PAL[team];
+function drawGriffin(c, team, t, atk, pal){
+  const P = PAL[team], X = pal || {body:'#c99a4a', wing:'#f1e6cc', tip:P.m, head:'#f7f2e6', beak:'#f0b030', tail:'#b08840'};
   ell(c, 0, 20, 11, 3.5, 'rgba(0,0,0,.25)');
   c.translate(0, Math.sin(t*4)*2 - 5);
   if (team==='e') c.rotate(Math.PI);
+  if (X.glow){ c.shadowColor='#ff8a2a'; c.shadowBlur=12; }
   c.strokeStyle=INK; c.lineWidth=1.5;
   const f = Math.sin(t*9);
   for (const sd of [-1,1]){
     c.beginPath(); c.moveTo(sd*4,-3);
     c.quadraticCurveTo(sd*16,-14 - f*6, sd*21, 0 + f*4);
     c.lineTo(sd*16, 3); c.lineTo(sd*13, 7); c.lineTo(sd*8, 6); c.lineTo(sd*4,5);
-    c.closePath(); c.fillStyle='#f1e6cc'; c.fill(); c.stroke();
-    c.fillStyle=P.m; c.beginPath(); c.moveTo(sd*21, f*4); c.lineTo(sd*16,3); c.lineTo(sd*17,-4); c.closePath(); c.fill();
+    c.closePath(); c.fillStyle=X.wing; c.fill(); c.stroke();
+    c.fillStyle=X.tip; c.beginPath(); c.moveTo(sd*21, f*4); c.lineTo(sd*16,3); c.lineTo(sd*17,-4); c.closePath(); c.fill();
   }
-  c.lineCap='round'; c.strokeStyle='#b08840'; c.lineWidth=2.5; c.beginPath(); c.moveTo(0,8); c.lineTo(Math.sin(t*5)*4,17); c.stroke(); c.strokeStyle=INK; c.lineWidth=1.5;
-  ell(c,0,1,6,9,'#c99a4a',true);
+  c.shadowBlur = 0;
+  c.lineCap='round'; c.strokeStyle=X.tail; c.lineWidth=2.5; c.beginPath(); c.moveTo(0,8); c.lineTo(Math.sin(t*5)*4,17); c.stroke();
+  if (pal){ c.beginPath(); c.moveTo(0,8); c.lineTo(Math.sin(t*5+1)*6-3,19); c.moveTo(0,8); c.lineTo(Math.sin(t*5+2)*6+3,19); c.stroke(); }
+  c.strokeStyle=INK; c.lineWidth=1.5;
+  ell(c,0,1,6,9,X.body,true);
   c.fillStyle=P.m; c.fillRect(-4.5,-7,9,2.4);
-  circ(c,0,-10,4.6,'#f7f2e6');
-  c.fillStyle='#f0b030'; c.beginPath(); c.moveTo(-2,-13); c.lineTo(2,-13); c.lineTo(0,-18 - atk*2); c.closePath(); c.fill(); c.stroke();
+  circ(c,0,-10,4.6,X.head);
+  c.fillStyle=X.beak; c.beginPath(); c.moveTo(-2,-13); c.lineTo(2,-13); c.lineTo(0,-18 - atk*2); c.closePath(); c.fill(); c.stroke();
   c.fillStyle=INK; c.fillRect(-2.8,-11,1.4,1.4); c.fillRect(1.4,-11,1.4,1.4);
 }
 function drawBat(c, team, t, atk){
@@ -1042,6 +1265,18 @@ function drawProj(p){
   } else if (p.kind==='ice'){
     ctx.rotate(p.ang); ctx.shadowColor='#bff4ff'; ctx.shadowBlur=10;
     ctx.fillStyle='#d8fbff'; ctx.beginPath(); ctx.moveTo(7,0); ctx.lineTo(0,-3.5); ctx.lineTo(-5,0); ctx.lineTo(0,3.5); ctx.closePath(); ctx.fill();
+  } else if (p.kind==='bullet'){
+    ctx.rotate(p.ang); ctx.strokeStyle='rgba(255,240,200,.6)'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(-10,0); ctx.lineTo(0,0); ctx.stroke();
+    ctx.fillStyle='#2a2a2e'; ctx.fillRect(-1.5,-1.5,3,3);
+  } else if (p.kind==='bolt'){
+    ctx.rotate(p.ang); ctx.shadowColor='#fff27a'; ctx.shadowBlur=12; ctx.strokeStyle='#fff6a8'; ctx.lineWidth=2.2;
+    ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(-7,-3); ctx.lineTo(-3,2); ctx.lineTo(2,-2); ctx.lineTo(6,0); ctx.stroke();
+  } else if (p.kind==='javelin'){
+    ctx.rotate(p.ang); ctx.strokeStyle='#8a5a30'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(4,0); ctx.stroke();
+    ctx.fillStyle='#e6e9ef'; ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(3,-2.8); ctx.lineTo(3,2.8); ctx.closePath(); ctx.fill();
+  } else if (p.kind==='note'){
+    ctx.font='bold 13px sans-serif'; ctx.textAlign='center'; ctx.fillStyle='#f5d36a'; ctx.strokeStyle='#000'; ctx.lineWidth=2;
+    ctx.strokeText('♪',0,4); ctx.fillText('♪',0,4);
   } else if (p.kind==='fire'){
     ctx.shadowColor='#ff7a2a'; ctx.shadowBlur=12; circ(ctx,0,0,6,'#ff8a2a',false); circ(ctx,0,0,3,'#ffe28a',false);
   } else if (p.kind==='rock'){
@@ -1078,8 +1313,13 @@ function tagsOf(T){
   if (T.castleMul && T.castleMul > 1 && !T.siege) t.push('城に強い');
   if (T.bonus) t.push('大型特効');
   if (T.count) t.push(`${T.count}体出撃`);
+  if (T.buff) t.push('攻撃力アップ');
+  if (T.leech) t.push('吸収');
+  if (T.revive) t.push('復活');
   return t;
 }
+const fmt = n => Math.floor(n).toLocaleString('ja-JP');
+const walletHTML = () => `<span><i class="coin"></i>金 <b>${fmt(save.gold)}</b></span><span><i class="mdl"></i>メダル <b>${save.medals}</b></span>`;
 
 // ---------- 入力 ----------
 const zoneTop = () => Math.round(H*0.56);
@@ -1114,7 +1354,7 @@ function buildCards(deck){
   for (const k of deck){
     const T = TYPES[k];
     const b = document.createElement('button'); b.className='card'; b.id='card-'+k; b.setAttribute('aria-label', T.name+' 魔力'+T.cost);
-    b.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${T.name}</em><span class="cost">${T.cost}</span>`;
+    b.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${T.name}</em><span class="cost">${T.cost}</span><span class="lvb">Lv${lvOf(k)}</span>`;
     b.addEventListener('pointerdown', ev => {
       ev.preventDefault(); ensureAudio();
       if (!G || G.demo || G.over) return;
@@ -1172,6 +1412,8 @@ function renderTitle(){
   }
   $('mdesc').textContent = MODES[save.mode].desc;
   $('deckMini').innerHTML = save.deck.map(k => `<img src="${iconURL(k)}" alt="${TYPES[k].name}">`).join('');
+  $('tWallet').innerHTML = walletHTML();
+  $('gachaSub').textContent = `図鑑 ${save.owned.length}/${GACHA.length}・メダル${save.medals}枚 ›`;
   const box = $('stages'); box.innerHTML = '';
   const P = prog();
   STAGES.forEach((S,i) => {
@@ -1185,14 +1427,15 @@ function renderTitle(){
 }
 function showTitle(){
   renderTitle();
-  $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = true; $('title').hidden = false;
-  newGame(Math.floor(Math.random()*STAGES.length), true);
+  $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = true; $('gachaOv').hidden = true; $('title').hidden = false;
+  if (!G || !G.demo) newGame(Math.floor(Math.random()*STAGES.length), true);
 }
 $('deckBtn').addEventListener('click', () => openForm(null));
+$('gachaBtn').addEventListener('click', () => { ensureAudio(); openGacha(); });
 
 // ---------- 画面：編成 ----------
 const F = {deck:[], stage:null, cur:null, msg:''};
-const SORTED = PLAYABLE.slice().sort((a,b) => TYPES[a].cost - TYPES[b].cost);
+const sortedUnits = () => available().sort((a,b) => (TYPES[a].gacha?1:0) - (TYPES[b].gacha?1:0) || TYPES[a].cost - TYPES[b].cost);
 function openForm(stage){
   F.deck = save.deck.slice(); F.stage = stage; F.cur = F.deck[0]; F.msg = '';
   $('title').hidden = true; $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = false;
@@ -1200,12 +1443,15 @@ function openForm(stage){
   renderForm();
   $('formOv').querySelector('.panel').scrollTop = 0;
 }
-function statTiles(T){
+function statTiles(T, lv=1){
   const sp = T.speed >= 50 ? '速い' : T.speed >= 28 ? '普通' : '遅い';
   const rg = T.range >= 60 ? T.range : '近接';
-  return `<div><small>体力</small><b>${T.hp}${T.count?'×'+T.count:''}</b></div><div><small>攻撃</small><b>${T.atk}</b></div><div><small>射程</small><b>${rg}</b></div><div><small>速さ</small><b>${sp}</b></div>`;
+  const m = lvMul(lv);
+  return `<div><small>体力</small><b>${Math.round(T.hp*m)}${T.count?'×'+T.count:''}</b></div><div><small>攻撃</small><b>${Math.round(T.atk*m)}</b></div><div><small>射程</small><b>${rg}</b></div><div><small>速さ</small><b>${sp}</b></div>`;
 }
+function rarityTag(T){ return T.gacha ? `<span class="tag" style="background:${RARITY[T.gacha].col}">${T.gacha}</span>` : ''; }
 function renderForm(){
+  $('fWallet').innerHTML = walletHTML();
   $('fStage').textContent = F.stage==null ? '出撃する6体を選ぶ' : `STAGE ${F.stage+1} ${STAGES[F.stage].name}・${MODES[save.mode].name}`;
   const sl = $('fSlots'); sl.innerHTML = '';
   for (let i=0;i<6;i++){
@@ -1218,10 +1464,11 @@ function renderForm(){
   }
   $('fCount').textContent = `${F.deck.length}/6`;
   const gr = $('fGrid'); gr.innerHTML = '';
-  for (const k of SORTED){
+  for (const k of sortedUnits()){
     const T = TYPES[k], inD = F.deck.includes(k);
     const b = document.createElement('button'); b.className = 'ucard' + (inD ? ' in' : '') + (F.cur===k ? ' cur' : ''); b.id = 'unit-'+k;
-    b.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${T.name}</em><span class="cost">${T.cost}</span>`;
+    b.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${T.name}</em><span class="cost">${T.cost}</span><span class="lvb">Lv${lvOf(k)}</span>`
+      + (T.gacha ? `<span class="rar" style="--rc:${RARITY[T.gacha].col}">${T.gacha}</span>` : '');
     b.addEventListener('click', () => {
       F.cur = k; F.msg = '';
       if (F.deck.includes(k)){ F.deck = F.deck.filter(x => x!==k); tone(420,.04,'square',.03); }
@@ -1234,8 +1481,18 @@ function renderForm(){
   const T = TYPES[F.cur];
   const d = $('fDetail');
   if (T){
-    d.innerHTML = `<h3>${T.name}<small>魔力 ${T.cost}</small></h3><div class="stats">${statTiles(T)}</div>
-      <div class="tags">${tagsOf(T).map(t=>`<span class="tag">${t}</span>`).join('')}</div>${T.desc}${F.msg ? `<br><span class="warn">${F.msg}</span>` : ''}`;
+    const lv = lvOf(F.cur), cost = lvCost(lv), m1 = lvMul(lv+1);
+    d.innerHTML = `<h3>${T.name}<small>魔力 ${T.cost}</small></h3><div class="stats">${statTiles(T, lv)}</div>
+      <div class="tags">${rarityTag(T)}${tagsOf(T).map(t=>`<span class="tag">${t}</span>`).join('')}</div>${T.desc}${F.msg ? `<br><span class="warn">${F.msg}</span>` : ''}
+      <div class="lvrow"><b>Lv ${lv}</b><span>次のLv：体力 ${Math.round(T.hp*m1)}・攻撃 ${Math.round(T.atk*m1)}</span>
+      <button class="lvbtn" id="lvUp" ${save.gold < cost ? 'disabled' : ''}><i class="coin"></i>強化 ${fmt(cost)}</button></div>`;
+    $('lvUp').addEventListener('click', ev => {
+      ev.stopPropagation();
+      const c = lvCost(lvOf(F.cur));
+      if (save.gold < c) return;
+      save.gold -= c; save.lv[F.cur] = lvOf(F.cur) + 1; persist(); sfx.up(); F.msg = '';
+      renderForm();
+    });
   } else d.textContent = 'ユニットをタップすると詳細が出る';
   const aa = F.deck.some(k => TYPES[k].hitsAir);
   if (F.deck.length===6 && !aa) d.innerHTML += '<br><span class="warn">注意：対空ユニットがいない。敵の飛行部隊を止められない</span>';
@@ -1257,6 +1514,86 @@ $('fGo').addEventListener('click', () => {
   if (F.stage == null) showTitle(); else startStage(F.stage);
 });
 
+// ---------- 画面：ガチャ ----------
+function rollUnit(){
+  let r = Math.random()*100, rar = 'R';
+  for (const [k,v] of Object.entries(RARITY)){ r -= v.w; if (r <= 0){ rar = k; break; } }
+  const list = GACHA.filter(k => TYPES[k].gacha === rar);
+  return list[Math.floor(Math.random()*list.length)];
+}
+function grant(k){
+  if (save.owned.includes(k)){ save.lv[k] = lvOf(k) + 1; return {k, dup:true}; }
+  save.owned.push(k); return {k, isNew:true};
+}
+function openGacha(){
+  $('title').hidden = true; $('gachaOv').hidden = false;
+  $('gRes').innerHTML = ''; $('gMsg').textContent = '';
+  renderGacha();
+  $('gachaOv').querySelector('.panel').scrollTop = 0;
+}
+function renderGacha(){
+  $('gWallet').innerHTML = walletHTML();
+  $('g1').disabled = save.gold < PULL_COST;
+  $('g10').disabled = save.gold < PULL10_COST;
+  $('gMedal').disabled = save.medals < MEDAL_NEED || save.gold < MEDAL_GOLD;
+  $('gMedalFill').style.width = Math.min(100, save.medals/MEDAL_NEED*100) + '%';
+  $('gMedalT').textContent = save.medals >= MEDAL_NEED
+    ? `ハズレメダル ${save.medals}枚（確定召喚 ${Math.floor(save.medals/MEDAL_NEED)}回分）`
+    : `ハズレメダル ${save.medals}/${MEDAL_NEED}`;
+  $('gOwned').textContent = `${save.owned.length}/${GACHA.length}`;
+  const bk = $('gBook'); bk.innerHTML = '';
+  const order = {SSR:0, SR:1, R:2};
+  for (const k of GACHA.slice().sort((a,b) => order[TYPES[a].gacha]-order[TYPES[b].gacha] || TYPES[b].cost-TYPES[a].cost)){
+    const T = TYPES[k], own = save.owned.includes(k);
+    const el = document.createElement('div'); el.className = 'ucard' + (own ? '' : ' lock');
+    el.innerHTML = `<img src="${iconURL(k)}" alt=""><em>${own ? T.name : '？？？'}</em><span class="rar" style="--rc:${RARITY[T.gacha].col}">${T.gacha}</span>` + (own ? `<span class="lvb">Lv${lvOf(k)}</span>` : '');
+    bk.append(el);
+  }
+}
+function showPulls(results){
+  const box = $('gRes'); box.innerHTML = '';
+  results.forEach((r, i) => {
+    const el = document.createElement('div');
+    el.style.animationDelay = (i*0.08) + 's';
+    if (r.miss){
+      el.className = 'gitem miss';
+      el.innerHTML = `<i class="mdl big"></i>ハズレ<br>メダル+1`;
+    } else {
+      const T = TYPES[r.k];
+      el.className = 'gitem' + (T.gacha==='SSR' ? ' ssr' : '');
+      el.style.setProperty('--rc', RARITY[T.gacha].col);
+      el.innerHTML = `<img src="${iconURL(r.k)}" alt="">${T.gacha} ${T.name}<br>${r.isNew ? '<em>NEW!</em>' : `かぶり→Lv${lvOf(r.k)}`}`;
+    }
+    box.append(el);
+  });
+  const hits = results.filter(r => !r.miss);
+  const best = hits.some(r => TYPES[r.k].gacha==='SSR') ? 'SSR' : hits.some(r => TYPES[r.k].gacha==='SR') ? 'SR' : hits.length ? 'R' : null;
+  $('gMsg').textContent = !best ? 'ハズレ…メダルを集めて確定召喚を狙おう' : best==='SSR' ? 'SSR 降臨！' : `${hits.length}体のユニットが現れた`;
+  $('gMsg').style.color = best==='SSR' ? '#b8780a' : best ? '#5b36c4' : '#5d5d68';
+  if (best==='SSR') [523,784,1046,1318].forEach((f,i)=>setTimeout(()=>tone(f,.3,'square',.05),i*120));
+  else if (best) sfx.up(); else tone(200,.25,'triangle',.05,.6);
+}
+function pull(n){
+  const cost = n===10 ? PULL10_COST : PULL_COST;
+  if (save.gold < cost){ $('gMsg').textContent = `金が足りない（必要 ${fmt(cost)}）`; $('gMsg').style.color=''; sfx.no(); return; }
+  save.gold -= cost;
+  const res = [];
+  for (let i=0;i<n;i++){
+    if (Math.random() < HIT_RATE) res.push(grant(rollUnit()));
+    else { save.medals++; res.push({miss:true}); }
+  }
+  persist(); renderGacha(); showPulls(res);
+}
+$('g1').addEventListener('click', () => pull(1));
+$('g10').addEventListener('click', () => pull(10));
+$('gMedal').addEventListener('click', () => {
+  if (save.medals < MEDAL_NEED || save.gold < MEDAL_GOLD){ sfx.no(); return; }
+  save.medals -= MEDAL_NEED; save.gold -= MEDAL_GOLD;
+  const res = [grant(rollUnit())];
+  persist(); renderGacha(); showPulls(res);
+});
+$('gBack').addEventListener('click', () => showTitle());
+
 // ---------- 画面：対戦 ----------
 function startStage(i){
   $('title').hidden = true; $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = true;
@@ -1270,7 +1607,11 @@ function endGame(win){
   const pr = Math.max(0, G.cast.p.hp) / G.cast.p.max;
   const stars = win ? (pr >= .7 ? 3 : pr >= .4 ? 2 : 1) : 0;
   const P = save.modes[G.mode];
+  let gold = 0, first = false;
   if (win){
+    first = !(P.stars[G.stage] > 0);
+    gold = Math.round((100 + 60*G.stage) * G.M.gold * [0,.8,1,1.2][stars] * (first ? 2 : 1));
+    save.gold += gold;
     P.stars[G.stage] = Math.max(P.stars[G.stage]||0, stars);
     P.unlocked = Math.max(P.unlocked, Math.min(STAGES.length, G.stage+2));
     persist(); sfx.win(); banner('敵城 陥落！');
@@ -1282,6 +1623,8 @@ function endGame(win){
     $('rTitle').textContent = win ? '勝利' : '敗北';
     $('rTitle').className = win ? 'win' : 'lose';
     $('rStars').innerHTML = win ? starsHTML(stars) : '';
+    $('rGold').hidden = !win;
+    $('rGold').innerHTML = `<i class="coin"></i>金 +${fmt(gold)}${first ? '（初回クリア2倍）' : ''}　所持 ${fmt(save.gold)}`;
     $('rInfo').textContent = win
       ? `${mname}・${STAGES[G.stage].name} 攻略　時間 ${m}:${s}　自城の残り ${Math.round(pr*100)}%`
       : `${mname}・${STAGES[G.stage].name}　${m}:${s} 持ちこたえた。編成を見直してみよう`;

@@ -210,6 +210,13 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
 .gtab{padding:8px 4px;border-radius:10px;border:1px solid #000;background:#0000001a;font-weight:800;font-size:13px;color:#4a3920}
 .gtab.on{background:linear-gradient(100deg,#5b36c4,#a3322b);color:#fff}
 .gtab i{font-style:normal;font-size:9px;background:#e8b04a;color:var(--ink);border-radius:5px;padding:0 4px;margin-left:4px;vertical-align:2px}
+.pwbtn{display:block;margin:8px auto 0;padding:6px 12px;border-radius:8px;border:1px solid #0004;background:transparent;color:#5a4527;font-size:12px;font-weight:800}
+.pwform{display:flex;gap:8px;margin:4px 0 0}
+.pwform input{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid #000;background:#fffaf0;color:var(--ink);font:800 16px var(--ui);
+  -webkit-user-select:text;user-select:text;letter-spacing:.1em}
+.pwform input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.pwform .btn{flex:none;padding:10px 16px}
+.pwmsg{min-height:1.4em;font-weight:800;font-size:13px!important;margin:10px 0 6px!important}
 @media (prefers-reduced-motion:reduce){.gitem{animation:none}}
 @media (prefers-reduced-motion:reduce){.banner.show{animation-duration:.01s}.meteor.arm{animation:none}.card{transition:none}}
 </style>
@@ -257,6 +264,7 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
       <div class="label">編成</div>
       <button class="deckbtn" id="deckBtn"><b>部隊</b><span class="mini" id="deckMini"></span><small>編成・強化 ›</small></button>
       <button class="gachabtn" id="gachaBtn">召喚ガチャ<small id="gachaSub">新ユニットを手に入れる ›</small></button>
+      <button class="pwbtn" id="pwBtn">パスワード入力 ›</button>
       <div class="label">ステージ</div>
       <div class="stages" id="stages"></div>
       <div class="how">
@@ -311,6 +319,20 @@ img{max-width:100%;-webkit-user-drag:none;pointer-events:none}
       <div class="label">ガチャユニット図鑑 <b id="gOwned"></b></div>
       <div class="ugrid" id="gBook"></div>
       <div class="fbtns one"><button class="btn" id="gBack">戻る</button></div>
+    </div>
+  </div>
+
+  <div class="ov" id="pwOv" hidden>
+    <div class="panel res">
+      <h2 class="lose" style="font-size:30px">パスワード</h2>
+      <p>パスワードを入力すると特典がもらえる</p>
+      <form class="pwform" id="pwForm" autocomplete="off">
+        <input id="pwIn" type="text" inputmode="latin" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" placeholder="パスワード" aria-label="パスワード">
+        <button class="btn pri" type="submit" id="pwGo">決定</button>
+      </form>
+      <p class="pwmsg" id="pwMsg"></p>
+      <div class="wallet" id="pwWallet"></div>
+      <div class="btns" style="margin-top:14px"><button class="btn" id="pwBack">戻る</button></div>
     </div>
   </div>
 
@@ -447,6 +469,16 @@ const SKILLS = {
 };
 const SKILLS2 = { hades:{n:'死の大鎌',k:'nova',cd:9,r:80,m:2}, dragonking:{n:'王の咆哮',k:'rally',cd:14,r:300,t:6}, wyrm:{n:'竜の威圧',k:'stun',cd:16,r:70,t:1.2,m:.5} };
 for (const k in TYPES) TYPES[k].skills = [SKILLS[k], SKILLS2[k]].filter(Boolean);
+// コストあたりの体力・秒間火力をそろえる（上の hp/atk は目安で、ここで上書き）。
+// 複数体で出るユニットは合計で揃える。爆弾兵の自爆ダメージとボス(コスト0)は対象外
+const HP_PER_COST = 80, DPS_PER_COST = 9;
+for (const k in TYPES){
+  const T = TYPES[k], n = T.count || 1;
+  if (!T.cost) continue;
+  T.hp = Math.round(HP_PER_COST * T.cost / n);
+  if (!T.bomb) T.atk = Math.round(DPS_PER_COST * T.cost * T.rate / n);
+}
+const dpsOf = T => T.bomb ? 0 : Math.round(T.atk / T.rate * (T.count || 1));
 const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23},
   unicorn:{s:1.1,oy:23}, cannon:{s:.95,oy:22}, phoenix:{s:.78,oy:16}, angel:{s:.85,oy:25}, frostwyrm:{s:.56,oy:14}, titan:{s:.62,oy:29}, reaper:{s:1.2,oy:24}, sniper:{s:1.2,oy:23},
   ghost:{s:1.3,oy:20}, harpy:{s:.8,oy:16}, gargoyle:{s:.75,oy:16}, holydragon:{s:.52,oy:14}, dragonking:{s:.3,oy:14}, hades:{s:.5,oy:31}, cyclops:{s:.7,oy:28},
@@ -1802,11 +1834,30 @@ function renderTitle(){
 }
 function showTitle(){
   renderTitle();
-  $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = true; $('gachaOv').hidden = true; $('title').hidden = false;
+  $('result').hidden = true; $('pauseOv').hidden = true; $('formOv').hidden = true; $('gachaOv').hidden = true; $('pwOv').hidden = true; $('title').hidden = false;
   if (!G || !G.demo) newGame(Math.floor(Math.random()*STAGES.length), true);
 }
 $('deckBtn').addEventListener('click', () => openForm(null));
 $('gachaBtn').addEventListener('click', () => { ensureAudio(); openGacha(); });
+
+// ---------- 画面：パスワード ----------
+const PASSWORDS = { aaaa: {gold:10000} };
+$('pwBtn').addEventListener('click', () => {
+  ensureAudio();
+  $('title').hidden = true; $('pwOv').hidden = false;
+  $('pwIn').value = ''; $('pwMsg').textContent = ''; $('pwWallet').innerHTML = walletHTML();
+});
+$('pwForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const code = $('pwIn').value.trim().toLowerCase(), reward = PASSWORDS[code], msg = $('pwMsg');
+  if (!code){ msg.textContent = 'パスワードを入力してください'; msg.style.color = '#a3261d'; return; }
+  if (!reward){ msg.textContent = 'パスワードが違います'; msg.style.color = '#a3261d'; sfx.no(); return; }
+  save.gold += reward.gold; persist();
+  msg.textContent = `金 +${fmt(reward.gold)} を獲得した！`; msg.style.color = '#8a5a0a';
+  $('pwIn').value = ''; $('pwWallet').innerHTML = walletHTML();
+  [660,880,1175].forEach((f,i)=>setTimeout(()=>tone(f,.15,'square',.05),i*90));
+});
+$('pwBack').addEventListener('click', () => showTitle());
 
 // ---------- 画面：編成 ----------
 const F = {deck:[], stage:null, cur:null, msg:''};
@@ -1822,7 +1873,7 @@ function statTiles(T, lv=1){
   const sp = T.speed >= 50 ? '速い' : T.speed >= 28 ? '普通' : '遅い';
   const rg = T.range >= 60 ? T.range : '近接';
   const m = lvMul(lv);
-  return `<div><small>体力</small><b>${Math.round(T.hp*m)}${T.count?'×'+T.count:''}</b></div><div><small>攻撃</small><b>${Math.round(T.atk*m)}</b></div><div><small>射程</small><b>${rg}</b></div><div><small>速さ</small><b>${sp}</b></div>`;
+  return `<div><small>体力</small><b>${Math.round(T.hp*m)}${T.count?'×'+T.count:''}</b></div><div><small>攻撃${T.bomb ? '(自爆)' : '・毎秒'}</small><b>${Math.round(T.atk*m)}${T.bomb ? '' : `<small style="display:inline;font-size:10px"> / ${Math.round(dpsOf(T)*m)}</small>`}</b></div><div><small>射程</small><b>${rg}</b></div><div><small>速さ</small><b>${sp}</b></div>`;
 }
 function rarityTag(T){ return T.gacha ? `<span class="tag" style="background:${RARITY[T.gacha].col}">${T.gacha}</span>` : ''; }
 function renderForm(){

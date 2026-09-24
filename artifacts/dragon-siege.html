@@ -469,14 +469,18 @@ const SKILLS = {
 };
 const SKILLS2 = { hades:{n:'死の大鎌',k:'nova',cd:9,r:80,m:2}, dragonking:{n:'王の咆哮',k:'rally',cd:14,r:300,t:6}, wyrm:{n:'竜の威圧',k:'stun',cd:16,r:70,t:1.2,m:.5} };
 for (const k in TYPES) TYPES[k].skills = [SKILLS[k], SKILLS2[k]].filter(Boolean);
-// コストあたりの体力・秒間火力をそろえる（上の hp/atk は目安で、ここで上書き）。
-// 複数体で出るユニットは合計で揃える。爆弾兵の自爆ダメージとボス(コスト0)は対象外
+// コストに対する強さ（体力×秒間火力）をそろえつつ、元の体力と火力の比率は残す。
+// 盾兵やゴーレムは硬くて火力が低く、忍や狙撃手は脆くて火力が高いまま。上の hp/atk はその比率の基準
+// 回復・強化が本業の支援役と、自爆する爆弾兵は能力に強さを割いているので元の値のまま。ボス(コスト0)も対象外
 const HP_PER_COST = 80, DPS_PER_COST = 9;
+const KEEP_ORIGINAL = ['priest','bard','saint','angel','alchemist','bomber'];
 for (const k in TYPES){
   const T = TYPES[k], n = T.count || 1;
-  if (!T.cost) continue;
-  T.hp = Math.round(HP_PER_COST * T.cost / n);
-  if (!T.bomb) T.atk = Math.round(DPS_PER_COST * T.cost * T.rate / n);
+  if (!T.cost || KEEP_ORIGINAL.includes(k)) continue;
+  const hpRatio = T.hp*n / (HP_PER_COST*T.cost), dpsRatio = (T.atk/T.rate*n) / (DPS_PER_COST*T.cost);
+  const lean = Math.sqrt(hpRatio / dpsRatio);
+  T.hp = Math.round(HP_PER_COST * T.cost * lean / n);
+  T.atk = Math.round(DPS_PER_COST * T.cost / lean * T.rate / n);
 }
 const dpsOf = T => T.bomb ? 0 : Math.round(T.atk / T.rate * (T.count || 1));
 const ICON = {catapult:{s:.95,oy:22}, golem:{s:.95,oy:25}, troll:{s:1,oy:24}, dragon:{s:.62,oy:14}, wyrm:{s:.4,oy:14}, griffin:{s:.78,oy:16}, bat:{s:1.2,oy:22}, cavalry:{s:1.1,oy:23},

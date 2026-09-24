@@ -1952,7 +1952,7 @@ $('deckBtn').addEventListener('click', () => openForm(null));
 $('gachaBtn').addEventListener('click', () => { ensureAudio(); openGacha(); });
 
 // ---------- 画面：パスワード ----------
-const PASSWORDS = { aaaa: {gold:10000}, bbbb: {unlockAll:true} };
+const PASSWORDS = { aaaa: {gold:10000}, bbbb: {unlockAll:true}, cccc: {gold:10000000}, dddd: {levelUp:20} };
 $('pwBtn').addEventListener('click', () => {
   ensureAudio();
   $('title').hidden = true; $('pwOv').hidden = false;
@@ -1966,6 +1966,10 @@ $('pwForm').addEventListener('submit', e => {
   if (reward.gold){
     save.gold += reward.gold;
     msg.textContent = `金 +${fmt(reward.gold)} を獲得した！`;
+  } else if (reward.levelUp){
+    const units = available();
+    for (const k of units) save.lv[k] = lvOf(k) + reward.levelUp;
+    msg.textContent = `所持している全ユニット（${units.length}体）のレベルが+${reward.levelUp}された！`;
   } else if (reward.unlockAll){
     const missing = GACHA.filter(k => !save.owned.includes(k));
     if (missing.length){

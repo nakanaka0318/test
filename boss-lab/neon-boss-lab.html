@@ -17,6 +17,7 @@
   --cyan:#3ef0ff;      /* secondary neon */
   --gold:#ffd23e;      /* lasers, warnings */
   --bad:#ff5a73;
+  --ok:#7dffb0;
   --f-neon:"Tilt Neon","M PLUS 1p",system-ui,sans-serif;
   --f-body:"M PLUS 1p","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
   color-scheme:dark;
@@ -31,19 +32,19 @@ button,input,select,textarea{font:inherit;color:inherit}
 h1,h2,h3{margin:0;text-wrap:balance}
 .neon{font-family:var(--f-neon);font-weight:400;letter-spacing:.04em}
 
-/* buttons */
-.btn{appearance:none;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;font-weight:700;transition:box-shadow .15s,border-color .15s,transform .05s}
+.btn{appearance:none;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;font-weight:700;transition:box-shadow .15s,border-color .15s,transform .05s;text-decoration:none}
 .btn:active{transform:translateY(1px)}
-.btn:focus-visible,.chip:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.btn:focus-visible,.chip:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,.card:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .btn.pri{border-color:var(--pink);color:#fff;background:linear-gradient(180deg,#3a0f36,#22091f);box-shadow:0 0 14px #ff4fd855,inset 0 0 10px #ff4fd833}
 .btn.cy{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 10px #3ef0ff33}
 .btn.sm{min-height:34px;padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.ic{min-width:34px;padding:6px 8px}
 .btn.danger{border-color:#5a2232;color:var(--bad)}
-.btn[disabled]{opacity:.45;pointer-events:none}
+.btn[disabled]{opacity:.4;pointer-events:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .grow{flex:1}
-.topbar{display:flex;align-items:center;gap:8px;padding-block:12px 8px;border-bottom:1px solid var(--line)}
-.topbar h2{font-size:18px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar{display:flex;align-items:center;gap:6px;padding-block:12px 8px;border-bottom:1px solid var(--line)}
+.topbar h2{font-size:17px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .muted{color:var(--dim)}
 .small{font-size:12.5px}
 .sec-title{font-size:12px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin:18px 0 8px;display:flex;align-items:center;gap:8px}
@@ -52,12 +53,12 @@ h1,h2,h3{margin:0;text-wrap:balance}
 /* title */
 #title{justify-content:center;align-items:center;text-align:center}
 #titleBg{position:absolute;inset:0;width:100%;height:100%;opacity:.42;pointer-events:none}
-.title-wrap{position:relative;display:flex;flex-direction:column;gap:22px;align-items:center;width:100%;max-width:340px}
+.title-wrap{position:relative;display:flex;flex-direction:column;gap:20px;align-items:center;width:100%;max-width:340px}
 .logo{font-family:var(--f-neon);font-size:clamp(44px,15vw,72px);line-height:.95;color:#fff;text-shadow:0 0 6px #fff,0 0 16px var(--pink),0 0 36px var(--pink),0 0 60px #ff4fd866}
 .logo span{display:block;color:#eaffff;text-shadow:0 0 6px #fff,0 0 16px var(--cyan),0 0 36px var(--cyan)}
-.tagline{color:var(--dim);font-size:13px;letter-spacing:.06em}
+.tagline{color:var(--dim);font-size:13px;letter-spacing:.06em;margin:0}
 .menu{display:grid;gap:10px;width:100%}
-.menu .btn{min-height:52px;font-size:16px;justify-content:flex-start;padding-inline:18px}
+.menu .btn{min-height:50px;font-size:16px;justify-content:flex-start;padding-inline:18px}
 .menu .btn small{margin-left:auto;font-weight:400;color:var(--dim);font-size:11.5px}
 .toggles{display:flex;gap:8px;justify-content:center}
 @media (prefers-reduced-motion:no-preference){.logo{animation:flick 2.6s ease-out 1}}
@@ -71,9 +72,17 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .card .name{font-weight:800;font-size:16px;overflow-wrap:anywhere}
 .card .meta{font-size:12px;color:var(--dim);display:flex;gap:10px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
 .card .acts{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.card.tap{cursor:pointer}
+.card.tap:hover{border-color:#4a3c80}
+.rec{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ok)}
+.rec.none{color:var(--dim)}
 .badge{font-size:11px;font-weight:800;letter-spacing:.1em;padding:2px 7px;border-radius:5px;border:1px solid currentColor}
-.b-easy{color:#7dffb0}.b-normal{color:var(--gold)}.b-hard{color:var(--bad)}
+.b-easy{color:var(--ok)}.b-normal{color:var(--gold)}.b-hard{color:var(--bad)}
 .empty{border:1px dashed var(--line);border-radius:12px;padding:18px;color:var(--dim);font-size:13.5px;text-align:center}
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.mini{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer;text-align:left;min-width:0}
+.mini canvas{width:34px;height:34px;flex:none}
+.mini span{font-size:13px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* game */
 #game{padding-block:6px}
@@ -91,10 +100,19 @@ h1,h2,h3{margin:0;text-wrap:balance}
 .stat span{font-size:11.5px;color:var(--dim)}
 .hint{font-size:12px;color:var(--dim)}
 
+/* ship */
+.shipgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.shipcard{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:10px;text-align:left;cursor:pointer;display:grid;gap:4px}
+.shipcard b{font-size:15px}
+.shipcard span{font-size:12px;color:var(--dim);line-height:1.45}
+.shipcard[aria-pressed=true]{border-color:var(--cyan);box-shadow:0 0 12px #3ef0ff44}
+.shipcard[disabled]{opacity:.35;pointer-events:none}
+#shipPv{width:100%;max-width:200px;aspect-ratio:9/16;display:block;margin:0 auto;border-radius:8px;box-shadow:0 0 0 1px var(--line)}
+
 /* editor */
 .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px}
 .fld{display:grid;grid-template-columns:7.2em 1fr auto;gap:8px;align-items:center;font-size:13.5px}
-.fld>span:first-child{color:var(--dim)}
+.fld>span:first-child,.fld>label:first-child{color:var(--dim)}
 .fld output{min-width:4.6em;text-align:right;font-variant-numeric:tabular-nums;font-size:13px}
 .fld.wide{grid-template-columns:7.2em 1fr}
 input[type=range]{width:100%;accent-color:var(--pink);min-width:0}
@@ -110,12 +128,17 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
 .toggle input{width:18px;height:18px;accent-color:var(--pink)}
 .prevgrid{display:grid;grid-template-columns:minmax(120px,42%) 1fr;gap:12px;align-items:start}
 .prevgrid>div{min-width:0;display:grid;gap:10px}
+.pvcol{display:grid;gap:6px;min-width:0}
 #pvWrap{position:relative;aspect-ratio:9/16;max-width:100%;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
 #pv{width:100%;height:100%;display:block}
-.pvlabel{position:absolute;left:6px;top:4px;font-size:10px;letter-spacing:.12em;color:var(--dim)}
-.tl{position:relative;background:#0b0817;border:1px solid var(--line);border-radius:8px;height:74px;overflow:hidden}
-.tl .lane{position:absolute;left:0;right:0;height:22px}
-.tl .mk{position:absolute;height:14px;top:4px;min-width:6px;border-radius:4px;cursor:pointer;border:none;padding:0}
+.pvlabel{position:absolute;left:6px;top:4px;font-size:10px;letter-spacing:.12em;color:var(--dim);font-variant-numeric:tabular-nums}
+.pvctl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.pvctl .btn{min-height:30px;padding:2px 0;font-size:12px;border-radius:7px}
+.tl{position:relative;background:#0b0817;border:1px solid var(--line);border-radius:8px;height:86px;overflow:hidden;touch-action:pan-y;cursor:crosshair}
+.tl .lane{position:absolute;left:0;right:0;height:28px;pointer-events:none}
+.tl .lname{position:absolute;right:4px;font-size:9.5px;color:#5d5290;pointer-events:none}
+.tl .mk{position:absolute;height:18px;min-width:10px;border-radius:5px;cursor:grab;border:none;padding:0;touch-action:none}
+.tl .mk.drag{cursor:grabbing;outline:2px solid #fff}
 .tl .ph{position:absolute;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 6px #fff;pointer-events:none}
 .tl-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;margin-top:-6px}
 .ev{border:1px solid var(--line);border-left:4px solid var(--c,#888);border-radius:10px;background:var(--panel2);overflow:hidden}
@@ -125,23 +148,34 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
 .ev>header .tm{font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--ink)}
 .ev .evb{padding:4px 10px 12px;display:grid;gap:9px;border-top:1px solid var(--line)}
 .ev .evb[hidden]{display:none}
+.ev.flash{animation:flash .9s ease-out 1}
+@keyframes flash{0%{box-shadow:0 0 0 2px #fff}100%{box-shadow:0 0 0 0 transparent}}
 .mod,.tr{background:#0d0a19;border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:7px}
 .mod .row select,.tr .row select{flex:1}
-.addrow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.addrow{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .dock{position:absolute;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(0deg,var(--void) 70%,#07050f00);display:flex;gap:8px;z-index:3}
 .dock .btn{flex:1}
+.presets{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.preset{display:grid;gap:2px;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px;cursor:pointer}
+.preset b{font-size:14px}
+.preset span{font-size:11.5px;color:var(--dim)}
+#pvBig{position:fixed;inset:0;z-index:25;background:#05030bf2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:max(12px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+#pvBigCv{height:min(78vh,calc((100vw - 32px)*16/9));aspect-ratio:9/16;max-width:100%;border-radius:8px;box-shadow:0 0 0 1px var(--line)}
+#pvBig .pvctl{width:min(360px,100%);grid-template-columns:repeat(5,1fr)}
 
 /* board */
 .lb{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;grid-column:1/-1}
-.lb div{background:#0d0a19;border-radius:8px;padding:6px;text-align:center;font-variant-numeric:tabular-nums}
+.lb div{background:#0d0a19;border-radius:8px;padding:6px;text-align:center;font-variant-numeric:tabular-nums;min-width:0}
 .lb b{display:block;font-size:14px}
-.lb span{font-size:10.5px;color:var(--dim)}
+.lb span{font-size:10.5px;color:var(--dim);overflow-wrap:anywhere}
 .liked{border-color:var(--pink)!important;color:var(--pink)}
 
 /* modal + toast */
 .modal{position:fixed;inset:0;z-index:20;background:#05030bdd;display:flex;align-items:flex-end;justify-content:center;padding:16px}
 .modal .sheet{width:100%;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px;max-height:90%;overflow:auto;margin-bottom:env(safe-area-inset-bottom,0px)}
 .modal h3{font-size:17px}
+.pf-head{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center}
+.pf-head canvas{width:52px;height:52px}
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1d1538;border:1px solid var(--cyan);color:#fff;padding:9px 16px;border-radius:999px;font-size:13.5px;z-index:30;box-shadow:0 0 18px #3ef0ff44;max-width:calc(100% - 32px);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -157,6 +191,7 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
       <div class="menu">
         <button class="btn pri" id="mPlay" type="button">▶ あそぶ<small>サンプル / マイボス</small></button>
         <button class="btn cy" id="mMake" type="button">✎ ボスを作る<small>タイムラインで設計</small></button>
+        <button class="btn" id="mShip" type="button">✈ 自機カスタマイズ<small id="mShipSub">バランス型</small></button>
         <button class="btn" id="mBoard" type="button">☰ みんなのボス置き場<small id="mBoardSub">挑戦・いいね</small></button>
         <button class="btn" id="mImport" type="button">⇩ 共有コードを読み込む</button>
       </div>
@@ -164,23 +199,37 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
         <button class="btn sm" id="tgSE" type="button" aria-pressed="true">効果音 ON</button>
         <button class="btn sm" id="tgBGM" type="button" aria-pressed="true">BGM ON</button>
       </div>
-      <p class="hint">スマホ：画面のどこでもドラッグで移動（自機は指の動きに追従）<br>PC：矢印キー / WASD、Shiftで低速、Escでポーズ</p>
+      <p class="hint" style="margin:0">スマホ：画面のどこでもドラッグで移動（感度は自機カスタマイズで変更）<br>PC：矢印キー / WASD、Shiftで低速、Escでポーズ</p>
     </div>
   </section>
 
-  <!-- SELECT -->
+  <!-- SELECT (play) -->
   <section class="screen" id="select" hidden>
-    <div class="topbar"><button class="btn sm" data-back type="button">← 戻る</button><h2>ボスを選ぶ</h2></div>
+    <div class="topbar"><button class="btn sm" data-back type="button">← 戻る</button><h2>ボスを選ぶ</h2><button class="btn sm" id="selImport" type="button">⇩ コード</button></div>
     <div class="scroll">
       <div class="sec-title">サンプルボス</div>
       <div class="cards" id="sampleList"></div>
       <div class="sec-title">マイボス</div>
       <div class="cards" id="myList"></div>
-      <div class="row" style="margin-top:12px">
-        <button class="btn cy grow" id="newBoss" type="button">＋ 新しいボスを作る</button>
-        <button class="btn grow" id="selImport" type="button">⇩ コードを読み込む</button>
-      </div>
     </div>
+  </section>
+
+  <!-- MAKE -->
+  <section class="screen" id="make" hidden>
+    <div class="topbar"><button class="btn sm" data-back type="button">← 戻る</button><h2>ボスを作る</h2></div>
+    <div class="scroll">
+      <button class="btn pri" id="newBoss" type="button" style="width:100%;min-height:52px">＋ 新しいボスを作る</button>
+      <div class="sec-title">マイボス（タップで編集）</div>
+      <div class="cards" id="makeList"></div>
+      <div class="sec-title">サンプルを改造して作る</div>
+      <div class="minis" id="remixList"></div>
+    </div>
+  </section>
+
+  <!-- SHIP -->
+  <section class="screen" id="ship" hidden>
+    <div class="topbar"><button class="btn sm" id="shipBack" type="button">← 戻る</button><h2>自機カスタマイズ</h2></div>
+    <div class="scroll" id="shipScroll"></div>
   </section>
 
   <!-- GAME -->
@@ -217,6 +266,8 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
     <div class="topbar">
       <button class="btn sm" id="edBack" type="button">← 戻る</button>
       <h2 id="edTitle">ボス編集</h2>
+      <button class="btn sm ic" id="edUndo" type="button" aria-label="元に戻す" title="元に戻す (Ctrl+Z)">↶</button>
+      <button class="btn sm ic" id="edRedo" type="button" aria-label="やり直す" title="やり直す (Ctrl+Shift+Z)">↷</button>
       <button class="btn sm cy" id="edShare" type="button">共有</button>
       <button class="btn sm pri" id="edSave" type="button">保存</button>
     </div>
@@ -243,6 +294,10 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
   </section>
 </div>
 
+<div id="pvBig" hidden>
+  <canvas id="pvBigCv" aria-label="拡大プレビュー"></canvas>
+  <div class="pvctl" id="pvBigCtl"></div>
+</div>
 <div class="modal" id="modal" hidden><div class="sheet" id="sheet"></div></div>
 <div id="toast" hidden></div>
 
@@ -252,7 +307,7 @@ textarea{font-family:ui-monospace,Menlo,monospace;font-size:12px;resize:vertical
    NEON BOSS LAB — single-file bullet-dodge + boss editor
    ========================================================= */
 const W = 360, H = 640;
-const ARTIFACT_URL = 'https://claude.ai/artifact/PVUQz9kx3Qd4jRgYandFZ1';            // claude.ai 版 (みんなのボス置き場) のURL。GitHub版で案内に使う
+const ARTIFACT_URL = 'https://claude.ai/artifact/PVUQz9kx3Qd4jRgYandFZ1';
 const $ = s => document.querySelector(s);
 function el(tag, attrs, ...kids){
   const e = document.createElement(tag);
@@ -269,9 +324,11 @@ function el(tag, attrs, ...kids){
 }
 const clamp = (v,a,b) => v<a?a:v>b?b:v;
 const rad = d => d*Math.PI/180;
+const ease = f => f<.5 ? 2*f*f : 1-Math.pow(-2*f+2,2)/2;
 const fmtTime = s => { s = Math.max(0,s); const m = Math.floor(s/60); return m+':'+(s-m*60).toFixed(1).padStart(4,'0'); };
 const uid8 = () => Math.random().toString(36).slice(2,10);
 const clone = o => JSON.parse(JSON.stringify(o));
+const BITL = 'ABCDEF';
 const store = {
   get(k,d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
@@ -285,14 +342,22 @@ const HUE_NAME = {330:'ピンク',185:'シアン',55:'イエロー',130:'グリ�
 const colOf = (h,a=1) => h < 0 ? `rgba(255,255,255,${a})` : `hsla(${h},100%,62%,${a})`;
 const SIZES = {s:4, m:7, l:12};
 const SHAPES = [['circle','まる'],['diamond','ひし形'],['hex','六角'],['star','星'],['tri','三角']];
+const BSHAPES = [['orb','丸'],['rice','米粒'],['knife','ナイフ'],['star','星'],['heart','ハート'],['ring','リング']];
+const SHIP_TYPES = {
+  balance:{n:'バランス型', d:'正面に2連ショット。どこからでも安定した火力。', rate:15, shots:[[-6,0],[6,0]]},
+  spread:{n:'拡散型', d:'5方向に扇状ショット。ボスに近づくほど強い（密着で約2倍）。', rate:12, shots:[[0,-14],[-3,-7],[0,0],[3,7],[0,14]]},
+};
+const SHIP_FORMS = [['arrow','アロー'],['delta','デルタ'],['round','ラウンド'],['wing','ウイング']];
 const T_FIELD = {k:'t',l:'開始',t:'r',min:0,max:60,step:0.05,d:0,u:'秒',tmax:1};
+const SRC_FIELD = {k:'src',l:'発射元',t:'src',d:'boss'};
 const F = {
   shot: [
-    T_FIELD,
+    T_FIELD, SRC_FIELD,
     {k:'pattern',l:'パターン',t:'s',d:'ring',re:1,o:[['ring','全方位'],['spiral','渦巻き'],['aimed','自機狙い'],['fan','扇（下向き）'],['random','ランダム'],['rain','雨（画面上から）']]},
     {k:'count',l:'弾数',t:'r',min:1,max:48,step:1,d:12,u:'発'},
     {k:'speed',l:'弾速',t:'r',min:20,max:400,step:5,d:120},
     {k:'layers',l:'速度の段',t:'r',min:1,max:4,step:1,d:1,u:'段'},
+    {k:'shape',l:'弾の形',t:'s',d:'orb',o:BSHAPES},
     {k:'size',l:'大きさ',t:'s',d:'m',o:[['s','小'],['m','中'],['l','大']]},
     {k:'color',l:'色',t:'c',d:330},
     {k:'repeat',l:'くり返し',t:'r',min:1,max:60,step:1,d:1,u:'回',re:1},
@@ -300,6 +365,9 @@ const F = {
     {k:'rot',l:'1回ごと回転',t:'r',min:-90,max:90,step:1,d:0,u:'°',show:e=>e.repeat>1},
     {k:'spread',l:'広がり',t:'r',min:0,max:360,step:5,d:60,u:'°',show:e=>['aimed','fan','rain'].includes(e.pattern)},
     {k:'angle',l:'向き補正',t:'r',min:-180,max:180,step:1,d:0,u:'°',show:e=>e.pattern!=='random'},
+    {k:'bounce',l:'壁で反射',t:'r',min:0,max:5,step:1,d:0,u:'回'},
+    {k:'wave',l:'蛇行の幅',t:'r',min:0,max:90,step:5,d:0,u:'°',re:1},
+    {k:'wfreq',l:'蛇行の速さ',t:'r',min:0.2,max:4,step:0.1,d:1,u:'回/秒',show:e=>e.wave>0},
   ],
   move: [
     T_FIELD,
@@ -312,7 +380,7 @@ const F = {
     {k:'speed',l:'追う速さ',t:'r',min:10,max:300,step:5,d:80,show:e=>e.kind==='chase'},
   ],
   laser: [
-    T_FIELD,
+    T_FIELD, SRC_FIELD,
     {k:'kind',l:'種類',t:'s',d:'aimed',re:1,o:[['aimed','自機狙い'],['fixed','固定方向'],['radial','放射']]},
     {k:'count',l:'本数',t:'r',min:1,max:12,step:1,d:1,u:'本',re:1},
     {k:'angle',l:'向き',t:'r',min:-180,max:180,step:1,d:0,u:'°'},
@@ -322,6 +390,20 @@ const F = {
     {k:'width',l:'太さ',t:'r',min:4,max:40,step:1,d:12},
     {k:'sweep',l:'なぎ払い',t:'r',min:-120,max:120,step:5,d:0,u:'°/秒'},
     {k:'color',l:'色',t:'c',d:55},
+  ],
+  bit: [
+    {k:'kind',l:'動き方',t:'s',d:'orbit',re:1,o:[['orbit','ボスの周りを回る'],['side','ボスの横に並ぶ'],['fixed','固定位置'],['chase','自機を追う']]},
+    {k:'r',l:'半径',t:'r',min:20,max:160,step:2,d:60,show:e=>e.kind==='orbit'},
+    {k:'speed',l:'回転速度',t:'r',min:-360,max:360,step:5,d:90,u:'°/秒',show:e=>e.kind==='orbit'},
+    {k:'angle',l:'初期角度',t:'r',min:0,max:355,step:5,d:0,u:'°',show:e=>e.kind==='orbit'},
+    {k:'ox',l:'横のずれ',t:'r',min:-160,max:160,step:2,d:-60,show:e=>e.kind==='side'},
+    {k:'oy',l:'縦のずれ',t:'r',min:-120,max:120,step:2,d:0,show:e=>e.kind==='side'},
+    {k:'x',l:'横位置',t:'r',min:5,max:95,step:1,d:25,u:'%',show:e=>e.kind==='fixed'},
+    {k:'y',l:'縦位置',t:'r',min:5,max:70,step:1,d:25,u:'%',show:e=>e.kind==='fixed'},
+    {k:'cs',l:'追う速さ',t:'r',min:10,max:200,step:5,d:45,show:e=>e.kind==='chase'},
+    {k:'brk',l:'壊せる',t:'b',d:true,re:1},
+    {k:'hp',l:'ビットHP',t:'r',min:10,max:600,step:10,d:80,show:e=>e.brk},
+    {k:'color',l:'色',t:'c',d:185},
   ]
 };
 const EV_META = {
@@ -332,31 +414,42 @@ const MODS = {
   accel:{l:'加速しはじめる',min:-300,max:300,step:5,d:120,u:'/秒²'},
   turn:{l:'曲がりはじめる',min:-360,max:360,step:5,d:90,u:'°/秒'},
   aim:{l:'自機に向き直る',min:-45,max:45,step:1,d:0,u:'°ずれ'},
+  home:{l:'自機を追尾する',min:0.2,max:5,step:0.1,d:1.5,u:'秒間'},
   stop:{l:'止まる',nov:1},
   split:{l:'分裂する',min:2,max:12,step:1,d:4,u:'個'},
 };
 const CONDS = {
   hp:{l:'ボスHPが ○% 以下',min:1,max:99,step:1,d:50,u:'%'},
   time:{l:'フェーズ経過 ○秒',min:0.5,max:120,step:0.5,d:10,u:'秒'},
+  total:{l:'戦闘開始から ○秒',min:1,max:300,step:1,d:60,u:'秒'},
   loop:{l:'タイムライン ○周ごと',min:1,max:20,step:1,d:2,u:'周'},
+  visit:{l:'このフェーズ ○回目以上',min:2,max:10,step:1,d:2,u:'回目'},
+  bits:{l:'壊せるビットが ○体以下',min:0,max:5,step:1,d:0,u:'体'},
   ptop:{l:'自機が上から ○% 以内',min:10,max:90,step:5,d:40,u:'%'},
+  pleft:{l:'自機が画面の左半分',nov:1},
+  pright:{l:'自機が画面の右半分',nov:1},
+  near:{l:'自機がボスから ○px 以内',min:40,max:400,step:10,d:120,u:'px'},
   lives:{l:'残機が ○ 以下',min:1,max:8,step:1,d:1,u:'機'},
   hit:{l:'自機が被弾した',nov:1},
 };
+const EVENTED = {loop:1, hit:1};
 
 /* ---- normalization (all external data passes through here) ---- */
 function nnum(v,min,max,step,d){ v = +v; if (!isFinite(v)) v = d; v = clamp(v,min,max); if (step) v = Math.round(v/step)*step; return +v.toFixed(3); }
 function nstr(v,d,max){ v = typeof v === 'string' ? v.replace(/[\u0000-\u001f]/g,'').trim().slice(0,max) : ''; return v || d; }
 function nfield(f,v){
+  if (v === undefined) return f.d;
   if (f.t === 'r') return nnum(v,f.min,f.max,f.step,f.d);
   if (f.t === 's') return f.o.some(o=>o[0]===v) ? v : f.d;
   if (f.t === 'c') return HUES.includes(+v) ? +v : f.d;
   if (f.t === 'b') return !!v;
+  if (f.t === 'src') return /^(boss|bits|bit[0-5])$/.test(v) ? v : 'boss';
   return f.d;
 }
-function newEvent(type, over){ const e = {type}; for (const f of F[type]) e[f.k] = f.d; if (type==='shot') e.mods = []; return Object.assign(e, over||{}); }
+function newObj(type, over){ const e = type === 'bit' ? {} : {type}; for (const f of F[type]) e[f.k] = f.d; if (type==='shot') e.mods = []; return Object.assign(e, over||{}); }
+const newEvent = newObj;
 function normEvent(o){
-  if (!o || !F[o.type]) return null;
+  if (!o || !F[o.type] || o.type === 'bit') return null;
   const e = {type:o.type};
   for (const f of F[o.type]) e[f.k] = nfield(f, o[f.k]);
   if (o.type === 'shot'){
@@ -367,6 +460,7 @@ function normEvent(o){
   }
   return e;
 }
+function normBit(o){ o = o && typeof o === 'object' ? o : {}; const b = {}; for (const f of F.bit) b[f.k] = nfield(f, o[f.k]); return b; }
 function normTrans(o, nPh){
   if (!o || !CONDS[o.c]) return null;
   const C = CONDS[o.c];
@@ -381,6 +475,7 @@ function normPhase(o, nPh){
     dur: nnum(o.dur,1,60,0.5,5),
     loop: o.loop === undefined ? true : !!o.loop,
     inv: !!o.inv,
+    bits: (Array.isArray(o.bits)?o.bits:[]).slice(0,6).map(normBit),
     events: (Array.isArray(o.events)?o.events:[]).slice(0,40).map(normEvent).filter(Boolean),
     trans: (Array.isArray(o.trans)?o.trans:[]).slice(0,6).map(t=>normTrans(t,nPh)).filter(Boolean),
   };
@@ -390,18 +485,30 @@ function normBoss(o){
   const raw = (Array.isArray(o.phases)?o.phases:[]).slice(0,12);
   const n = Math.max(1, raw.length);
   const b = {
-    v:1,
+    v:2,
     name: nstr(o.name,'名もなきボス',20),
     hue: HUES.includes(+o.hue) ? +o.hue : 330,
     shape: SHAPES.some(s=>s[0]===o.shape) ? o.shape : 'circle',
     hp: nnum(o.hp,100,9000,50,1000),
     lives: nnum(o.lives,1,9,1,3),
+    ship: ['any','balance','spread'].includes(o.ship) ? o.ship : 'any',
     phases: raw.map(p=>normPhase(p,n)),
   };
   if (o.diff && /^(EASY|NORMAL|HARD)$/.test(o.diff)) b.diff = o.diff;
   if (!b.phases.length) b.phases = [normPhase({name:'第一形態',events:[newEvent('shot')]},1)];
   return b;
 }
+function normShip(o){
+  o = o && typeof o === 'object' ? o : {};
+  return {
+    type: SHIP_TYPES[o.type] ? o.type : 'balance',
+    sens: nnum(o.sens,0.5,2.5,0.05,1.25),
+    hue: HUES.includes(+o.hue) ? +o.hue : 185,
+    form: SHIP_FORMS.some(f=>f[0]===o.form) ? o.form : 'arrow',
+  };
+}
+let Ship = normShip(store.get('nbl.ship', {}));
+function saveShip(){ store.set('nbl.ship', Ship); $('#mShipSub').textContent = SHIP_TYPES[Ship.type].n; }
 
 /* ---------------- sample bosses ---------------- */
 const SAMPLES = [
@@ -446,6 +553,32 @@ const SAMPLES = [
     {type:'laser',t:3.5,kind:'aimed',count:1,warn:0.8,dur:0.8,width:20,color:185}],
    trans:[]}
  ]},
+ {name:'ネオン・オービター', diff:'NORMAL', hue:130, shape:'diamond', hp:1200, lives:3, phases:[
+  {name:'オービット・ダンス', dur:4,
+   bits:[{kind:'orbit',r:62,speed:110,angle:0,brk:true,hp:120,color:130},{kind:'orbit',r:62,speed:110,angle:180,brk:true,hp:120,color:130}],
+   events:[
+    {type:'move',t:0,kind:'sway',amp:20,period:6},
+    {type:'shot',t:0.4,src:'bits',pattern:'aimed',count:3,spread:20,speed:170,shape:'rice',size:'s',color:130,repeat:3,interval:0.2},
+    {type:'shot',t:2,pattern:'ring',count:16,speed:100,shape:'ring',size:'m',color:55,bounce:1}],
+   trans:[{c:'bits',v:0,p:100,to:'next'},{c:'hp',v:60,p:100,to:'next'}]},
+  {name:'ウイング・ナイフ', dur:5,
+   bits:[{kind:'side',ox:-72,oy:6,brk:false,color:55},{kind:'side',ox:72,oy:6,brk:false,color:55}],
+   events:[
+    {type:'move',t:0,kind:'to',x:50,y:18,dur:1},
+    {type:'shot',t:0.6,src:'bits',pattern:'fan',count:5,spread:50,speed:200,shape:'knife',size:'m',color:-1,repeat:4,interval:0.25},
+    {type:'shot',t:2.5,pattern:'spiral',count:3,speed:120,shape:'star',size:'m',color:55,repeat:20,interval:0.1,rot:15,wave:25,wfreq:1.5}],
+   trans:[{c:'hp',v:30,p:100,to:'next'},{c:'near',v:110,p:100,to:3}]},
+  {name:'ハンター', dur:4,
+   bits:[{kind:'chase',cs:40,brk:true,hp:60,color:20},{kind:'fixed',x:15,y:30,brk:true,hp:60,color:20},{kind:'fixed',x:85,y:30,brk:true,hp:60,color:20}],
+   events:[
+    {type:'shot',t:0.3,pattern:'aimed',count:4,spread:90,speed:150,shape:'knife',size:'m',color:20,repeat:2,interval:1,mods:[{at:0.3,type:'home',v:1.2}]},
+    {type:'shot',t:2,src:'bits',pattern:'ring',count:8,speed:90,shape:'heart',size:'m',color:330}],
+   trans:[]},
+  {name:'近づくな！', dur:2.5, inv:true, events:[
+    {type:'shot',t:0,pattern:'ring',count:30,speed:220,shape:'knife',size:'m',color:-1},
+    {type:'shot',t:0.4,pattern:'ring',count:30,speed:180,shape:'knife',size:'m',color:330,angle:6}],
+   trans:[{c:'time',v:2.5,p:100,to:1}]}
+ ]},
  {name:'アビス・クラウン', diff:'HARD', hue:330, shape:'star', hp:1800, lives:3, phases:[
   {name:'深淵の冠', dur:4, events:[
     {type:'move',t:0,kind:'circle',amp:18,period:5},
@@ -474,6 +607,7 @@ const SAMPLES = [
    trans:[]}
  ]}
 ].map(normBoss);
+const SAMPLE_KEYS = ['s:jelly','s:owl','s:orbiter','s:crown'];
 
 function templateBoss(){
   return normBoss({name:'マイボス', hue:185, shape:'diamond', hp:800, lives:3, phases:[
@@ -488,6 +622,36 @@ function templateBoss(){
      trans:[]}
   ]});
 }
+
+/* bullet presets for the editor (t = insert time) */
+const PRESETS = [
+  {n:'花', d:'回転しながら開く花びら', ev:t=>[
+    {type:'shot',t,pattern:'ring',count:12,speed:110,shape:'rice',color:330,mods:[{at:0.3,type:'turn',v:120},{at:1.2,type:'turn',v:0}]},
+    {type:'shot',t,pattern:'ring',count:12,speed:110,shape:'rice',color:275,angle:15,mods:[{at:0.3,type:'turn',v:-120},{at:1.2,type:'turn',v:0}]}]},
+  {n:'二重螺旋', d:'逆回転する2本の渦', ev:t=>[
+    {type:'shot',t,pattern:'spiral',count:2,speed:130,shape:'rice',size:'s',color:185,repeat:30,interval:0.08,rot:14},
+    {type:'shot',t,pattern:'spiral',count:2,speed:130,shape:'rice',size:'s',color:330,repeat:30,interval:0.08,rot:-14}]},
+  {n:'波', d:'くねくね蛇行する扇', ev:t=>[
+    {type:'shot',t,pattern:'fan',count:9,spread:100,speed:120,shape:'rice',color:130,wave:35,wfreq:1.2,repeat:4,interval:0.4}]},
+  {n:'反射リング', d:'壁で2回跳ね返る輪', ev:t=>[
+    {type:'shot',t,pattern:'ring',count:20,speed:150,shape:'ring',color:55,bounce:2}]},
+  {n:'ホーミング', d:'少しのあいだ自機を追う', ev:t=>[
+    {type:'shot',t,pattern:'aimed',count:5,spread:120,speed:140,shape:'knife',color:20,repeat:2,interval:0.8,mods:[{at:0.4,type:'home',v:1.2}]}]},
+  {n:'ナイフ扇', d:'速いナイフの3連射', ev:t=>[
+    {type:'shot',t,pattern:'aimed',count:7,spread:40,speed:260,shape:'knife',color:-1,repeat:3,interval:0.12}]},
+  {n:'星くず雨', d:'上から降る回転する星', ev:t=>[
+    {type:'shot',t,pattern:'rain',count:3,speed:140,shape:'star',color:55,repeat:20,interval:0.15,spread:30}]},
+  {n:'ハートリング', d:'止まってから狙ってくる', ev:t=>[
+    {type:'shot',t,pattern:'ring',count:14,speed:90,shape:'heart',size:'l',color:330,mods:[{at:0.8,type:'stop'},{at:1.4,type:'aim',v:0},{at:1.4,type:'speed',v:180}]}]},
+  {n:'米粒ばらまき', d:'2段の速さでランダム連射', ev:t=>[
+    {type:'shot',t,pattern:'random',count:6,speed:150,shape:'rice',size:'s',color:185,repeat:25,interval:0.08,layers:2}]},
+  {n:'停止→狙い', d:'全方位が止まって一斉に飛ぶ', ev:t=>[
+    {type:'shot',t,pattern:'ring',count:24,speed:170,color:275,mods:[{at:0.5,type:'stop'},{at:1.2,type:'aim',v:0},{at:1.2,type:'speed',v:220}]}]},
+  {n:'予告レーザー', d:'自機狙いの太いレーザー', ev:t=>[
+    {type:'laser',t,kind:'aimed',count:1,warn:1,dur:0.8,width:20,color:55}]},
+  {n:'なぎ払い', d:'放射レーザーが回転', ev:t=>[
+    {type:'laser',t,kind:'radial',count:4,angle:45,sweep:40,warn:1.2,dur:2,width:10,color:185}]},
+];
 
 /* =========================================================
    SOUND — procedural SE + BGM (Web Audio)
@@ -523,12 +687,14 @@ const Sound = {
   },
   play(n){
     if (!this.ctx || !this.se) return;
-    const now = this.ctx.currentTime, gap = {shot:0.09, bhit:0.07, fire:0.05, warn:0.08}[n] || 0;
+    const now = this.ctx.currentTime, gap = {shot:0.09, bhit:0.07, fire:0.05, warn:0.08, bit:0.05}[n] || 0;
     if (gap && this.last[n] && now - this.last[n] < gap) return;
     this.last[n] = now; const o = this.sg;
     switch(n){
       case 'shot': this.tone(o, 1800, 0.03, 'square', 0.025, 900); break;
       case 'bhit': this.tone(o, 320, 0.04, 'square', 0.04, 180); break;
+      case 'bit': this.tone(o, 900, 0.04, 'square', 0.03, 600); break;
+      case 'bitdie': this.nz(o, 0.35, 0.3, 'bandpass', 1600); this.tone(o, 700, 0.3, 'square', 0.08, 120); break;
       case 'fire': this.tone(o, 620, 0.05, 'triangle', 0.05, 420); break;
       case 'warn': this.tone(o, 880, 0.18, 'sine', 0.08); this.tone(o, 1320, 0.18, 'sine', 0.05, null, now+0.09); break;
       case 'laser': this.nz(o, 0.5, 0.25, 'lowpass', 1400); this.tone(o, 110, 0.5, 'sawtooth', 0.12, 70); break;
@@ -545,7 +711,6 @@ const Sound = {
 };
 const Music = {
   on:false, step:0, next:0, timer:0, level:0, tempo:138,
-  // A minor: Am F C G  (root Hz, chord intervals)
   prog:[[110,[0,3,7,12]],[87.31,[0,4,7,12]],[130.81,[0,4,7,12]],[98,[0,4,7,12]]],
   start(level){
     Sound.init(); if (!Sound.ctx) return;
@@ -563,15 +728,11 @@ const Music = {
   note(s, t){
     const o = Sound.mg, L = this.level, bar = Math.floor(s/16), st = s%16;
     const [root, iv] = this.prog[bar];
-    // drums
     if (st%4===0) Sound.tone(o, 150, 0.16, 'sine', 0.55, 40, t);
     if (L>=1 && (st===4||st===12)) Sound.nz(o, 0.14, 0.22, 'bandpass', 1800, t);
     if (st%2===1 || (L>=2)) Sound.nz(o, 0.04, st%2 ? 0.12 : 0.06, 'highpass', 7000, t);
-    // bass (8ths, octave pop)
     if (st%2===0) Sound.tone(o, root*(st%8===6?2:1), 0.18, 'sawtooth', 0.13, null, t);
-    // arp
     if (L>=1){ const f = root*4*Math.pow(2, iv[(st + (L>=2?bar:0))%4]/12); Sound.tone(o, f, 0.11, 'square', 0.035, null, t); }
-    // lead stab on level 2+
     if (L>=2 && (st===0||st===3||st===6||st===10)) Sound.tone(o, root*8*Math.pow(2, iv[(st>>1)%3]/12), 0.22, 'triangle', 0.05, null, t);
   }
 };
@@ -584,12 +745,16 @@ class Game {
   constructor(boss, opt){
     this.b = boss; this.o = opt || {};
     this.preview = !!this.o.preview;
-    this.bul = []; this.las = []; this.shots = []; this.parts = []; this.emit = [];
+    this.ship = normShip(this.o.ship || Ship);
+    if (boss.ship && boss.ship !== 'any') this.ship.type = boss.ship;
+    this.st = SHIP_TYPES[this.ship.type];
+    this.bul = []; this.las = []; this.shots = []; this.parts = []; this.emit = []; this.bits = [];
     this.hpMax = boss.hp; this.hp = boss.hp;
     this.bx = W/2; this.by = H*0.18; this.mv = {kind:'stop'};
     this.p = {x:W/2, y:H*0.82, inv:0, lives:boss.lives};
     this.t = 0; this.hits = 0; this.over = 0; this.endT = 0; this.result = null;
-    this.flash = 0; this.shake = 0; this.bflash = 0; this.shotT = 0; this.boom = 0;
+    this.flash = 0; this.shake = 0; this.bflash = 0; this.shotT = 0;
+    this.visits = {};
     this.input = {dx:0, dy:0};
     this.enter(clamp(this.o.startPhase||0, 0, boss.phases.length-1), true);
   }
@@ -597,15 +762,19 @@ class Game {
   ty(){ return this.preview ? H*0.82 : this.p.y; }
   enter(i, first){
     this.pi = i; this.ph = this.b.phases[i]; this.pt = 0; this.loops = 0;
+    this.visits[i] = (this.visits[i]||0) + 1;
     this.evs = this.ph.events.slice().sort((a,b)=>a.t-b.t);
     this.emit.length = 0; this.las.length = 0; this.mv = {kind:'stop'};
     this.rolled = new Set(); this.fHit = false; this.fLoop = false;
     this.grace = first ? 0.6 : 1.0;
     this.clearBullets();
+    for (const bt of this.bits) if (bt.alive) this.burst(bt.x, bt.y, bt.d.color, 10);
+    this.bits = this.ph.bits.map((d,j)=>({d, j, alive:true, hp:d.hp, x:this.bx, y:this.by, sx:this.bx, sy:this.by, t:0, fl:0, ang:rad(d.angle)}));
     this.banner = {name:this.ph.name, idx:i, t:0};
     if (!first && !this.preview){ Sound.play('phase'); this.flash = 0.5; }
     if (!this.preview) Music.level = Math.min(2, i);
   }
+  burst(x, y, h, n){ for (let k=0;k<n && this.parts.length<1400;k++){ const a = Math.random()*Math.PI*2, s = 40+Math.random()*180; this.parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:0.6,ml:0.6,h,r:2.2}); } }
   clearBullets(){
     for (const b of this.bul) if (this.parts.length < 1400) this.parts.push({x:b.x,y:b.y,vx:(Math.random()-.5)*40,vy:-40-Math.random()*40,l:0.5,ml:0.5,h:b.h,r:2.2});
     this.bul.length = 0;
@@ -614,7 +783,6 @@ class Game {
     this.t += dt;
     if (this.over){ this.endT += dt; this.updParts(dt); this.updBul(dt, true); return; }
     const ph = this.ph;
-    // ----- timeline -----
     const prev = this.pt; this.pt += dt;
     if (ph.loop){
       const d = ph.dur, l0 = Math.floor(prev/d), l1 = Math.floor(this.pt/d);
@@ -625,7 +793,6 @@ class Game {
       }
     } else if (prev < ph.dur) this.fireRange(prev, Math.min(this.pt, ph.dur+1e-6));
     else if (this.preview && this.pt > ph.dur + 2.5){ this.enter(this.pi); return; }
-    // ----- emitters -----
     for (let i = this.emit.length-1; i >= 0; i--){
       const em = this.emit[i]; em.next -= dt;
       let guard = 0;
@@ -633,26 +800,21 @@ class Game {
       if (em.n <= 0) this.emit.splice(i,1);
     }
     this.updMove(dt);
-    // ----- player -----
+    this.updBits(dt);
     const p = this.p;
     if (!this.preview){
       p.x = clamp(p.x + this.input.dx, 8, W-8); p.y = clamp(p.y + this.input.dy, 12, H-10);
       this.input.dx = this.input.dy = 0;
       if (p.inv > 0) p.inv -= dt;
       this.shotT -= dt;
-      if (this.shotT <= 0){ this.shotT = 1/15; this.shots.push({x:p.x-6,y:p.y-8},{x:p.x+6,y:p.y-8}); Sound.play('shot'); }
-    }
-    // ----- player shots -----
-    for (let i = this.shots.length-1; i >= 0; i--){
-      const s = this.shots[i]; s.y -= 820*dt;
-      if (Math.abs(s.x-this.bx) < 26 && Math.abs(s.y-this.by) < 26){
-        this.shots[i] = this.shots[this.shots.length-1]; this.shots.pop();
-        if (this.parts.length < 1400) this.parts.push({x:s.x,y:s.y+6,vx:(Math.random()-.5)*120,vy:-Math.random()*80,l:0.2,ml:0.2,h:this.b.hue,r:1.6});
-        if (!ph.inv && this.grace <= 0){ this.hp -= 1; this.bflash = 0.06; Sound.play('bhit'); if (this.hp <= 0){ this.hp = 0; this.win(); return; } }
-        continue;
+      if (this.shotT <= 0){
+        this.shotT = 1/this.st.rate;
+        for (const [ox, ad] of this.st.shots){ const a = rad(ad); this.shots.push({x:p.x+ox, y:p.y-8, vx:Math.sin(a)*820, vy:-Math.cos(a)*820, a}); }
+        Sound.play('shot');
       }
-      if (s.y < -20){ this.shots[i] = this.shots[this.shots.length-1]; this.shots.pop(); }
     }
+    this.updShots(dt);
+    if (this.over) return;
     this.updBul(dt, false);
     this.updLas(dt);
     this.updParts(dt);
@@ -664,38 +826,95 @@ class Game {
     if (!this.preview && !this.o.lockPhase) this.checkTrans();
     this.fHit = false; this.fLoop = false;
   }
-  fireRange(s, e){
-    for (const ev of this.evs){ if (ev.t >= s && ev.t < e) this.fireEvent(ev); }
+  updShots(dt){
+    const S = this.shots;
+    shot: for (let i = S.length-1; i >= 0; i--){
+      const s = S[i]; s.x += s.vx*dt; s.y += s.vy*dt;
+      if (s.y < -20 || s.x < -20 || s.x > W+20){ S[i] = S[S.length-1]; S.pop(); continue; }
+      for (const bt of this.bits){
+        if (!bt.alive || !bt.d.brk) continue;
+        const dx = s.x-bt.x, dy = s.y-bt.y;
+        if (dx*dx+dy*dy < 13*13){
+          S[i] = S[S.length-1]; S.pop();
+          if (this.grace <= 0){ bt.hp -= 1; bt.fl = 0.06; Sound.play('bit');
+            if (bt.hp <= 0){ bt.alive = false; this.burst(bt.x, bt.y, bt.d.color, 30); Sound.play('bitdie'); this.shake = Math.max(this.shake, 0.15); } }
+          continue shot;
+        }
+      }
+      if (Math.abs(s.x-this.bx) < 26 && Math.abs(s.y-this.by) < 26){
+        S[i] = S[S.length-1]; S.pop();
+        if (this.parts.length < 1400) this.parts.push({x:s.x,y:s.y+6,vx:(Math.random()-.5)*120,vy:-Math.random()*80,l:0.2,ml:0.2,h:this.b.hue,r:1.6});
+        if (!this.ph.inv && this.grace <= 0){ this.hp -= 1; this.bflash = 0.06; Sound.play('bhit'); if (this.hp <= 0){ this.hp = 0; this.win(); return; } }
+      }
+    }
   }
+  updBits(dt){
+    const p = this.p;
+    for (const bt of this.bits){
+      if (!bt.alive) continue;
+      const d = bt.d; bt.t += dt; if (bt.fl > 0) bt.fl -= dt;
+      let tx, ty;
+      if (d.kind === 'chase'){
+        if (bt.t < 0.6){ tx = bt.sx; ty = bt.sy + 30; }
+        const gx = this.tx(), gy = this.ty();
+        const dx = gx-bt.x, dy = gy-bt.y, L = Math.hypot(dx,dy) || 1, m = Math.min(L, d.cs*dt);
+        bt.x += dx/L*m; bt.y += dy/L*m;
+      } else {
+        if (d.kind === 'orbit'){ bt.ang += rad(d.speed)*dt; tx = this.bx + Math.cos(bt.ang)*d.r; ty = this.by + Math.sin(bt.ang)*d.r; }
+        else if (d.kind === 'side'){ tx = this.bx + d.ox; ty = this.by + d.oy; }
+        else { tx = d.x/100*W; ty = d.y/100*H; }
+        const k = ease(clamp(bt.t/0.6, 0, 1));
+        bt.x = bt.sx + (tx-bt.sx)*k; bt.y = bt.sy + (ty-bt.sy)*k;
+      }
+      bt.x = clamp(bt.x, 8, W-8); bt.y = clamp(bt.y, 8, H-8);
+      if (!this.preview && p.inv <= 0 && !this.over){
+        const dx = bt.x-p.x, dy = bt.y-p.y;
+        if (dx*dx+dy*dy < 11*11){ this.playerHit(); return; }
+      }
+    }
+  }
+  fireRange(s, e){ for (const ev of this.evs){ if (ev.t >= s && ev.t < e) this.fireEvent(ev); } }
   fireEvent(ev){
     if (ev.type === 'shot') this.emit.push({ev, n:ev.repeat, k:0, next:0});
     else if (ev.type === 'move') this.setMove(ev);
     else if (ev.type === 'laser') this.fireLaser(ev);
   }
-  aim(){ return Math.atan2(this.ty()-this.by, this.tx()-this.bx); }
+  origins(src){
+    if (!src || src === 'boss') return ['boss'];
+    if (src === 'bits') return this.bits.filter(b=>b.alive);
+    const bt = this.bits[+src.slice(3)];
+    return bt && bt.alive ? [bt] : [];
+  }
+  ox(o){ return o === 'boss' ? this.bx : o.x; }
+  oy(o){ return o === 'boss' ? this.by : o.y; }
   firePattern(ev, k){
     const n = ev.count, base = rad(ev.angle + k*ev.rot), S = rad(ev.spread);
-    const angs = [];
-    const spreadAround = c => { if (n === 1) angs.push(c); else if (ev.spread >= 360) for (let i=0;i<n;i++) angs.push(c + i*Math.PI*2/n); else for (let i=0;i<n;i++) angs.push(c - S/2 + S*i/(n-1)); };
-    switch(ev.pattern){
-      case 'ring': case 'spiral': for (let i=0;i<n;i++) angs.push(Math.PI/2 + base + i*Math.PI*2/n); break;
-      case 'aimed': spreadAround(this.aim() + base); break;
-      case 'fan': spreadAround(Math.PI/2 + base); break;
-      case 'random': for (let i=0;i<n;i++) angs.push(Math.random()*Math.PI*2); break;
-      case 'rain':
-        for (let L=0; L<ev.layers; L++) for (let i=0;i<n;i++){
-          const a = Math.PI/2 + base + (Math.random()-.5)*S;
-          this.spawn(Math.random()*W, -8 - Math.random()*20, a, ev.speed*(1-L*0.15), ev);
-        }
-        if (k===0 || k%3===0) Sound.play('fire');
-        return;
+    if (ev.pattern === 'rain'){
+      for (let L=0; L<ev.layers; L++) for (let i=0;i<n;i++){
+        const a = Math.PI/2 + base + (Math.random()-.5)*S;
+        this.spawn(Math.random()*W, -8 - Math.random()*20, a, ev.speed*(1-L*0.15), ev);
+      }
+      if (k%3===0) Sound.play('fire');
+      return;
     }
-    for (let L=0; L<ev.layers; L++) for (const a of angs) this.spawn(this.bx, this.by, a, ev.speed*(1-L*0.15), ev);
+    const os = this.origins(ev.src); if (!os.length) return;
+    for (const o of os){
+      const x = this.ox(o), y = this.oy(o);
+      const angs = [];
+      const spreadAround = c => { if (n === 1) angs.push(c); else if (ev.spread >= 360) for (let i=0;i<n;i++) angs.push(c + i*Math.PI*2/n); else for (let i=0;i<n;i++) angs.push(c - S/2 + S*i/(n-1)); };
+      switch(ev.pattern){
+        case 'ring': case 'spiral': for (let i=0;i<n;i++) angs.push(Math.PI/2 + base + i*Math.PI*2/n); break;
+        case 'aimed': spreadAround(Math.atan2(this.ty()-y, this.tx()-x) + base); break;
+        case 'fan': spreadAround(Math.PI/2 + base); break;
+        case 'random': for (let i=0;i<n;i++) angs.push(Math.random()*Math.PI*2); break;
+      }
+      for (let L=0; L<ev.layers; L++) for (const a of angs) this.spawn(x, y, a, ev.speed*(1-L*0.15), ev);
+    }
     Sound.play('fire');
   }
   spawn(x, y, a, s, ev, mods, mi, t){
     if (this.bul.length >= MAX_BUL) return;
-    this.bul.push({x, y, a, s, acc:0, turn:0, r:SIZES[ev.size]||7, h:ev.color, t:t||0, m:mods||ev.mods, mi:mi||0, ev});
+    this.bul.push({x, y, a, d:a, s, acc:0, turn:0, home:0, r:SIZES[ev.size]||7, h:ev.color, sh:ev.shape||'orb', bn:ev.bounce||0, wv:rad(ev.wave||0), wf:ev.wfreq||1, t:t||0, m:mods||ev.mods, mi:mi||0, ev});
   }
   applyMod(b, m){
     switch(m.type){
@@ -703,7 +922,8 @@ class Game {
       case 'accel': b.acc = m.v; break;
       case 'turn': b.turn = rad(m.v); break;
       case 'aim': b.a = Math.atan2(this.ty()-b.y, this.tx()-b.x) + rad(m.v); break;
-      case 'stop': b.s = 0; b.acc = 0; b.turn = 0; break;
+      case 'home': b.home = m.v; break;
+      case 'stop': b.s = 0; b.acc = 0; b.turn = 0; b.home = 0; break;
       case 'split': {
         const sp = Math.max(b.s, 90);
         for (let i=0;i<m.v;i++) this.spawn(b.x, b.y, b.a + i*Math.PI*2/m.v, sp, b.ev, b.m, b.mi+1, b.t);
@@ -714,16 +934,26 @@ class Game {
   updBul(dt, noHit){
     const B = this.bul, p = this.p;
     const canHit = !this.preview && !noHit && p.inv <= 0;
+    const tx = this.tx(), ty = this.ty(), TAU = Math.PI*2, hr = rad(200)*dt;
     for (let i = B.length-1; i >= 0; i--){
       const b = B[i]; b.t += dt;
       while (b.m && b.mi < b.m.length && b.t >= b.m[b.mi].at){ const m = b.m[b.mi]; b.mi++; this.applyMod(b, m); if (b.dead) break; }
       if (!b.dead){
         if (b.acc) b.s = clamp(b.s + b.acc*dt, -300, 600);
         if (b.turn) b.a += b.turn*dt;
-        b.x += Math.cos(b.a)*b.s*dt; b.y += Math.sin(b.a)*b.s*dt;
+        if (b.home > 0){ b.home -= dt; const ta = Math.atan2(ty-b.y, tx-b.x); let da = ((ta - b.a) % TAU + TAU*1.5) % TAU - Math.PI; b.a += clamp(da, -hr, hr); }
+        const dir = b.wv ? b.a + b.wv*Math.sin(b.t*b.wf*TAU) : b.a;
+        b.d = dir;
+        const cx = Math.cos(dir), sy = Math.sin(dir);
+        b.x += cx*b.s*dt; b.y += sy*b.s*dt;
+        if (b.bn > 0){
+          const sgn = b.s >= 0 ? 1 : -1;
+          if ((b.x < 0 && cx*sgn < 0) || (b.x > W && cx*sgn > 0)){ b.x = b.x < 0 ? -b.x : 2*W-b.x; b.a = Math.PI - b.a; b.bn--; }
+          else if (b.y < 0 && sy*sgn < 0 && b.t > 0.2){ b.y = -b.y; b.a = -b.a; b.bn--; }
+        }
         if (b.x < -40 || b.x > W+40 || b.y < -60 || b.y > H+40) b.dead = true;
         else if (canHit){
-          const dx = b.x-p.x, dy = b.y-p.y, rr = b.r*0.68 + 2.2;
+          const dx = b.x-p.x, dy = b.y-p.y, rr = b.r*(b.sh==='knife'||b.sh==='rice' ? 0.6 : 0.68) + 2.2;
           if (dx*dx+dy*dy < rr*rr){ this.playerHit(); return; }
         }
       }
@@ -731,25 +961,29 @@ class Game {
     }
   }
   fireLaser(ev){
-    const n = ev.count; let angs = [];
-    const c = ev.kind === 'aimed' ? this.aim() + rad(ev.angle) : Math.PI/2 + rad(ev.angle);
-    if (ev.kind === 'radial') for (let i=0;i<n;i++) angs.push(c + i*Math.PI*2/n);
-    else if (n === 1) angs = [c];
-    else { const S = rad(ev.spread); for (let i=0;i<n;i++) angs.push(c - S/2 + S*i/(n-1)); }
-    for (const a of angs) this.las.push({a, rate:rad(ev.sweep), warn:ev.warn, dur:ev.dur, w:ev.width, h:ev.color, t:0, fired:false});
+    const os = this.origins(ev.src); if (!os.length) return;
+    for (const o of os){
+      const x = this.ox(o), y = this.oy(o), n = ev.count; let angs = [];
+      const c = ev.kind === 'aimed' ? Math.atan2(this.ty()-y, this.tx()-x) + rad(ev.angle) : Math.PI/2 + rad(ev.angle);
+      if (ev.kind === 'radial') for (let i=0;i<n;i++) angs.push(c + i*Math.PI*2/n);
+      else if (n === 1) angs = [c];
+      else { const S = rad(ev.spread); for (let i=0;i<n;i++) angs.push(c - S/2 + S*i/(n-1)); }
+      for (const a of angs) this.las.push({o, a, rate:rad(ev.sweep), warn:ev.warn, dur:ev.dur, w:ev.width, h:ev.color, t:0, fired:false});
+    }
     if (!this.preview) Sound.play('warn');
   }
   updLas(dt){
     const p = this.p;
     for (let i = this.las.length-1; i >= 0; i--){
       const L = this.las[i]; L.t += dt;
+      if (L.o !== 'boss' && !L.o.alive){ this.las.splice(i,1); continue; }
       if (L.t >= L.warn){
         if (!L.fired){ L.fired = true; if (!this.preview) Sound.play('laser'); this.shake = Math.max(this.shake, 0.12); }
         L.a += L.rate*dt;
         const k = L.t - L.warn;
         if (k > L.dur){ this.las.splice(i,1); continue; }
         if (!this.preview && p.inv <= 0 && k > 0.06 && k < L.dur - 0.1){
-          const dx = p.x - this.bx, dy = p.y - this.by;
+          const dx = p.x - this.ox(L.o), dy = p.y - this.oy(L.o);
           const ca = Math.cos(L.a), sa = Math.sin(L.a);
           const along = dx*ca + dy*sa, perp = Math.abs(-dx*sa + dy*ca);
           if (along > 0 && perp < L.w*0.42 + 2){ this.playerHit(); return; }
@@ -758,14 +992,14 @@ class Game {
     }
   }
   setMove(ev){
-    if (this.mv.ev === ev && ev.kind !== 'to') return; // looping timeline: keep periodic motion continuous
+    if (this.mv.ev === ev && ev.kind !== 'to') return;
     this.mv = {kind:ev.kind, ev, t:0, sx:this.bx, sy:this.by};
     if (ev.kind === 'random') this.mv.nt = 0;
   }
   updMove(dt){
     const m = this.mv, e = m.ev; if (!e) return; m.t += dt;
     switch(m.kind){
-      case 'to': { const f = clamp(m.t/e.dur,0,1), q = f<.5 ? 2*f*f : 1-Math.pow(-2*f+2,2)/2;
+      case 'to': { const q = ease(clamp(m.t/e.dur,0,1));
         this.bx = m.sx + (e.x/100*W - m.sx)*q; this.by = m.sy + (e.y/100*H - m.sy)*q; break; }
       case 'sway': this.bx = m.sx + Math.sin(m.t*Math.PI*2/e.period)*e.amp/100*W; break;
       case 'circle': { const r = e.amp/100*W, w = m.t*Math.PI*2/e.period; this.bx = m.sx + Math.sin(w)*r; this.by = m.sy + (1-Math.cos(w))*r*0.5; break; }
@@ -773,7 +1007,7 @@ class Game {
       case 'random': {
         m.nt -= dt;
         if (m.nt <= 0){ m.nt = e.period; m.fx = this.bx; m.fy = this.by; m.gx = W*(0.15+Math.random()*0.7); m.gy = H*(0.1+Math.random()*0.22); m.mt = 0; }
-        m.mt += dt; const f = clamp(m.mt/(e.period*0.6),0,1), q = f<.5 ? 2*f*f : 1-Math.pow(-2*f+2,2)/2;
+        m.mt += dt; const q = ease(clamp(m.mt/(e.period*0.6),0,1));
         this.bx = m.fx + (m.gx-m.fx)*q; this.by = m.fy + (m.gy-m.fy)*q; break;
       }
     }
@@ -786,41 +1020,51 @@ class Game {
   playerHit(){
     const p = this.p;
     p.lives--; this.hits++; p.inv = 2.2; this.shake = 0.35; this.flash = 0.25; this.fHit = true;
-    for (let i=0;i<40;i++) this.parts.push({x:p.x,y:p.y,vx:(Math.random()-.5)*400,vy:(Math.random()-.5)*400,l:0.7,ml:0.7,h:185,r:2.4});
+    for (let i=0;i<40;i++) this.parts.push({x:p.x,y:p.y,vx:(Math.random()-.5)*400,vy:(Math.random()-.5)*400,l:0.7,ml:0.7,h:this.ship.hue,r:2.4});
     this.clearBullets(); this.las.length = 0;
     Sound.play('hit');
-    if (p.lives <= 0){ this.lose(); }
+    if (p.lives <= 0) this.lose();
+  }
+  cond(T){
+    const p = this.p;
+    switch(T.c){
+      case 'hp': return this.hp/this.hpMax*100 <= T.v;
+      case 'time': return this.pt >= T.v;
+      case 'total': return this.t >= T.v;
+      case 'loop': return this.fLoop && this.loops % T.v === 0;
+      case 'visit': return (this.visits[this.pi]||0) >= T.v;
+      case 'bits': { const br = this.bits.filter(b=>b.d.brk); return br.length > 0 && br.filter(b=>b.alive).length <= T.v; }
+      case 'ptop': return p.y < H*T.v/100;
+      case 'pleft': return p.x < W/2;
+      case 'pright': return p.x >= W/2;
+      case 'near': return Math.hypot(p.x-this.bx, p.y-this.by) <= T.v;
+      case 'lives': return p.lives <= T.v;
+      case 'hit': return this.fHit;
+    }
+    return false;
   }
   checkTrans(){
     if (this.grace > 0 || this.over) return;
     const tr = this.ph.trans;
     for (let i=0;i<tr.length;i++){
-      const T = tr[i]; let ok = false;
-      switch(T.c){
-        case 'hp': ok = this.hp/this.hpMax*100 <= T.v; break;
-        case 'time': ok = this.pt >= T.v; break;
-        case 'loop': ok = this.fLoop && this.loops % T.v === 0; break;
-        case 'ptop': ok = this.p.y < H*T.v/100; break;
-        case 'lives': ok = this.p.lives <= T.v; break;
-        case 'hit': ok = this.fHit; break;
-      }
-      if (!ok) continue;
-      const evented = T.c === 'loop' || T.c === 'hit';
-      if (!evented){ if (this.rolled.has(i)) continue; this.rolled.add(i); }
+      const T = tr[i];
+      if (!this.cond(T)) continue;
+      if (!EVENTED[T.c]){ if (this.rolled.has(i)) continue; this.rolled.add(i); }
       if (Math.random()*100 < T.p){ this.goto(T.to); return; }
     }
   }
   goto(to){
     if (to === 'clear') return this.win();
-    let idx = to === 'next' ? this.pi+1 : to;
+    const idx = to === 'next' ? this.pi+1 : to;
     if (idx >= this.b.phases.length) return this.win();
     this.enter(idx);
   }
   win(){
     if (this.over) return;
     this.over = 1; this.result = 'win'; this.clearBullets(); this.las.length = 0; this.emit.length = 0;
+    for (const bt of this.bits) if (bt.alive){ bt.alive = false; this.burst(bt.x, bt.y, bt.d.color, 16); }
     for (let i=0;i<160;i++){ const a = Math.random()*Math.PI*2, s = 60+Math.random()*420; this.parts.push({x:this.bx,y:this.by,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1.4,ml:1.4,h:i%3?this.b.hue:-1,r:2+Math.random()*2.5}); }
-    this.boom = 1; this.flash = 0.6; this.shake = 0.6;
+    this.flash = 0.6; this.shake = 0.6;
     Sound.play('boom'); setTimeout(()=>Sound.play('clear'), 500);
   }
   lose(){ if (this.over) return; this.over = 1; this.result = 'lose'; Sound.play('over'); }
@@ -830,17 +1074,39 @@ class Game {
    RENDER
    ========================================================= */
 const SPR = {};
-function sprite(h, r){
-  const key = h+'_'+r; if (SPR[key]) return SPR[key];
-  const R = Math.ceil(r*2.6), k = 2, c = document.createElement('canvas');
+function bulletPath(x, sh, r){
+  x.beginPath();
+  switch(sh){
+    case 'rice': x.ellipse(0,0,r*1.35,r*0.62,0,0,Math.PI*2); break;
+    case 'knife': x.moveTo(r*1.7,0); x.lineTo(-r*0.7,r*0.62); x.lineTo(-r*0.25,0); x.lineTo(-r*0.7,-r*0.62); x.closePath(); break;
+    case 'star': for (let i=0;i<10;i++){ const a = -Math.PI/2 + i*Math.PI/5, rr = i%2 ? r*0.55 : r*1.3; i ? x.lineTo(Math.cos(a)*rr, Math.sin(a)*rr) : x.moveTo(Math.cos(a)*rr, Math.sin(a)*rr); } x.closePath(); break;
+    case 'heart': { const s = r*1.15; x.moveTo(0, s*0.95); x.bezierCurveTo(-s*1.4, -s*0.1, -s*0.75, -s*1.15, 0, -s*0.42); x.bezierCurveTo(s*0.75, -s*1.15, s*1.4, -s*0.1, 0, s*0.95); x.closePath(); break; }
+    default: x.arc(0,0,r,0,Math.PI*2);
+  }
+}
+function sprite(sh, h, r){
+  const key = sh+'_'+h+'_'+r; if (SPR[key]) return SPR[key];
+  const R = Math.ceil(r*(sh==='orb'?2.6:2.9)), k = 2, c = document.createElement('canvas');
   c.width = c.height = R*2*k; const x = c.getContext('2d');
-  const g = x.createRadialGradient(R*k,R*k,0,R*k,R*k,R*k);
-  g.addColorStop(0,'#fff'); g.addColorStop(r*0.5/R,'#fff');
-  g.addColorStop(r*0.85/R, colOf(h,1)); g.addColorStop(r*1.15/R, colOf(h,0.45)); g.addColorStop(1, colOf(h,0));
-  x.fillStyle = g; x.fillRect(0,0,c.width,c.height);
+  if (sh === 'orb'){
+    const g = x.createRadialGradient(R*k,R*k,0,R*k,R*k,R*k);
+    g.addColorStop(0,'#fff'); g.addColorStop(r*0.5/R,'#fff');
+    g.addColorStop(r*0.85/R, colOf(h,1)); g.addColorStop(r*1.15/R, colOf(h,0.45)); g.addColorStop(1, colOf(h,0));
+    x.fillStyle = g; x.fillRect(0,0,c.width,c.height);
+  } else {
+    x.translate(R*k, R*k); x.scale(k, k);
+    x.shadowColor = colOf(h); x.shadowBlur = r*1.6;
+    if (sh === 'ring'){
+      x.strokeStyle = colOf(h); x.lineWidth = r*0.42; x.beginPath(); x.arc(0,0,r*0.9,0,Math.PI*2); x.stroke();
+      x.shadowBlur = 0; x.strokeStyle = '#fff'; x.lineWidth = r*0.16; x.stroke();
+    } else {
+      x.fillStyle = colOf(h); bulletPath(x, sh, r); x.fill();
+      x.shadowBlur = 0; x.fillStyle = '#fff'; x.scale(0.5,0.5); bulletPath(x, sh, r); x.fill();
+    }
+  }
   return SPR[key] = {c, R};
 }
-function shapePath(ctx, shape, r, t){
+function shapePath(ctx, shape, r){
   ctx.beginPath();
   if (shape === 'circle'){ ctx.arc(0,0,r,0,Math.PI*2); return; }
   const pts = shape === 'diamond' ? 4 : shape === 'hex' ? 6 : shape === 'tri' ? 3 : 10;
@@ -851,51 +1117,79 @@ function shapePath(ctx, shape, r, t){
   }
   ctx.closePath();
 }
+function shipPath(ctx, form){
+  ctx.beginPath();
+  switch(form){
+    case 'delta': ctx.moveTo(0,-11); ctx.lineTo(13,10); ctx.lineTo(0,6); ctx.lineTo(-13,10); break;
+    case 'round': ctx.arc(0,1,9,0,Math.PI*2); ctx.moveTo(0,-14); ctx.lineTo(4,-7); ctx.lineTo(-4,-7); break;
+    case 'wing': ctx.moveTo(0,-14); ctx.lineTo(4,-3); ctx.lineTo(14,6); ctx.lineTo(4,5); ctx.lineTo(0,11); ctx.lineTo(-4,5); ctx.lineTo(-14,6); ctx.lineTo(-4,-3); break;
+    default: ctx.moveTo(0,-13); ctx.lineTo(9,9); ctx.lineTo(0,4); ctx.lineTo(-9,9);
+  }
+  ctx.closePath();
+}
 function drawBoss(ctx, g){
   const b = g.b, col = colOf(b.hue);
   if (g.result === 'win' && g.endT > 0.05) return;
   ctx.save(); ctx.translate(g.bx, g.by);
   const pulse = 1 + Math.sin(g.t*4)*0.04;
-  // aura
   const au = ctx.createRadialGradient(0,0,4,0,0,60); au.addColorStop(0, colOf(b.hue,0.35)); au.addColorStop(1, colOf(b.hue,0));
   ctx.fillStyle = au; ctx.fillRect(-60,-60,120,120);
   ctx.rotate(g.t*0.6); ctx.scale(pulse,pulse);
   ctx.shadowColor = col; ctx.shadowBlur = 18;
   ctx.lineWidth = 3; ctx.strokeStyle = g.bflash > 0 ? '#fff' : col; ctx.fillStyle = '#0d0820';
-  shapePath(ctx, b.shape, 24, g.t); ctx.fill(); ctx.stroke();
+  shapePath(ctx, b.shape, 24); ctx.fill(); ctx.stroke();
   ctx.rotate(-g.t*1.4); ctx.lineWidth = 1.5; ctx.globalAlpha = 0.7;
-  shapePath(ctx, b.shape, 14, g.t); ctx.stroke();
+  shapePath(ctx, b.shape, 14); ctx.stroke();
   ctx.globalAlpha = 1; ctx.shadowBlur = 12; ctx.fillStyle = g.ph.inv ? '#ffd23e' : '#fff';
   ctx.beginPath(); ctx.arc(0,0,4+Math.sin(g.t*8)*1,0,Math.PI*2); ctx.fill();
   if (g.ph.inv){ ctx.strokeStyle = '#ffd23e88'; ctx.lineWidth = 2; ctx.setLineDash([4,6]); ctx.beginPath(); ctx.arc(0,0,34,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]); }
   ctx.restore();
 }
+function drawBits(ctx, g){
+  for (const bt of g.bits){
+    if (!bt.alive) continue;
+    const d = bt.d, col = colOf(d.color);
+    ctx.save(); ctx.translate(bt.x, bt.y);
+    ctx.shadowColor = col; ctx.shadowBlur = 12;
+    ctx.fillStyle = '#0d0820'; ctx.strokeStyle = bt.fl > 0 ? '#fff' : col; ctx.lineWidth = 2;
+    ctx.rotate(g.t*2 + bt.j);
+    if (!d.brk) ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(0,-10); ctx.lineTo(10,0); ctx.lineTo(0,10); ctx.lineTo(-10,0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.setLineDash([]); ctx.rotate(-(g.t*2 + bt.j)); ctx.shadowBlur = 0;
+    ctx.fillStyle = d.brk ? '#fff' : '#9d93c6'; ctx.font = '800 9px "M PLUS 1p", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(BITL[bt.j], 0, 0.5);
+    if (d.brk){ ctx.strokeStyle = colOf(d.color, 0.8); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0,0,14,-Math.PI/2,-Math.PI/2 + Math.PI*2*bt.hp/d.hp); ctx.stroke(); }
+    ctx.restore();
+  }
+}
 function drawPlayer(ctx, g, ghost){
   const p = ghost ? {x:g.tx(), y:g.ty(), inv:0} : g.p;
   if (!ghost && g.result === 'lose') return;
   if (!ghost && p.inv > 0 && Math.floor(p.inv*14)%2) return;
+  const col = colOf(g.ship.hue);
   ctx.save(); ctx.translate(p.x, p.y); ctx.globalAlpha = ghost ? 0.4 : 1;
-  ctx.shadowColor = '#3ef0ff'; ctx.shadowBlur = 14; ctx.strokeStyle = '#3ef0ff'; ctx.lineWidth = 2; ctx.fillStyle = '#081a24';
-  ctx.beginPath(); ctx.moveTo(0,-13); ctx.lineTo(9,9); ctx.lineTo(0,4); ctx.lineTo(-9,9); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.shadowColor = col; ctx.shadowBlur = 14; ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.fillStyle = '#081a24';
+  shipPath(ctx, g.ship.form); ctx.fill(); ctx.stroke();
   ctx.shadowColor = '#ff4fd8'; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0,0,2.6,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle = '#ff4fd8'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(0,0,4.6,0,Math.PI*2); ctx.stroke();
   ctx.restore();
 }
 function drawLasers(ctx, g, warnPass){
   for (const L of g.las){
-    const ca = Math.cos(L.a), sa = Math.sin(L.a), x2 = g.bx + ca*900, y2 = g.by + sa*900;
+    const ox = g.ox(L.o), oy = g.oy(L.o);
+    const ca = Math.cos(L.a), sa = Math.sin(L.a), x2 = ox + ca*900, y2 = oy + sa*900;
     if (L.t < L.warn){
       if (!warnPass) continue;
       const blink = 0.35 + 0.35*Math.abs(Math.sin(L.t*14));
       ctx.strokeStyle = colOf(L.h, blink); ctx.lineWidth = 1.4; ctx.setLineDash([10,6]);
-      ctx.beginPath(); ctx.moveTo(g.bx,g.by); ctx.lineTo(x2,y2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(x2,y2); ctx.stroke(); ctx.setLineDash([]);
       continue;
     }
     if (warnPass) continue;
     const k = L.t - L.warn, w = L.w * Math.min(1, k/0.08) * Math.min(1, (L.dur-k)/0.15);
     if (w <= 0) continue;
     ctx.lineCap = 'round';
-    ctx.strokeStyle = colOf(L.h, 0.25); ctx.lineWidth = w*2.2; ctx.beginPath(); ctx.moveTo(g.bx,g.by); ctx.lineTo(x2,y2); ctx.stroke();
+    ctx.strokeStyle = colOf(L.h, 0.25); ctx.lineWidth = w*2.2; ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(x2,y2); ctx.stroke();
     ctx.strokeStyle = colOf(L.h, 0.9); ctx.lineWidth = w; ctx.stroke();
     ctx.strokeStyle = '#fff'; ctx.lineWidth = w*0.4; ctx.stroke();
     ctx.lineCap = 'butt';
@@ -919,17 +1213,22 @@ function render(ctx, g, hud){
   drawBg(ctx, g);
   drawLasers(ctx, g, true);
   drawBoss(ctx, g);
-  // player shots
-  ctx.fillStyle = 'rgba(160,255,255,0.85)';
-  for (const s of g.shots) ctx.fillRect(s.x-1.5, s.y-7, 3, 12);
-  if (g.preview) drawPlayer(ctx, g, true); else drawPlayer(ctx, g, false);
+  drawBits(ctx, g);
+  ctx.strokeStyle = colOf(g.ship.hue, 0.85); ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath();
+  for (const s of g.shots){ const dx = Math.sin(s.a)*6, dy = Math.cos(s.a)*6; ctx.moveTo(s.x-dx, s.y+dy); ctx.lineTo(s.x+dx, s.y-dy); }
+  ctx.stroke(); ctx.lineCap = 'butt';
+  drawPlayer(ctx, g, g.preview);
   ctx.globalCompositeOperation = 'lighter';
-  for (const b of g.bul){ const s = sprite(b.h, b.r); ctx.drawImage(s.c, b.x-s.R, b.y-s.R, s.R*2, s.R*2); }
+  for (const b of g.bul){
+    const s = sprite(b.sh, b.h, b.r);
+    if (b.sh === 'orb' || b.sh === 'ring' || b.sh === 'heart') ctx.drawImage(s.c, b.x-s.R, b.y-s.R, s.R*2, s.R*2);
+    else { ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.sh === 'star' ? b.t*5 : b.d); ctx.drawImage(s.c, -s.R, -s.R, s.R*2, s.R*2); ctx.restore(); }
+  }
   for (const q of g.parts){ ctx.globalAlpha = Math.max(0,q.l/q.ml); ctx.fillStyle = colOf(q.h); ctx.fillRect(q.x-q.r/2, q.y-q.r/2, q.r, q.r); }
   ctx.globalAlpha = 1;
   drawLasers(ctx, g, false);
   ctx.globalCompositeOperation = 'source-over';
-  // player hitbox stays on top of bullets
   if (!g.preview && g.result !== 'lose' && !(g.p.inv > 0 && Math.floor(g.p.inv*14)%2)){ ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(g.p.x,g.p.y,2.4,0,Math.PI*2); ctx.fill(); }
   ctx.restore();
   if (g.flash > 0){ ctx.fillStyle = `rgba(255,255,255,${Math.min(0.35,g.flash*0.6)})`; ctx.fillRect(0,0,W,H); }
@@ -949,7 +1248,6 @@ function drawBanner(ctx, g){
 }
 function drawHud(ctx, g){
   ctx.save();
-  // HP bar
   const x = 12, y = 10, w = W-24, h = 6, f = g.hp/g.hpMax;
   ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(x,y,w,h);
   ctx.shadowColor = colOf(g.b.hue); ctx.shadowBlur = 10; ctx.fillStyle = g.ph.inv ? '#ffd23e' : colOf(g.b.hue); ctx.fillRect(x,y,w*f,h);
@@ -959,11 +1257,10 @@ function drawHud(ctx, g){
   ctx.fillText(g.b.name, x, y+22, 170);
   ctx.textAlign = 'right'; ctx.fillStyle = '#9d93c6';
   ctx.fillText(fmtTime(g.t), W-56, y+22);
-  // lives
-  ctx.textAlign = 'left';
+  const col = colOf(g.ship.hue);
   for (let i=0;i<g.p.lives;i++){
-    ctx.save(); ctx.translate(16+i*16, H-16); ctx.strokeStyle = '#3ef0ff'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(0,-6); ctx.lineTo(5,5); ctx.lineTo(0,2); ctx.lineTo(-5,5); ctx.closePath(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.translate(16+i*18, H-16); ctx.scale(0.55,0.55); ctx.strokeStyle = col; ctx.lineWidth = 2.6;
+    shipPath(ctx, g.ship.form); ctx.stroke(); ctx.restore();
   }
   ctx.fillStyle = '#9d93c6'; ctx.textAlign = 'right'; ctx.font = '700 10px "M PLUS 1p", sans-serif';
   ctx.fillText(`PHASE ${g.pi+1}`, W-12, H-12);
@@ -971,21 +1268,21 @@ function drawHud(ctx, g){
 }
 
 /* =========================================================
-   SCREENS
+   SCREENS / NAV
    ========================================================= */
-const screens = ['title','select','game','editor','board'];
+const screens = ['title','select','make','ship','game','editor','board'];
 let cur = 'title';
 function show(id){
   for (const s of screens) $('#'+s).hidden = s !== id;
   cur = id;
   if (id === 'title') startTitleBg(); else stopTitleBg();
-  if (id !== 'editor') stopPreview();
+  if (id !== 'editor'){ stopPreview(); $('#pvBig').hidden = true; }
+  if (id !== 'ship') stopShipPv();
   if (id !== 'game') Music.stop();
 }
 document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', ()=>{ Sound.play('ui'); show('title'); }));
-document.addEventListener('pointerdown', ()=>Sound.init(), {once:false, passive:true});
+document.addEventListener('pointerdown', ()=>Sound.init(), {passive:true});
 
-/* ---- title background demo ---- */
 let titleRAF = 0, titleGame = null;
 function startTitleBg(){
   if (titleRAF) return;
@@ -1007,7 +1304,6 @@ function startTitleBg(){
 }
 function stopTitleBg(){ cancelAnimationFrame(titleRAF); titleRAF = 0; }
 
-/* ---- toggles ---- */
 function syncToggles(){
   $('#tgSE').textContent = '効果音 ' + (Sound.se ? 'ON' : 'OFF'); $('#tgSE').setAttribute('aria-pressed', Sound.se);
   $('#tgBGM').textContent = 'BGM ' + (Sound.bgm ? 'ON' : 'OFF'); $('#tgBGM').setAttribute('aria-pressed', Sound.bgm);
@@ -1017,58 +1313,197 @@ $('#tgBGM').onclick = ()=>{ Sound.init(); Sound.setBGM(!Sound.bgm); syncToggles(
 syncToggles();
 
 /* =========================================================
-   MY BOSSES (local)
+   MY BOSSES + LOCAL RECORDS
    ========================================================= */
 function loadMine(){ const a = store.get('nbl.bosses', []); return Array.isArray(a) ? a.filter(x=>x&&x.id).map(x=>({id:String(x.id), boss:normBoss(x.boss), at:+x.at||0})) : []; }
 let mine = loadMine();
 function saveMine(){ store.set('nbl.bosses', mine); }
+const Rec = {
+  all: (()=>{ const r = store.get('nbl.rec', {}); return r && typeof r === 'object' ? r : {}; })(),
+  get(k){ return k ? this.all[k] : null; },
+  put(k, win, time, sh){
+    if (!k) return false;
+    const r = this.all[k] || {t:0,c:0,b:null,sh:null}; r.t++; let best = false;
+    if (win){ r.c++; if (r.b == null || time < r.b){ r.b = +time.toFixed(2); r.sh = sh; best = true; } }
+    this.all[k] = r; store.set('nbl.rec', this.all); return best;
+  }
+};
+function recLine(k){
+  const r = Rec.get(k);
+  if (!r) return el('span',{class:'rec none'},'未挑戦');
+  if (!r.c) return el('span',{class:'rec none'}, `挑戦 ${r.t}回・未クリア`);
+  return el('span',{class:'rec'}, `✓ ベスト ${fmtTime(r.b)}（${SHIP_TYPES[r.sh]?.n || '—'}）・${r.c}/${r.t}回クリア`);
+}
 
-function bossIcon(b){
-  const c = el('canvas',{class:'ico', width:104, height:104, 'aria-hidden':'true'});
-  const x = c.getContext('2d'); x.scale(2,2); x.translate(26,26);
+function bossIcon(b, size=52){
+  const c = el('canvas',{class:'ico', width:size*2, height:size*2, 'aria-hidden':'true'});
+  const x = c.getContext('2d'); x.scale(2*size/52,2*size/52); x.translate(26,26);
   x.shadowColor = colOf(b.hue); x.shadowBlur = 10; x.strokeStyle = colOf(b.hue); x.lineWidth = 2.5; x.fillStyle = '#0d0820';
-  shapePath(x, b.shape, 15, 0); x.fill(); x.stroke();
+  shapePath(x, b.shape, 15); x.fill(); x.stroke();
   x.fillStyle = '#fff'; x.beginPath(); x.arc(0,0,3,0,Math.PI*2); x.fill();
   return c;
 }
-function bossMeta(b){ return [`HP ${b.hp}`, `フェーズ ${b.phases.length}`, `残機 ${b.lives}`]; }
+function bossMeta(b){
+  const bits = b.phases.reduce((n,p)=>n+p.bits.length,0);
+  return [`HP ${b.hp}`, `フェーズ ${b.phases.length}`, `残機 ${b.lives}`, bits ? `ビット ${bits}` : null, b.ship !== 'any' ? `${SHIP_TYPES[b.ship].n}固定` : null].filter(Boolean);
+}
 function renderSelect(){
   const sl = $('#sampleList'); sl.replaceChildren();
-  SAMPLES.forEach((b)=>{
+  SAMPLES.forEach((b,i)=>{
+    const key = SAMPLE_KEYS[i];
     sl.append(el('div',{class:'card'}, bossIcon(b),
       el('div',{class:'body'},
         el('div',{class:'row'}, el('span',{class:'name'}, b.name), el('span',{class:'badge b-'+b.diff.toLowerCase()}, b.diff)),
-        el('div',{class:'meta'}, ...bossMeta(b).map(m=>el('span',{},m)))),
+        el('div',{class:'meta'}, ...bossMeta(b).map(m=>el('span',{},m))), recLine(key)),
       el('div',{class:'acts'},
-        el('button',{class:'btn pri sm grow',type:'button',onclick:()=>startGame(b,{from:'select'})},'▶ 挑戦'),
-        el('button',{class:'btn sm',type:'button',onclick:()=>{ openEditor(clone(b), null); toast('サンプルを元に新しいボスを作ります'); }},'✎ 改造する'))
+        el('button',{class:'btn pri sm grow',type:'button',onclick:()=>openPrefight(b,{from:'select',rec:key})},'▶ 挑戦'))
     ));
   });
   const ml = $('#myList'); ml.replaceChildren();
-  if (!mine.length) ml.append(el('div',{class:'empty'},'まだボスがいません。「新しいボスを作る」から始めるか、サンプルを「改造する」と早いです。'));
+  if (!mine.length) ml.append(el('div',{class:'empty'},'マイボスはまだいません。タイトルの「ボスを作る」から作れます。'));
+  mine.slice().sort((a,b)=>b.at-a.at).forEach(m=>{
+    const b = m.boss, key = 'm:'+m.id;
+    ml.append(el('div',{class:'card'}, bossIcon(b),
+      el('div',{class:'body'}, el('span',{class:'name'}, b.name), el('div',{class:'meta'}, ...bossMeta(b).map(x=>el('span',{},x))), recLine(key)),
+      el('div',{class:'acts'},
+        el('button',{class:'btn pri sm grow',type:'button',onclick:()=>openPrefight(b,{from:'select',rec:key})},'▶ 挑戦'),
+        el('button',{class:'btn sm',type:'button',onclick:()=>openEditor(clone(b), m.id)},'✎ 編集'))
+    ));
+  });
+}
+function renderMake(){
+  const ml = $('#makeList'); ml.replaceChildren();
+  if (!mine.length) ml.append(el('div',{class:'empty'},'まだボスがいません。上のボタンか、下のサンプル改造から始めましょう。'));
   mine.slice().sort((a,b)=>b.at-a.at).forEach(m=>{
     const b = m.boss;
     const posted = Cloud.ready && Cloud.my && Cloud.my.bosses && Cloud.my.bosses[m.id];
     const del = el('button',{class:'btn sm danger',type:'button'},'削除');
-    del.onclick = ()=>{
-      if (del.dataset.arm){ mine = mine.filter(x=>x.id!==m.id); saveMine(); renderSelect(); toast('削除しました'); return; }
+    del.onclick = ev=>{
+      ev.stopPropagation();
+      if (del.dataset.arm){ mine = mine.filter(x=>x.id!==m.id); saveMine(); renderMake(); toast('削除しました'); return; }
       del.dataset.arm = 1; del.textContent = 'もう一度押すと削除'; setTimeout(()=>{ if(del.isConnected){ delete del.dataset.arm; del.textContent='削除'; } }, 3000);
     };
-    ml.append(el('div',{class:'card'}, bossIcon(b),
+    const stop = f => ev => { ev.stopPropagation(); f(); };
+    const card = el('div',{class:'card tap',tabindex:0,role:'button','aria-label':b.name+' を編集'}, bossIcon(b),
       el('div',{class:'body'}, el('span',{class:'name'}, b.name), el('div',{class:'meta'}, ...bossMeta(b).map(x=>el('span',{},x)), posted ? el('span',{style:'color:var(--cyan)'},'置き場に投稿中') : null)),
       el('div',{class:'acts'},
-        el('button',{class:'btn pri sm',type:'button',onclick:()=>startGame(b,{from:'select'})},'▶ 挑戦'),
-        el('button',{class:'btn sm cy',type:'button',onclick:()=>openEditor(clone(b), m.id)},'✎ 編集'),
-        el('button',{class:'btn sm',type:'button',onclick:()=>openShare(b)},'共有コード'),
-        Cloud.canPost() ? el('button',{class:'btn sm',type:'button',onclick:()=>Cloud.post(m)}, posted ? '置き場を更新' : '置き場に投稿') : null,
-        del)
-    ));
+        el('button',{class:'btn sm cy',type:'button',onclick:stop(()=>openEditor(clone(b), m.id))},'✎ 編集'),
+        el('button',{class:'btn sm',type:'button',onclick:stop(()=>openPrefight(b,{from:'make',rec:'m:'+m.id}))},'▶ 挑戦'),
+        el('button',{class:'btn sm',type:'button',onclick:stop(()=>openShare(b))},'共有コード'),
+        Cloud.canPost() ? el('button',{class:'btn sm',type:'button',onclick:stop(()=>Cloud.post(m))}, posted ? '置き場を更新' : '置き場に投稿') : null,
+        del));
+    card.onclick = ()=>openEditor(clone(b), m.id);
+    card.onkeydown = k=>{ if (k.key === 'Enter' && k.target === card) openEditor(clone(b), m.id); };
+    ml.append(card);
+  });
+  const rl = $('#remixList'); rl.replaceChildren();
+  SAMPLES.forEach(b=>{
+    const c = bossIcon(b, 34);
+    rl.append(el('button',{type:'button',class:'mini',onclick:()=>{ const n = clone(b); delete n.diff; n.name = (b.name+'改').slice(0,20); openEditor(n, null); toast('サンプルを元に新しいボスを作ります'); }}, c, el('span',{}, b.name+' を改造')));
   });
 }
 $('#mPlay').onclick = ()=>{ Sound.play('ui'); renderSelect(); show('select'); };
-$('#mMake').onclick = ()=>{ Sound.play('ui'); renderSelect(); show('select'); setTimeout(()=>$('#myList').scrollIntoView({block:'start'}),0); };
-$('#newBoss').onclick = ()=>{ openEditor(templateBoss(), null); };
+$('#mMake').onclick = ()=>{ Sound.play('ui'); renderMake(); show('make'); };
+$('#newBoss').onclick = ()=>openEditor(templateBoss(), null);
 $('#mImport').onclick = $('#selImport').onclick = ()=>openImport();
+$('#mShip').onclick = ()=>{ Sound.play('ui'); openShip(()=>show('title')); };
+$('#mShipSub').textContent = SHIP_TYPES[Ship.type].n;
+
+/* =========================================================
+   PRE-FIGHT
+   ========================================================= */
+function openPrefight(boss, info){
+  Sound.init(); Sound.play('ui');
+  const lock = boss.ship !== 'any' ? boss.ship : null;
+  let type = lock || Ship.type;
+  const r = Rec.get(info.rec);
+  const cards = el('div',{class:'shipgrid'});
+  const drawCards = ()=>{
+    cards.replaceChildren(...Object.entries(SHIP_TYPES).map(([k,s])=>{
+      const c = el('button',{type:'button',class:'shipcard','aria-pressed':String(k===type),disabled:!!lock && k!==lock}, el('b',{},s.n), el('span',{},s.d));
+      c.onclick = ()=>{ type = k; Ship.type = k; saveShip(); drawCards(); };
+      return c;
+    }));
+  };
+  drawCards();
+  const sensIn = el('input',{type:'range',id:'pfSens',min:0.5,max:2.5,step:0.05,value:Ship.sens});
+  const sensOut = el('output',{for:'pfSens'}, Ship.sens.toFixed(2)+'倍');
+  sensIn.oninput = ()=>{ Ship.sens = +sensIn.value; sensOut.textContent = Ship.sens.toFixed(2)+'倍'; saveShip(); };
+  const stats = el('div',{class:'stats'},
+    el('div',{class:'stat'}, el('b',{}, r && r.b != null ? fmtTime(r.b) : '—'), el('span',{}, r && r.sh ? 'ベスト（'+SHIP_TYPES[r.sh].n+'）' : 'ベストタイム')),
+    el('div',{class:'stat'}, el('b',{}, r ? `${r.c} / ${r.t}` : '0 / 0'), el('span',{},'クリア / 挑戦')));
+  modal(
+    el('div',{class:'pf-head'}, bossIcon(boss), el('div',{style:'min-width:0'},
+      el('h3',{style:'overflow-wrap:anywhere'}, boss.name, boss.diff ? el('span',{class:'badge b-'+boss.diff.toLowerCase(),style:'margin-left:8px;vertical-align:middle'}, boss.diff) : null),
+      el('div',{class:'meta muted small',style:'display:flex;gap:10px;flex-wrap:wrap'}, ...bossMeta(boss).map(m=>el('span',{},m))))),
+    info.rec ? stats : null,
+    el('div',{class:'sec-title',style:'margin:4px 0 0'},'自機'),
+    lock ? el('p',{class:'hint',style:'margin:0;color:var(--gold)'}, `このボスは作者が「${SHIP_TYPES[lock].n}」に固定しています。`) : null,
+    cards,
+    el('div',{class:'fld'}, el('label',{for:'pfSens'},'移動の感度'), sensIn, sensOut),
+    el('button',{type:'button',class:'btn pri',style:'min-height:52px;font-size:17px',onclick:()=>{ closeModal(); startGame(boss, Object.assign({}, info, {shipType:type})); }},'▶ 開始'),
+    el('div',{class:'row'},
+      el('button',{type:'button',class:'btn sm grow',onclick:()=>{ closeModal(); openShip(()=>{ show(info.from === 'board' ? 'board' : info.from === 'make' ? 'make' : 'select'); openPrefight(boss, info); }); }},'✈ 見た目・感度を細かく調整'),
+      el('button',{type:'button',class:'btn sm grow',onclick:closeModal},'やめる'))
+  );
+}
+
+/* =========================================================
+   SHIP CUSTOMIZE
+   ========================================================= */
+let shipBack = null, shipRAF = 0;
+function openShip(back){
+  shipBack = back; show('ship'); renderShip();
+}
+$('#shipBack').onclick = ()=>{ Sound.play('ui'); stopShipPv(); (shipBack || (()=>show('title')))(); };
+function renderShip(){
+  const root = $('#shipScroll'); root.replaceChildren();
+  const pv = el('canvas',{id:'shipPv','aria-label':'自機のプレビュー'});
+  const types = el('div',{class:'shipgrid'}, ...Object.entries(SHIP_TYPES).map(([k,s])=>{
+    const c = el('button',{type:'button',class:'shipcard','aria-pressed':String(k===Ship.type)}, el('b',{},s.n), el('span',{},s.d), el('span',{}, `連射 ${s.rate}/秒 × ${s.shots.length}発`));
+    c.onclick = ()=>{ Ship.type = k; saveShip(); renderShip(); };
+    return c;
+  }));
+  const sw = el('div',{class:'swatches',role:'group','aria-label':'機体の色'}, ...HUES.map(h=>{
+    const b = el('button',{type:'button',class:'sw',style:`background:${colOf(h)};color:${colOf(h)}`,'aria-label':HUE_NAME[h],'aria-pressed':String(Ship.hue===h)});
+    b.onclick = ()=>{ Ship.hue = h; saveShip(); renderShip(); }; return b;
+  }));
+  const forms = el('div',{class:'chips',role:'group','aria-label':'機体の形'}, ...SHIP_FORMS.map(([k,n])=>{
+    const c = el('button',{type:'button',class:'chip','aria-pressed':String(Ship.form===k)}, n);
+    c.onclick = ()=>{ Ship.form = k; saveShip(); renderShip(); }; return c;
+  }));
+  const sensIn = el('input',{type:'range',id:'shSens',min:0.5,max:2.5,step:0.05,value:Ship.sens});
+  const sensOut = el('output',{for:'shSens'}, Ship.sens.toFixed(2)+'倍');
+  sensIn.oninput = ()=>{ Ship.sens = +sensIn.value; sensOut.textContent = Ship.sens.toFixed(2)+'倍'; saveShip(); };
+  root.append(pv,
+    el('div',{class:'sec-title'},'機体タイプ'), types,
+    el('p',{class:'hint',style:'margin:8px 0 0'},'ボスの作者が機体を固定している場合は、その機体で戦います。'),
+    el('div',{class:'sec-title'},'見た目'),
+    el('div',{class:'box'}, el('div',{class:'fld wide'}, el('span',{},'色'), sw), el('div',{class:'fld wide'}, el('span',{},'形'), forms)),
+    el('div',{class:'sec-title'},'操作'),
+    el('div',{class:'box'}, el('div',{class:'fld'}, el('label',{for:'shSens'},'移動の感度'), sensIn, sensOut),
+      el('p',{class:'hint',style:'margin:0'},'指を1cm動かしたときに自機が動く量の倍率です。小さいほど細かく、大きいほど少ない指の動きで大きく動きます。')));
+  startShipPv();
+}
+function startShipPv(){
+  stopShipPv();
+  const dummy = normBoss({name:'', hue:-1, shape:'circle', hp:9000, phases:[{name:'', dur:5, inv:true, events:[{type:'move',t:0,kind:'sway',amp:20,period:5}]}]});
+  const g = new Game(dummy, {ship:Ship}); g.banner = null; g.grace = 0;
+  let last = performance.now();
+  const loop = now => {
+    shipRAF = requestAnimationFrame(loop);
+    const c = $('#shipPv'); if (!c) return;
+    const r = c.getBoundingClientRect(); if (!r.width) return;
+    const dpr = Math.min(2, window.devicePixelRatio||1);
+    if (c.width !== Math.round(r.width*dpr)){ c.width = Math.round(r.width*dpr); c.height = Math.round(r.height*dpr); }
+    const dt = Math.min(0.033, (now-last)/1000); last = now;
+    g.input.dx = Math.cos(g.t*0.9)*60*dt; g.input.dy = Math.sin(g.t*1.3)*30*dt;
+    g.update(dt);
+    const cx = c.getContext('2d'), sc = c.width/W; cx.setTransform(sc,0,0,sc,0,0); render(cx, g, false);
+  };
+  shipRAF = requestAnimationFrame(loop);
+}
+function stopShipPv(){ cancelAnimationFrame(shipRAF); shipRAF = 0; }
 
 /* =========================================================
    GAME SCREEN
@@ -1088,7 +1523,7 @@ function startGame(boss, info){
   Sound.init(); Sound.play('ui');
   ctxInfo = info || {from:'select'};
   show('game'); fitCanvas();
-  G = new Game(boss, {startPhase: info && info.startPhase || 0});
+  G = new Game(boss, {startPhase: ctxInfo.startPhase || 0, ship: Object.assign({}, Ship, {type: ctxInfo.shipType || Ship.type})});
   paused = false; $('#pauseOv').hidden = true; $('#resultOv').hidden = true;
   if (Sound.bgm) Music.start(0); Music.level = 0;
   let last = performance.now(), resultShown = false;
@@ -1108,15 +1543,16 @@ function showResult(){
   Music.stop();
   $('#resTitle').textContent = win ? 'BOSS CLEAR' : 'GAME OVER';
   $('#resTitle').className = win ? 'res-win' : 'res-lose';
-  $('#resBoss').textContent = G.b.name + (ctxInfo.startPhase ? `（フェーズ${ctxInfo.startPhase+1}から）` : '');
+  $('#resBoss').textContent = G.b.name + '・' + G.st.n + (ctxInfo.startPhase ? `（フェーズ${ctxInfo.startPhase+1}から）` : '');
   $('#resTime').textContent = fmtTime(G.t);
   $('#resHits').textContent = G.hits;
-  let note = '';
+  const notes = [];
+  if (ctxInfo.from !== 'editor' && ctxInfo.rec){ if (Rec.put(ctxInfo.rec, win, G.t, G.ship.type)) notes.push('自己ベスト更新！'); }
   if (ctxInfo.from === 'board'){
-    const r = Cloud.record(ctxInfo.key, win, G.t);
-    note = r ? (win ? (r.best ? '自己ベスト更新！置き場に記録しました' : '置き場に記録しました') : '挑戦を記録しました') : 'この画面では記録できません（閲覧のみ）';
-  } else if (ctxInfo.from === 'editor') note = 'テストプレイ。戻ると編集を続けられます。';
-  $('#resNote').textContent = note;
+    const r = Cloud.record(ctxInfo.key, win, G.t, G.ship.type);
+    notes.push(r ? '置き場に記録しました' : 'この画面では置き場に記録できません（閲覧のみ）');
+  } else if (ctxInfo.from === 'editor') notes.push('テストプレイ（記録されません）。戻ると編集を続けられます。');
+  $('#resNote').textContent = notes.join(' ');
   $('#resultOv').hidden = false;
 }
 $('#rRetry').onclick = ()=>{ const b = G.b; stopGame(); startGame(b, ctxInfo); };
@@ -1125,6 +1561,7 @@ function leaveGame(){
   stopGame(); Sound.play('ui');
   if (ctxInfo.from === 'editor'){ show('editor'); startPreview(); }
   else if (ctxInfo.from === 'board'){ show('board'); renderBoard(); }
+  else if (ctxInfo.from === 'make'){ renderMake(); show('make'); }
   else { renderSelect(); show('select'); }
 }
 function setPause(v){ if (!G || G.over) return; paused = v; $('#pauseOv').hidden = !v; if (v) Music.stop(); else if (Sound.bgm) Music.start(Music.level); }
@@ -1134,12 +1571,11 @@ $('#pRetry').onclick = ()=>{ const b = G.b; stopGame(); startGame(b, ctxInfo); }
 $('#pQuit').onclick = ()=>leaveGame();
 document.addEventListener('visibilitychange', ()=>{ if (document.hidden && cur === 'game') setPause(true); });
 
-/* input: relative drag + keyboard */
 let drag = null;
 cv.addEventListener('pointerdown', e=>{ e.preventDefault(); cv.setPointerCapture(e.pointerId); drag = {id:e.pointerId, x:e.clientX, y:e.clientY}; });
 cv.addEventListener('pointermove', e=>{
   if (!drag || e.pointerId !== drag.id || !G || paused) return;
-  const sens = e.pointerType === 'mouse' ? 1 : 1.25;
+  const sens = G.ship.sens * (e.pointerType === 'mouse' ? 0.8 : 1);
   G.input.dx += (e.clientX-drag.x)/gScale*sens; G.input.dy += (e.clientY-drag.y)/gScale*sens;
   drag.x = e.clientX; drag.y = e.clientY;
 });
@@ -1147,6 +1583,9 @@ const endDrag = e=>{ if (drag && e.pointerId === drag.id) drag = null; };
 cv.addEventListener('pointerup', endDrag); cv.addEventListener('pointercancel', endDrag);
 const keys = {};
 window.addEventListener('keydown', e=>{
+  if (cur === 'editor' && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement?.tagName) ){
+    e.preventDefault(); e.shiftKey ? redo() : undo(); return;
+  }
   if (cur !== 'game') return;
   if (e.key === 'Escape' || e.key === 'p'){ setPause(!paused); return; }
   keys[e.key.toLowerCase()] = true;
@@ -1166,14 +1605,35 @@ function applyKeys(dt){
 /* =========================================================
    EDITOR
    ========================================================= */
-const ED = {boss:null, id:null, sel:0, open:new Set(), dirty:false};
+const ED = {boss:null, id:null, sel:0, open:new Set(), openBits:new Set(), dirty:false, hist:[], hi:0, histT:0};
 function openEditor(boss, id){
   Sound.play('ui');
-  ED.boss = normBoss(boss); ED.id = id; ED.sel = 0; ED.open = new Set(); ED.dirty = false;
-  if (!id) ED.boss.diff && delete ED.boss.diff;
+  ED.boss = normBoss(boss); ED.id = id; ED.sel = 0; ED.open = new Set(); ED.openBits = new Set(); ED.dirty = false;
+  delete ED.boss.diff;
+  ED.hist = [JSON.stringify(ED.boss)]; ED.hi = 0;
   show('editor'); renderEditor(); startPreview();
 }
-function markDirty(){ ED.dirty = true; $('#edTitle').textContent = ED.boss.name + ' *'; schedulePreview(); }
+function markDirty(){
+  ED.dirty = true; $('#edTitle').textContent = ED.boss.name + ' *'; schedulePreview();
+  clearTimeout(ED.histT); ED.histT = setTimeout(commitHist, 400);
+}
+function commitHist(){
+  clearTimeout(ED.histT);
+  const s = JSON.stringify(ED.boss);
+  if (s === ED.hist[ED.hi]) return;
+  ED.hist = ED.hist.slice(0, ED.hi+1); ED.hist.push(s);
+  if (ED.hist.length > 100) ED.hist.shift();
+  ED.hi = ED.hist.length-1; syncUndo();
+}
+function syncUndo(){ $('#edUndo').disabled = ED.hi <= 0; $('#edRedo').disabled = ED.hi >= ED.hist.length-1; }
+function restoreHist(){
+  ED.boss = JSON.parse(ED.hist[ED.hi]); ED.dirty = true; ED.open.clear(); ED.openBits.clear();
+  if (ED.sel >= ED.boss.phases.length) ED.sel = ED.boss.phases.length-1;
+  renderEditor(); schedulePreview(0); syncUndo();
+}
+function undo(){ commitHist(); if (ED.hi <= 0) return; ED.hi--; restoreHist(); toast('元に戻しました'); }
+function redo(){ commitHist(); if (ED.hi >= ED.hist.length-1) return; ED.hi++; restoreHist(); toast('やり直しました'); }
+$('#edUndo').onclick = undo; $('#edRedo').onclick = redo;
 function fmtVal(f, v){ return (f.step && f.step < 1 ? (+v).toFixed(f.step < 0.1 ? 2 : 1) : v) + (f.u||''); }
 
 function fieldEl(f, obj, idp, onCh){
@@ -1188,7 +1648,9 @@ function fieldEl(f, obj, idp, onCh){
     return el('div',{class:'fld'}, el('label',{for:id}, f.l), inp, out);
   }
   if (f.t === 's'){
-    const s = el('select',{id}, ...f.o.map(o=>el('option',{value:o[0], selected:o[0]===obj[f.k]}, o[1])));
+    const opts = f.o.slice();
+    if (!opts.some(o=>o[0]===obj[f.k])) opts.push([obj[f.k], '（存在しないビット）']);
+    const s = el('select',{id}, ...opts.map(o=>el('option',{value:o[0], selected:o[0]===obj[f.k]}, o[1])));
     s.addEventListener('change', ()=>{ obj[f.k] = s.value; onCh(f, true); });
     return el('div',{class:'fld wide'}, el('label',{for:id}, f.l), s);
   }
@@ -1201,13 +1663,26 @@ function fieldEl(f, obj, idp, onCh){
     }
     return el('div',{class:'fld wide'}, el('span',{}, f.l), wrap);
   }
+  if (f.t === 'b'){
+    const cb = el('input',{type:'checkbox',id,checked:!!obj[f.k]});
+    cb.onchange = ()=>{ obj[f.k] = cb.checked; onCh(f, true); };
+    return el('label',{class:'toggle',for:id}, cb, f.l);
+  }
 }
+function srcOpts(ph){
+  return [['boss','ボスから'], ...(ph.bits.length ? [['bits','全ビットから']] : []), ...ph.bits.map((b,j)=>['bit'+j, `ビット${BITL[j]}から`])];
+}
+function fieldFor(f, ph){ return f.t === 'src' ? Object.assign({}, f, {t:'s', o:srcOpts(ph)}) : f; }
 
+function optLabel(type, k, v){ const f = F[type].find(x=>x.k===k); const o = f.o.find(o=>o[0]===v); return o ? o[1] : v; }
+function srcLabel(e){ return !e.src || e.src === 'boss' ? '' : e.src === 'bits' ? '［全ビット］' : `［ビット${BITL[+e.src.slice(3)]}］`; }
 function evSummary(e){
-  const lab = (fs,k)=>{ const f = F[e.type].find(x=>x.k===k); return f.o.find(o=>o[0]===e[k])[1]; };
-  if (e.type === 'shot') return `${lab(F.shot,'pattern')} ${e.count}発${e.repeat>1?' ×'+e.repeat:''}${e.mods.length?' ・変化'+e.mods.length:''}`;
-  if (e.type === 'move') return lab(F.move,'kind');
-  return `${lab(F.laser,'kind')} ${e.count}本`;
+  if (e.type === 'shot'){
+    const extra = [e.shape !== 'orb' ? optLabel('shot','shape',e.shape) : '', e.bounce ? '反射' : '', e.wave ? '蛇行' : '', e.mods.length ? '変化'+e.mods.length : ''].filter(Boolean).join('・');
+    return `${srcLabel(e)}${optLabel('shot','pattern',e.pattern)} ${e.count}発${e.repeat>1?' ×'+e.repeat:''}${extra?' '+extra:''}`;
+  }
+  if (e.type === 'move') return optLabel('move','kind',e.kind);
+  return `${srcLabel(e)}${optLabel('laser','kind',e.kind)} ${e.count}本`;
 }
 function evSpan(e){
   if (e.type === 'shot') return e.repeat > 1 ? (e.repeat-1)*e.interval : 0;
@@ -1219,6 +1694,7 @@ function renderEditor(){
   const b = ED.boss, root = $('#edScroll');
   $('#edTitle').textContent = b.name + (ED.dirty ? ' *' : '');
   if (ED.sel >= b.phases.length) ED.sel = b.phases.length-1;
+  syncUndo();
   const keepScroll = root.scrollTop;
   root.replaceChildren();
 
@@ -1236,82 +1712,95 @@ function renderEditor(){
     el('div',{class:'fld wide'}, el('span',{},'形'), shapeChips),
     bf({k:'hp',l:'HP',t:'r',min:100,max:9000,step:50}),
     bf({k:'lives',l:'自機の残機',t:'r',min:1,max:9,step:1,u:'機'}),
-    el('p',{class:'hint',style:'margin:0'},'自機は常に自動ショット（1秒に約30ダメージ）。HP 900 ならずっと当て続けて約30秒です。')
+    bf({k:'ship',l:'自機の制限',t:'s',o:[['any','制限なし（好きな機体）'],['balance','バランス型に固定'],['spread','拡散型に固定']]}),
+    el('p',{class:'hint',style:'margin:0'},'自機の火力はどちらの機体もおよそ1秒30ダメージ（拡散型は離れると弱く、密着すると約60）。HP 900 ならずっと当て続けて約30秒です。')
   ));
 
   /* --- phase tabs --- */
   const tabs = el('div',{class:'chips',role:'tablist','aria-label':'フェーズ'});
   b.phases.forEach((p,i)=>{
     const c = el('button',{type:'button',class:'chip',role:'tab','aria-pressed':String(i===ED.sel),'aria-selected':String(i===ED.sel)}, `${i+1}. ${p.name}`);
-    c.onclick = ()=>{ ED.sel = i; ED.open.clear(); renderEditor(); schedulePreview(0); }; tabs.append(c);
+    c.onclick = ()=>{ ED.sel = i; ED.open.clear(); ED.openBits.clear(); renderEditor(); schedulePreview(0); }; tabs.append(c);
   });
   if (b.phases.length < 12){
     const add = el('button',{type:'button',class:'chip',style:'border-color:var(--cyan);color:var(--cyan)'},'＋ フェーズ');
-    add.onclick = ()=>{ b.phases.push(normPhase({name:'第'+(b.phases.length+1)+'形態', events:[newEvent('shot')]}, b.phases.length+1)); ED.sel = b.phases.length-1; markDirty(); renderEditor(); };
+    add.onclick = ()=>{ b.phases.push(normPhase({name:'第'+(b.phases.length+1)+'形態', events:[newEvent('shot')]}, b.phases.length+1)); ED.sel = b.phases.length-1; ED.open.clear(); ED.openBits.clear(); markDirty(); renderEditor(); };
     tabs.append(add);
   }
   root.append(el('div',{class:'sec-title'},'フェーズ'), tabs);
 
-  /* --- phase panel --- */
+  /* --- phase panel with preview --- */
   const ph = b.phases[ED.sel];
   const pName = el('input',{type:'text',id:'pName',value:ph.name,maxlength:24});
   pName.addEventListener('input', ()=>{ ph.name = pName.value.slice(0,24) || 'フェーズ'; tabs.children[ED.sel].textContent = `${ED.sel+1}. ${ph.name}`; markDirty(); });
   const durF = {k:'dur',l:'長さ',t:'r',min:1,max:60,step:0.5,u:'秒'};
   const loopT = el('label',{class:'toggle'}, el('input',{type:'checkbox',id:'pLoop',checked:ph.loop}), 'ループする');
-  loopT.firstChild.onchange = e=>{ ph.loop = e.target.checked; markDirty(); };
+  loopT.firstChild.onchange = e=>{ ph.loop = e.target.checked; markDirty(); renderEditor(); };
   const invT = el('label',{class:'toggle'}, el('input',{type:'checkbox',id:'pInv',checked:ph.inv}), '無敵（耐久フェーズ）');
   invT.firstChild.onchange = e=>{ ph.inv = e.target.checked; markDirty(); };
 
-  const pvWrap = el('div',{id:'pvWrap'}, el('canvas',{id:'pv'}), el('span',{class:'pvlabel'},'PREVIEW'));
+  const pvWrap = el('div',{id:'pvWrap'}, el('canvas',{id:'pv'}), el('span',{class:'pvlabel',id:'pvLabel'},'PREVIEW'));
   root.append(el('div',{class:'box',style:'margin-top:8px'},
     el('div',{class:'prevgrid'},
-      pvWrap,
+      el('div',{class:'pvcol'}, pvWrap, pvControls('pvCtl')),
       el('div',{},
         el('div',{class:'fld wide',style:'grid-template-columns:1fr'}, el('label',{for:'pName',class:'muted small'},'技名（開始時に表示）'), pName),
         el('div',{style:'display:grid;gap:4px'}, el('span',{class:'muted small'},'タイムラインの長さ'),
           (()=>{ const f = fieldEl(durF, ph, 'ph'+ED.sel, (ff,commit)=>{ markDirty(); if (commit) renderEditor(); }); f.style.gridTemplateColumns = '1fr auto'; f.firstChild.remove(); return f; })()),
         loopT, invT,
-        el('p',{class:'hint',style:'margin:0'},'プレビューはこのフェーズだけをくり返し再生します。薄い自機に向けて狙い撃ちします。')
+        el('p',{class:'hint',style:'margin:0'},'プレビューはこのフェーズだけを再生します。薄い自機に向けて狙い撃ちします。')
       )
     ),
     timelineEl(ph)
   ));
 
+  /* --- bits --- */
+  const bitList = el('div',{style:'display:grid;gap:8px'});
+  ph.bits.forEach((bt,j)=>bitList.append(bitCard(bt, j, ph)));
+  if (!ph.bits.length) bitList.append(el('div',{class:'empty'},'ビットなし。子分を置くと、弾幕・レーザーの「発射元」に選べます。'));
+  const addBit = el('button',{type:'button',class:'btn sm cy',disabled:ph.bits.length>=6},'＋ ビットを追加');
+  addBit.onclick = ()=>{ const n = ph.bits.length; ph.bits.push(normBit({kind:'orbit', angle:(n*60)%360})); ED.openBits.add(n); markDirty(); renderEditor(); };
+  root.append(el('div',{class:'sec-title'},'ビット（子分）'), bitList, el('div',{style:'height:8px'}), addBit);
+
   /* --- events --- */
   const addRow = el('div',{class:'addrow'}, ...['shot','move','laser'].map(tp=>{
     const bt = el('button',{type:'button',class:'btn sm',style:`border-color:${EV_META[tp].c};color:${EV_META[tp].c}`}, '＋'+EV_META[tp].l);
-    bt.onclick = ()=>{
-      if (ph.events.length >= 40) return toast('1フェーズのイベントは40個までです');
-      const t = nnum(previewTime(), 0, Math.max(0, ph.dur-0.05), 0.05, 0);
-      const e = newEvent(tp, {t}); ph.events.push(e); ED.open.add(e); markDirty(); renderEditor();
-    };
+    bt.onclick = ()=>addEvents([newEvent(tp)]);
     return bt;
-  }));
+  }), el('button',{type:'button',class:'btn sm pri',onclick:openPresets},'★ プリセット'));
   const list = el('div',{style:'display:grid;gap:8px'});
-  ph.events.slice().sort((a,c)=>a.t-c.t).forEach(e=>list.append(eventCard(e, ph)));
-  if (!ph.events.length) list.append(el('div',{class:'empty'},'イベントがありません。上のボタンで弾幕・移動・レーザーを追加しましょう。'));
-  root.append(el('div',{class:'sec-title'},'タイムライン'), el('p',{class:'hint',style:'margin:0 0 8px'},'追加したイベントはプレビューの現在時刻に置かれます。開始時間はあとで調整できます。'), addRow, el('div',{style:'height:8px'}), list);
+  ph.events.map((e,i)=>[e,i]).sort((a,c)=>a[0].t-c[0].t).forEach(([e,i])=>list.append(eventCard(e, i, ph)));
+  if (!ph.events.length) list.append(el('div',{class:'empty'},'イベントがありません。上のボタンかプリセットで追加しましょう。'));
+  root.append(el('div',{class:'sec-title'},'タイムライン'),
+    el('p',{class:'hint',style:'margin:0 0 8px'},'追加したイベントはプレビューの現在時刻に置かれます。タイムラインのバーは左右にドラッグして時間を変えられます。空いている所をタップするとその時刻へ移動します。'),
+    addRow, el('div',{style:'height:8px'}), list);
 
   /* --- transitions --- */
   const trBox = el('div',{style:'display:grid;gap:8px'});
   ph.trans.forEach((T,i)=>trBox.append(transRow(T, i, ph)));
-  if (!ph.trans.length) trBox.append(el('div',{class:'empty'}, ED.sel === b.phases.length-1 ? '条件なし：HPを0にすると撃破です。' : '条件なし：このフェーズのままHPが0になると撃破です。次へ進めたいときは条件を追加。'));
+  if (!ph.trans.length) trBox.append(el('div',{class:'empty'}, ' 条件なし：このフェーズのままHPが0になると撃破です。次へ進めたいときは条件を追加。'));
   const addTr = el('button',{type:'button',class:'btn sm cy'},'＋ 条件を追加');
   addTr.onclick = ()=>{ if (ph.trans.length >= 6) return toast('条件は6個までです'); ph.trans.push({c:'hp',v:50,p:100,to:'next'}); markDirty(); renderEditor(); };
   root.append(el('div',{class:'sec-title'},'フェーズ移行の条件'),
-    el('p',{class:'hint',style:'margin:0 0 8px'},'上から順に判定。条件を満たした瞬間に確率で抽選し、当たれば移行します（HP・時間などは1フェーズ中1回だけ抽選、「○周ごと」「被弾」は毎回抽選）。'),
+    el('p',{class:'hint',style:'margin:0 0 8px'},'上から順に判定。条件を満たした瞬間に確率で抽選し、当たれば移行します（ほとんどの条件は1フェーズ中1回だけ抽選。「○周ごと」「被弾」は毎回抽選）。'),
     trBox, el('div',{style:'height:8px'}), addTr);
 
   /* --- phase actions --- */
   const del = el('button',{type:'button',class:'btn sm danger',disabled:b.phases.length<=1},'このフェーズを削除');
   del.onclick = ()=>{
     if (!del.dataset.arm){ del.dataset.arm = 1; del.textContent = 'もう一度押すと削除'; return; }
-    b.phases.splice(ED.sel,1);
-    for (const p of b.phases) p.trans = p.trans.filter(T=>T.to!==ED.sel).map(T=>({...T, to: typeof T.to==='number' && T.to>ED.sel ? T.to-1 : T.to}));
-    ED.sel = Math.max(0, ED.sel-1); markDirty(); renderEditor();
+    const s = ED.sel;
+    b.phases.splice(s,1);
+    for (const p of b.phases) p.trans = p.trans.filter(T=>T.to!==s).map(T=>({...T, to: typeof T.to==='number' && T.to>s ? T.to-1 : T.to}));
+    ED.sel = Math.max(0, s-1); ED.open.clear(); ED.openBits.clear(); markDirty(); renderEditor();
   };
   const dup = el('button',{type:'button',class:'btn sm',disabled:b.phases.length>=12},'複製');
-  dup.onclick = ()=>{ const c = clone(ph); c.name += '（複製）'; b.phases.splice(ED.sel+1,0,c); fixShift(ED.sel+1, +1); ED.sel++; markDirty(); renderEditor(); };
+  dup.onclick = ()=>{
+    const c = clone(ph); c.name = (c.name+'（複製）').slice(0,24);
+    for (const p of b.phases) for (const T of p.trans) if (typeof T.to === 'number' && T.to > ED.sel) T.to++;
+    for (const T of c.trans) if (typeof T.to === 'number' && T.to > ED.sel) T.to++;
+    b.phases.splice(ED.sel+1,0,c); ED.sel++; ED.open.clear(); ED.openBits.clear(); markDirty(); renderEditor();
+  };
   const mv = d=>{ const j = ED.sel+d; if (j<0||j>=b.phases.length) return; swapPhases(ED.sel,j); ED.sel = j; markDirty(); renderEditor(); };
   root.append(el('div',{class:'sec-title'},'フェーズ操作'), el('div',{class:'row'},
     el('button',{type:'button',class:'btn sm',disabled:ED.sel===0,onclick:()=>mv(-1)},'← 前へ'),
@@ -1319,76 +1808,131 @@ function renderEditor(){
     dup, del));
   root.scrollTop = keepScroll;
 }
-function fixShift(at, d){ // indices >= at shift by d (after insert)
-  for (const p of ED.boss.phases) for (const T of p.trans) if (typeof T.to === 'number' && T.to >= at) T.to += d;
-  // the inserted copy keeps its own targets which were already shifted above
-}
 function swapPhases(i, j){
   const P = ED.boss.phases; [P[i],P[j]] = [P[j],P[i]];
   for (const p of P) for (const T of p.trans){ if (T.to === i) T.to = j; else if (T.to === j) T.to = i; }
 }
+function addEvents(list){
+  const ph = ED.boss.phases[ED.sel];
+  if (ph.events.length + list.length > 40) return toast('1フェーズのイベントは40個までです');
+  const t = nnum(previewTime(), 0, Math.max(0, ph.dur-0.05), 0.05, 0);
+  let first = -1;
+  for (const raw of list){ const e = normEvent(Object.assign({}, raw, {t})); ph.events.push(e); if (first < 0) first = ph.events.length-1; ED.open.add(ph.events.length-1); }
+  markDirty(); renderEditor();
+  requestAnimationFrame(()=>{ const c = document.querySelector(`.ev[data-i="${first}"]`); if (c){ c.scrollIntoView({block:'center',behavior:'smooth'}); c.classList.add('flash'); } });
+}
+function openPresets(){
+  modal(el('h3',{},'弾幕プリセット'), el('p',{class:'hint',style:'margin:0'},'タップすると現在のプレビュー時刻に追加します。追加したあと自由に調整できます。'),
+    el('div',{class:'presets'}, ...PRESETS.map(p=>el('button',{type:'button',class:'preset',onclick:()=>{ closeModal(); addEvents(p.ev(0)); toast(`「${p.n}」を追加しました`); }}, el('b',{},p.n), el('span',{},p.d)))),
+    el('button',{type:'button',class:'btn',onclick:closeModal},'閉じる'));
+}
 
+/* --- timeline with drag + seek --- */
 function timelineEl(ph){
   const tl = el('div',{class:'tl',id:'tl'});
   const lanes = {move:0, shot:1, laser:2};
-  ['移動','弾幕','レーザー'].forEach((n,i)=>tl.append(el('div',{class:'lane',style:`top:${4+i*22}px;border-top:${i?'1px dashed #2c2350':'none'}`})));
-  for (const e of ph.events){
-    const l = e.t/ph.dur*100, w = Math.max(1.2, Math.min(100-l, evSpan(e)/ph.dur*100));
-    const mk = el('button',{type:'button',class:'mk','aria-label':`${EV_META[e.type].l} ${e.t.toFixed(2)}秒`,style:`left:${l}%;width:${w}%;top:${6+lanes[e.type]*22}px;background:${EV_META[e.type].c};box-shadow:0 0 8px ${EV_META[e.type].c}`});
-    mk.onclick = ()=>{ ED.open.add(e); renderEditor(); requestAnimationFrame(()=>{ const c = document.querySelector('.ev[data-open="1"]'); const all = [...document.querySelectorAll('.ev')].find(x=>x._ev===e); (all||c)?.scrollIntoView({block:'center',behavior:'smooth'}); }); };
+  ['移動','弾幕','レーザー'].forEach((n,i)=>{ tl.append(el('div',{class:'lane',style:`top:${2+i*28}px;border-top:${i?'1px dashed #2c2350':'none'}`}), el('span',{class:'lname',style:`top:${4+i*28}px`}, n)); });
+  ph.events.forEach((e,idx)=>{
+    const l = e.t/ph.dur*100, w = Math.max(2, Math.min(100-l, evSpan(e)/ph.dur*100));
+    const mk = el('button',{type:'button',class:'mk','aria-label':`${EV_META[e.type].l} ${e.t.toFixed(2)}秒（ドラッグで移動）`,style:`left:${l}%;width:${w}%;top:${7+lanes[e.type]*28}px;background:${EV_META[e.type].c};box-shadow:0 0 8px ${EV_META[e.type].c}`});
+    let st = null;
+    mk.addEventListener('pointerdown', ev=>{ ev.stopPropagation(); mk.setPointerCapture(ev.pointerId); st = {x:ev.clientX, t:e.t, moved:false, w:tl.getBoundingClientRect().width}; });
+    mk.addEventListener('pointermove', ev=>{
+      if (!st) return;
+      const dx = ev.clientX - st.x; if (Math.abs(dx) > 4) st.moved = true;
+      if (!st.moved) return;
+      mk.classList.add('drag');
+      e.t = nnum(st.t + dx/st.w*ph.dur, 0, Math.max(0, ph.dur-0.05), 0.05, 0);
+      mk.style.left = (e.t/ph.dur*100)+'%';
+      const lab = $('#pvLabel'); if (lab) lab.textContent = `${EV_META[e.type].l} → ${e.t.toFixed(2)}秒`;
+    });
+    const up = ()=>{
+      if (!st) return; const moved = st.moved; st = null; mk.classList.remove('drag');
+      if (moved){ markDirty(); renderEditor(); schedulePreview(0); }
+      else { ED.open.add(idx); renderEditor(); requestAnimationFrame(()=>{ const c = document.querySelector(`.ev[data-i="${idx}"]`); if (c){ c.scrollIntoView({block:'center',behavior:'smooth'}); c.classList.add('flash'); } }); }
+    };
+    mk.addEventListener('pointerup', up); mk.addEventListener('pointercancel', ()=>{ st = null; mk.classList.remove('drag'); });
+    mk.addEventListener('keydown', k=>{ if (k.key === 'ArrowLeft' || k.key === 'ArrowRight'){ k.preventDefault(); e.t = nnum(e.t + (k.key==='ArrowLeft'?-0.05:0.05), 0, Math.max(0,ph.dur-0.05), 0.05, 0); mk.style.left = (e.t/ph.dur*100)+'%'; markDirty(); } });
     tl.append(mk);
-  }
+  });
   tl.append(el('div',{class:'ph',id:'tlHead',style:'left:0'}));
+  tl.addEventListener('pointerdown', ev=>{ if (ev.target.classList.contains('mk')) return; const r = tl.getBoundingClientRect(); seekPreview(clamp((ev.clientX-r.left)/r.width,0,1)*ph.dur); });
   const scale = el('div',{class:'tl-scale'}, el('span',{},'0秒'), el('span',{},(ph.dur/2).toFixed(1)+'秒'), el('span',{},ph.dur+'秒'+(ph.loop?' ↺':'')));
   return el('div',{style:'display:grid;gap:8px'}, tl, scale);
 }
 
-function eventCard(e, ph){
-  const meta = EV_META[e.type], open = ED.open.has(e);
+function eventCard(e, idx, ph){
+  const meta = EV_META[e.type], open = ED.open.has(idx);
   const tm = el('span',{class:'tm'}, e.t.toFixed(2)+'s'), sum = el('span',{class:'s'}, evSummary(e));
   const head = el('header',{role:'button',tabindex:0,'aria-expanded':String(open)}, el('b',{style:`color:${meta.c}`}, meta.l), tm, sum, el('span',{class:'muted'}, open?'▲':'▼'));
   const body = el('div',{class:'evb',hidden:!open});
-  const card = el('div',{class:'ev',style:`--c:${meta.c}`,'data-open':open?'1':'0'}, head, body);
-  card._ev = e;
-  const toggle = ()=>{ if (ED.open.has(e)) ED.open.delete(e); else ED.open.add(e); renderEditor(); };
+  const card = el('div',{class:'ev',style:`--c:${meta.c}`,'data-i':idx}, head, body);
+  const toggle = ()=>{ if (ED.open.has(idx)) ED.open.delete(idx); else ED.open.add(idx); renderEditor(); };
   head.onclick = toggle; head.onkeydown = k=>{ if (k.key==='Enter'||k.key===' '){ k.preventDefault(); toggle(); } };
-  if (open) fillEventBody(body, e, ph, tm, sum);
+  if (open) fillEventBody(body, e, idx, ph, tm, sum);
   return card;
 }
-function fillEventBody(body, e, ph, tm, sum){
+function fillEventBody(body, e, idx, ph, tm, sum){
   body.replaceChildren();
-  const idp = 'e'+ED.sel+'-'+ph.events.indexOf(e);
+  const idp = 'e'+ED.sel+'-'+idx;
+  const refresh = ()=>fillEventBody(body, e, idx, ph, tm, sum);
   const onCh = (f, commit)=>{
     if (f.k === 'pattern' && e.pattern === 'spiral' && e.rot === 0){ e.rot = 12; if (e.repeat < 2){ e.repeat = 30; e.interval = 0.1; } }
     tm.textContent = e.t.toFixed(2)+'s'; sum.textContent = evSummary(e); markDirty();
-    if (commit && (f.re || f.k === 't')) { if (f.k === 't') renderEditor(); else fillEventBody(body, e, ph, tm, sum); }
+    if (commit && f.k === 't') renderEditor();
+    else if (commit && f.re) refresh();
   };
-  for (const f of F[e.type]){ if (f.show && !f.show(e)) continue; body.append(fieldEl(f, e, idp, onCh)); }
+  for (const f of F[e.type]){ if (f.show && !f.show(e)) continue; body.append(fieldEl(fieldFor(f, ph), e, idp, onCh)); }
   if (e.type === 'shot'){
     body.append(el('div',{class:'muted small',style:'margin-top:4px'},'弾の変化（発射から○秒後に…）'));
-    e.mods.forEach((m,i)=>body.append(modRow(e, m, i, ()=>fillEventBody(body, e, ph, tm, sum), idp)));
+    e.mods.forEach((m,i)=>body.append(modRow(e, m, i, refresh, idp, sum)));
     if (e.mods.length < 6){
       const add = el('button',{type:'button',class:'btn sm'},'＋ 変化を追加');
-      add.onclick = ()=>{ e.mods.push({at:0.6, type:'stop', v:0}); markDirty(); fillEventBody(body, e, ph, tm, sum); sum.textContent = evSummary(e); };
+      add.onclick = ()=>{ e.mods.push({at:0.6, type:'stop', v:0}); markDirty(); refresh(); sum.textContent = evSummary(e); };
       body.append(add);
     }
   }
   const dup = el('button',{type:'button',class:'btn sm'},'複製');
-  dup.onclick = ()=>{ if (ph.events.length >= 40) return toast('1フェーズのイベントは40個までです'); const c = clone(e); c.t = nnum(e.t + 0.5, 0, Math.max(0,ph.dur-0.05), 0.05, 0); ph.events.push(c); ED.open.add(c); markDirty(); renderEditor(); };
+  dup.onclick = ()=>{ if (ph.events.length >= 40) return toast('1フェーズのイベントは40個までです'); const c = clone(e); c.t = nnum(e.t + 0.5, 0, Math.max(0,ph.dur-0.05), 0.05, 0); ph.events.push(c); ED.open.add(ph.events.length-1); markDirty(); renderEditor(); };
   const del = el('button',{type:'button',class:'btn sm danger'},'削除');
-  del.onclick = ()=>{ ph.events.splice(ph.events.indexOf(e),1); ED.open.delete(e); markDirty(); renderEditor(); };
+  del.onclick = ()=>{ ph.events.splice(idx,1); const n = new Set(); for (const i of ED.open) if (i !== idx) n.add(i > idx ? i-1 : i); ED.open = n; markDirty(); renderEditor(); };
   body.append(el('div',{class:'row'}, dup, del));
 }
-function modRow(e, m, i, refresh, idp){
+function modRow(e, m, i, refresh, idp, sum){
   const M = MODS[m.type];
   const sel = el('select',{id:`${idp}-m${i}-type`,'aria-label':'変化の種類'}, ...Object.entries(MODS).map(([k,v])=>el('option',{value:k,selected:k===m.type}, v.l)));
   sel.onchange = ()=>{ m.type = sel.value; m.v = MODS[m.type].nov ? 0 : MODS[m.type].d; e.mods.sort((a,b)=>a.at-b.at); markDirty(); refresh(); };
   const rm = el('button',{type:'button',class:'btn sm danger','aria-label':'この変化を削除'},'×');
-  rm.onclick = ()=>{ e.mods.splice(i,1); markDirty(); refresh(); };
+  rm.onclick = ()=>{ e.mods.splice(i,1); markDirty(); refresh(); sum.textContent = evSummary(e); };
   const atF = fieldEl({k:'at',l:'○秒後',t:'r',min:0,max:8,step:0.05,u:'秒'}, m, `${idp}-m${i}`, (f,commit)=>{ markDirty(); if (commit){ e.mods.sort((a,b)=>a.at-b.at); refresh(); } });
   const box = el('div',{class:'mod'}, el('div',{class:'row'}, sel, rm), atF);
   if (!M.nov) box.append(fieldEl({k:'v',l:'値',t:'r',min:M.min,max:M.max,step:M.step,u:M.u}, m, `${idp}-m${i}`, ()=>markDirty()));
   return box;
+}
+function bitCard(bt, j, ph){
+  const open = ED.openBits.has(j), c = colOf(bt.color);
+  const desc = optLabel('bit','kind',bt.kind) + (bt.brk ? ` ・HP ${bt.hp}` : ' ・無敵');
+  const head = el('header',{role:'button',tabindex:0,'aria-expanded':String(open)}, el('b',{style:`color:${c}`}, 'ビット'+BITL[j]), el('span',{class:'s'}, desc), el('span',{class:'muted'}, open?'▲':'▼'));
+  const body = el('div',{class:'evb',hidden:!open});
+  const card = el('div',{class:'ev',style:`--c:${c}`}, head, body);
+  const toggle = ()=>{ if (ED.openBits.has(j)) ED.openBits.delete(j); else ED.openBits.add(j); renderEditor(); };
+  head.onclick = toggle; head.onkeydown = k=>{ if (k.key==='Enter'||k.key===' '){ k.preventDefault(); toggle(); } };
+  if (open){
+    const fill = ()=>{
+      body.replaceChildren();
+      for (const f of F.bit){ if (f.show && !f.show(bt)) continue; body.append(fieldEl(f, bt, `b${ED.sel}-${j}`, (ff,commit)=>{ markDirty(); head.querySelector('.s').textContent = optLabel('bit','kind',bt.kind) + (bt.brk ? ` ・HP ${bt.hp}` : ' ・無敵'); if (commit && (ff.re || ff.t==='c')){ if (ff.t==='c') renderEditor(); else fill(); } })); }
+      const del = el('button',{type:'button',class:'btn sm danger'},'このビットを削除');
+      del.onclick = ()=>{
+        ph.bits.splice(j,1);
+        for (const e of ph.events){ if (!e.src || e.src === 'boss' || e.src === 'bits') continue; const k = +e.src.slice(3); if (k === j) e.src = 'boss'; else if (k > j) e.src = 'bit'+(k-1); }
+        for (const e of ph.events) if (e.src === 'bits' && !ph.bits.length) e.src = 'boss';
+        ED.openBits.clear(); markDirty(); renderEditor();
+      };
+      body.append(el('p',{class:'hint',style:'margin:0'},'ビットは体当たりでも被弾します。破線の枠は壊せないビットです。'), el('div',{class:'row'}, del));
+    };
+    fill();
+  }
+  return card;
 }
 function transRow(T, i, ph){
   const C = CONDS[T.c], b = ED.boss;
@@ -1405,39 +1949,72 @@ function transRow(T, i, ph){
   const up = el('button',{type:'button',class:'btn sm','aria-label':'優先度を上げる',disabled:i===0},'↑');
   up.onclick = ()=>{ [ph.trans[i-1],ph.trans[i]] = [ph.trans[i],ph.trans[i-1]]; markDirty(); renderEditor(); };
   const box = el('div',{class:'tr'}, el('div',{class:'row'}, el('b',{class:'small',style:'color:var(--cyan)'},'IF'), sel, up, rm));
+  if (T.c === 'bits' && !ph.bits.some(x=>x.brk)) box.append(el('p',{class:'hint',style:'margin:0;color:var(--gold)'},'このフェーズには壊せるビットがないので、この条件は満たされません。'));
   if (!C.nov) box.append(fieldEl({k:'v',l:'値',t:'r',min:C.min,max:C.max,step:C.step,u:C.u}, T, idp, ()=>markDirty()));
   box.append(fieldEl({k:'p',l:'確率',t:'r',min:1,max:100,step:1,u:'%'}, T, idp, ()=>markDirty()));
   box.append(el('div',{class:'row'}, el('b',{class:'small',style:'color:var(--pink)'},'THEN'), to));
   return box;
 }
 
-/* preview */
-let pvRAF = 0, pvGame = null, pvTimer = 0;
-function previewTime(){ if (!pvGame) return 0; const d = pvGame.ph.dur; return pvGame.ph.loop ? pvGame.pt % d : Math.min(pvGame.pt, d); }
-function schedulePreview(ms){ clearTimeout(pvTimer); pvTimer = setTimeout(()=>{ if (cur === 'editor') startPreview(); }, ms==null ? 350 : ms); }
-function startPreview(){
+/* --- preview (pause / speed / seek / zoom) --- */
+const PV = {raf:0, g:null, timer:0, paused:false, speed:1};
+const SPEEDS = [0.25, 0.5, 1, 2];
+function previewTime(){ const g = PV.g; if (!g) return 0; const d = g.ph.dur; return g.ph.loop ? g.pt % d : Math.min(g.pt, d); }
+function schedulePreview(ms){ clearTimeout(PV.timer); PV.timer = setTimeout(()=>{ if (cur === 'editor'){ const t = previewTime(); startPreview(t); } }, ms==null ? 350 : ms); }
+function newPreviewGame(){ return new Game(normBoss(clone(ED.boss)), {preview:true, lockPhase:true, startPhase:ED.sel}); }
+function fastForward(g, t){ let guard = 0; while (g.pt < t - 1e-6 && guard++ < 4000) g.update(Math.min(1/60, t - g.pt)); g.banner = null; }
+function pvControls(id){
+  const box = el('div',{class:'pvctl',id});
+  const play = el('button',{type:'button',class:'btn sm','aria-label':'再生/一時停止'}, PV.paused ? '▶' : 'Ⅱ');
+  play.onclick = ()=>{ PV.paused = !PV.paused; syncPvCtl(); };
+  const spd = el('button',{type:'button',class:'btn sm','aria-label':'再生速度'}, PV.speed+'×');
+  spd.onclick = ()=>{ PV.speed = SPEEDS[(SPEEDS.indexOf(PV.speed)+1)%SPEEDS.length]; syncPvCtl(); };
+  const rst = el('button',{type:'button',class:'btn sm','aria-label':'最初から'}, '⟲');
+  rst.onclick = ()=>startPreview(0);
+  const big = el('button',{type:'button',class:'btn sm','aria-label':'拡大表示'}, id === 'pvBigCtl' ? '✕' : '⤢');
+  big.onclick = ()=>{ const ov = $('#pvBig'); ov.hidden = id === 'pvBigCtl'; syncPvCtl(); };
+  box.append(play, spd, rst, big);
+  if (id === 'pvBigCtl'){
+    const step = el('button',{type:'button',class:'btn sm','aria-label':'少し進める'}, '+0.1秒');
+    step.onclick = ()=>{ if (PV.g){ PV.paused = true; for (let i=0;i<6;i++) PV.g.update(1/60); syncPvCtl(); } };
+    box.insertBefore(step, big);
+  }
+  box._play = play; box._spd = spd;
+  return box;
+}
+function syncPvCtl(){
+  for (const id of ['pvCtl','pvBigCtl']){ const b = document.getElementById(id); if (!b || !b._play) continue; b._play.textContent = PV.paused ? '▶' : 'Ⅱ'; b._spd.textContent = PV.speed+'×'; }
+}
+(function initBig(){ const ov = $('#pvBig'), c = pvControls('pvBigCtl'); $('#pvBigCtl').replaceWith(c); ov.addEventListener('click', e=>{ if (e.target === ov) ov.hidden = true; }); })();
+function seekPreview(t){ if (!ED.boss) return; startPreview(t); }
+function startPreview(seekT){
   stopPreview();
-  const cvp = $('#pv'); if (!cvp) return;
-  const ctx = cvp.getContext('2d');
-  pvGame = new Game(normBoss(clone(ED.boss)), {preview:true, lockPhase:true, startPhase:ED.sel});
+  if (!$('#pv')) return;
+  PV.g = newPreviewGame();
+  if (seekT) fastForward(PV.g, seekT);
   let last = performance.now();
-  const loop = now => {
-    pvRAF = requestAnimationFrame(loop);
-    const c = $('#pv'); if (!c) return;
+  const draw = (c, g) => {
     const r = c.getBoundingClientRect(); if (!r.width) return;
     const dpr = Math.min(2, window.devicePixelRatio||1);
     if (c.width !== Math.round(r.width*dpr)){ c.width = Math.round(r.width*dpr); c.height = Math.round(r.height*dpr); }
-    const dt = Math.min(0.033, (now-last)/1000); last = now;
-    pvGame.update(dt);
-    const cx = c.getContext('2d'), sc = c.width/W;
-    cx.setTransform(sc,0,0,sc,0,0); render(cx, pvGame, false);
-    const head = $('#tlHead'); if (head) head.style.left = (previewTime()/pvGame.ph.dur*100)+'%';
+    const cx = c.getContext('2d'), sc = c.width/W; cx.setTransform(sc,0,0,sc,0,0); render(cx, g, false);
+    cx.fillStyle = '#9d93c6'; cx.font = '700 13px "M PLUS 1p", sans-serif'; cx.textAlign = 'right';
+    cx.fillText(previewTime().toFixed(2)+'秒' + (PV.speed !== 1 ? `  ${PV.speed}×` : '') + (PV.paused ? '  停止中' : ''), W-10, H-12);
   };
-  pvRAF = requestAnimationFrame(loop);
+  const loop = now => {
+    PV.raf = requestAnimationFrame(loop);
+    const g = PV.g, dt = Math.min(0.033, (now-last)/1000); last = now;
+    if (!PV.paused){ let rem = dt*PV.speed; while (rem > 1e-6){ const s = Math.min(1/60, rem); g.update(s); rem -= s; } }
+    const c = $('#pv'); if (c) draw(c, g);
+    if (!$('#pvBig').hidden) draw($('#pvBigCv'), g);
+    const head = $('#tlHead'); if (head) head.style.left = (previewTime()/g.ph.dur*100)+'%';
+  };
+  PV.raf = requestAnimationFrame(loop);
 }
-function stopPreview(){ cancelAnimationFrame(pvRAF); pvRAF = 0; }
+function stopPreview(){ cancelAnimationFrame(PV.raf); PV.raf = 0; }
 
 function saveEditor(){
+  commitHist();
   const b = normBoss(clone(ED.boss));
   if (ED.id){ const m = mine.find(x=>x.id===ED.id); if (m){ m.boss = b; m.at = Date.now(); } else mine.push({id:ED.id, boss:b, at:Date.now()}); }
   else { ED.id = uid8(); mine.push({id:ED.id, boss:b, at:Date.now()}); }
@@ -1449,10 +2026,10 @@ $('#edBack').onclick = ()=>{
   const btn = $('#edBack');
   if (ED.dirty && !btn.dataset.arm){ btn.dataset.arm = 1; btn.textContent = '保存せず戻る？'; setTimeout(()=>{ delete btn.dataset.arm; btn.textContent = '← 戻る'; }, 3000); toast('未保存の変更があります'); return; }
   delete btn.dataset.arm; btn.textContent = '← 戻る';
-  renderSelect(); show('select');
+  renderMake(); show('make');
 };
-$('#edTestPhase').onclick = ()=>startGame(normBoss(clone(ED.boss)), {from:'editor', startPhase:ED.sel});
-$('#edTestAll').onclick = ()=>startGame(normBoss(clone(ED.boss)), {from:'editor', startPhase:0});
+$('#edTestPhase').onclick = ()=>{ commitHist(); startGame(normBoss(clone(ED.boss)), {from:'editor', startPhase:ED.sel}); };
+$('#edTestAll').onclick = ()=>{ commitHist(); startGame(normBoss(clone(ED.boss)), {from:'editor', startPhase:0}); };
 
 /* =========================================================
    SHARE CODES
@@ -1477,7 +2054,7 @@ async function decodeBoss(code){
   }
   return normBoss(JSON.parse(new TextDecoder().decode(bytes)));
 }
-function modal(...kids){ const s = $('#sheet'); s.replaceChildren(...kids); $('#modal').hidden = false; }
+function modal(...kids){ const s = $('#sheet'); s.replaceChildren(...kids.filter(Boolean)); $('#modal').hidden = false; }
 function closeModal(){ $('#modal').hidden = true; }
 $('#modal').addEventListener('click', e=>{ if (e.target.id === 'modal') closeModal(); });
 async function copyText(text, ta){
@@ -1506,10 +2083,10 @@ function openImport(prefill){
     actions.replaceChildren(); msg.style.color = '';
     try{
       const b = await decodeBoss(ta.value);
-      msg.textContent = `「${b.name}」 HP ${b.hp} ・ フェーズ ${b.phases.length}`;
+      msg.textContent = `「${b.name}」 ${bossMeta(b).join(' ・ ')}`;
       actions.append(
-        el('button',{type:'button',class:'btn pri grow',onclick:()=>{ closeModal(); startGame(b,{from:'select'}); }},'▶ 挑戦'),
-        el('button',{type:'button',class:'btn grow',onclick:()=>{ mine.push({id:uid8(), boss:b, at:Date.now()}); saveMine(); closeModal(); renderSelect(); show('select'); toast('マイボスに追加しました'); }},'マイボスに追加'));
+        el('button',{type:'button',class:'btn pri grow',onclick:()=>{ closeModal(); openPrefight(b,{from:'select',rec:'c:'+b.name}); }},'▶ 挑戦'),
+        el('button',{type:'button',class:'btn grow',onclick:()=>{ mine.push({id:uid8(), boss:b, at:Date.now()}); saveMine(); closeModal(); renderMake(); show('make'); toast('マイボスに追加しました'); }},'マイボスに追加'));
     }catch(e){ msg.textContent = (e && e.message) || '読み込めませんでした'; msg.style.color = 'var(--bad)'; }
   };
   modal(el('h3',{},'共有コードを読み込む'), ta, go, msg, actions, el('button',{type:'button',class:'btn',onclick:closeModal},'閉じる'));
@@ -1518,7 +2095,7 @@ function openImport(prefill){
 
 /* =========================================================
    CLOUD — みんなのボス置き場 (claude.ai artifact db)
-   players/<uid> = { bosses:{bid:{n,d,at}}, stats:{"author|bid":{t,c,b,l}} }
+   players/<uid> = { bosses:{bid:{n,d,at}}, stats:{"author|bid":{t,c,b,sh,l}} }
    ========================================================= */
 const IN_ARTIFACT = !!(window.claude && window.claude.use);
 const Cloud = {
@@ -1543,7 +2120,6 @@ const Cloud = {
         this.docs = docs;
         if (!snap.metadata.fromCache){ this.loaded = true; clearTimeout(timer); if (this.err === 'slow') this.err = ''; }
         if (this.uid && !this.my) this.my = clone(docs[this.uid] || {bosses:{}, stats:{}});
-        if (!this.my && this.uid) this.my = {bosses:{}, stats:{}};
         if (cur === 'board') renderBoard();
         updateBoardSub();
       }, e=>{ clearTimeout(timer); this.err = 'error'; this.loaded = true; if (cur==='board') renderBoard(); });
@@ -1565,9 +2141,9 @@ const Cloud = {
     const my = this.ensureMy();
     if (!my.bosses[m.id] && Object.keys(my.bosses).length >= 12) return toast('投稿できるのは12体までです');
     const b = normBoss(m.boss);
-    if (JSON.stringify(b).length > 20000) return toast('ボスが大きすぎます。イベントを減らしてください');
+    if (JSON.stringify(b).length > 24000) return toast('ボスが大きすぎます。イベントを減らしてください');
     my.bosses[m.id] = {n:b.name, d:b, at:Date.now()};
-    this.write(); toast('置き場に投稿しました'); renderSelect();
+    this.write(); toast('置き場に投稿しました'); renderMake();
   },
   unpost(bid){ const my = this.ensureMy(); delete my.bosses[bid]; this.write(); toast('取り下げました'); renderBoard(); },
   async modDelete(author, bid){
@@ -1579,12 +2155,12 @@ const Cloud = {
       await ref.set(d); toast('管理者として削除しました');
     }catch(e){ toast('削除できませんでした'); }
   },
-  record(key, win, time){
+  record(key, win, time, sh){
     if (!this.canPost()) return null;
     const st = this.ensureMy().stats; const s = st[key] || {t:0,c:0,b:null,l:false};
-    s.t = (s.t|0) + 1; let best = false;
-    if (win){ s.c = (s.c|0) + 1; if (s.b == null || time < s.b){ s.b = +time.toFixed(2); best = true; } }
-    st[key] = s; this.write(); return {best};
+    s.t = (s.t|0) + 1;
+    if (win){ s.c = (s.c|0) + 1; if (s.b == null || time < s.b){ s.b = +time.toFixed(2); s.sh = sh; } }
+    st[key] = s; this.write(); return true;
   },
   like(key){
     if (!this.canPost()) return toast('いいねするには書き込み権限が必要です');
@@ -1594,12 +2170,12 @@ const Cloud = {
   entries(){
     const out = [];
     const docs = Object.assign({}, this.docs);
-    if (this.uid && this.my) docs[this.uid] = this.my; // show own writes immediately
+    if (this.uid && this.my) docs[this.uid] = this.my;
     for (const [author, d] of Object.entries(docs)){
       const bs = d && d.bosses && typeof d.bosses === 'object' ? d.bosses : {};
       for (const [bid, e] of Object.entries(bs)){
         if (!e || typeof e !== 'object') continue;
-        out.push({key:author+'|'+bid, author, bid, at:+e.at||0, boss:normBoss(e.d), tries:0, clears:0, likes:0, best:null, bestBy:null});
+        out.push({key:author+'|'+bid, author, bid, at:+e.at||0, boss:normBoss(e.d), tries:0, clears:0, likes:0, best:null, bestBy:null, bestSh:null});
       }
     }
     const idx = Object.fromEntries(out.map(e=>[e.key,e]));
@@ -1608,7 +2184,7 @@ const Cloud = {
       for (const [k, s] of Object.entries(st)){
         const e = idx[k]; if (!e || !s) continue;
         e.tries += Math.max(0, s.t|0); e.clears += Math.max(0, s.c|0); if (s.l) e.likes++;
-        const b = +s.b; if (s.b != null && isFinite(b) && b > 0 && (e.best == null || b < e.best)){ e.best = b; e.bestBy = pid; }
+        const b = +s.b; if (s.b != null && isFinite(b) && b > 0 && (e.best == null || b < e.best)){ e.best = b; e.bestBy = pid; e.bestSh = SHIP_TYPES[s.sh] ? s.sh : null; }
       }
     }
     return out;
@@ -1643,21 +2219,21 @@ async function renderBoard(){
   if (Cloud.sort === 'hard') es.sort((a,b)=>(rate(a)-rate(b)) || b.tries-a.tries);
   if (Cloud.sort === 'play') es.sort((a,b)=>b.tries-a.tries);
   status.textContent = Cloud.err === 'slow' ? '置き場にまだ届きません。表示が古いかもしれません。' : Cloud.err === 'error' ? '置き場の読み込みに失敗しました。ページを開き直してください。' : !Cloud.loaded ? '読み込み中…' :
-    (Cloud.canPost() ? `${es.length}体。投稿は「あそぶ」→ マイボスの「置き場に投稿」から。` : `${es.length}体。閲覧のみ：記録・いいね・投稿はできません。`);
+    (Cloud.canPost() ? `${es.length}体。投稿は「ボスを作る」→ マイボスの「置き場に投稿」から。` : `${es.length}体。閲覧のみ：記録・いいね・投稿はできません。`);
   const ids = [...new Set(es.flatMap(e=>[e.author, e.bestBy]).filter(Boolean))];
   let ps = {};
   try{ if (Cloud.user && ids.length) ps = await Cloud.user.profiles(ids); }catch(e){}
   if (my !== boardRender) return;
   const nm = id => (ps[id] && ps[id].name) || (id === Cloud.uid ? 'あなた' : '誰か');
   list.replaceChildren();
-  if (!es.length && Cloud.loaded) list.append(el('div',{class:'empty'},'まだ誰も投稿していません。マイボスの「置き場に投稿」で最初の1体を置きましょう。'));
+  if (!es.length && Cloud.loaded) list.append(el('div',{class:'empty'},'まだ誰も投稿していません。「ボスを作る」→ マイボスの「置き場に投稿」で最初の1体を置きましょう。'));
   for (const e of es){
     const mineS = Cloud.my && Cloud.my.stats && Cloud.my.stats[e.key] || {};
     const isMine = e.author === Cloud.uid;
     const like = el('button',{type:'button',class:'btn sm'+(mineS.l?' liked':''),'aria-pressed':String(!!mineS.l),disabled:!Cloud.canPost()}, (mineS.l?'♥':'♡')+' '+e.likes);
     like.onclick = ()=>Cloud.like(e.key);
     const acts = el('div',{class:'acts'},
-      el('button',{type:'button',class:'btn pri sm grow',onclick:()=>startGame(e.boss,{from:'board',key:e.key})},'▶ 挑戦'), like,
+      el('button',{type:'button',class:'btn pri sm grow',onclick:()=>openPrefight(e.boss,{from:'board',key:e.key,rec:'b:'+e.key})},'▶ 挑戦'), like,
       el('button',{type:'button',class:'btn sm',onclick:()=>{ mine.push({id:uid8(), boss:clone(e.boss), at:Date.now()}); saveMine(); toast('マイボスにコピーしました'); }},'コピー'));
     if (isMine) acts.append(el('button',{type:'button',class:'btn sm danger',onclick:()=>Cloud.unpost(e.bid)},'取り下げ'));
     else if (Cloud.isOwner) acts.append(el('button',{type:'button',class:'btn sm danger',onclick:()=>Cloud.modDelete(e.author, e.bid)},'管理削除'));
@@ -1668,7 +2244,7 @@ async function renderBoard(){
         el('div',{}, el('b',{}, e.tries), el('span',{},'挑戦')),
         el('div',{}, el('b',{}, e.tries ? Math.round(e.clears/e.tries*100)+'%' : '—'), el('span',{},'クリア率')),
         el('div',{}, el('b',{}, e.likes), el('span',{},'いいね')),
-        el('div',{}, el('b',{}, e.best != null ? fmtTime(e.best) : '—'), el('span',{}, e.best != null ? '最速 ' + nm(e.bestBy) : '最速'))),
+        el('div',{}, el('b',{}, e.best != null ? fmtTime(e.best) : '—'), el('span',{}, e.best != null ? `最速 ${nm(e.bestBy)}${e.bestSh ? '・'+SHIP_TYPES[e.bestSh].n : ''}` : '最速'))),
       acts));
   }
 }
@@ -1679,6 +2255,5 @@ async function renderBoard(){
 show('title');
 Cloud.init();
 updateBoardSub();
-// GitHub版: #boss=CODE で直接読み込み
 if (!IN_ARTIFACT && /#boss=NBL/.test(location.hash)) openImport(decodeURIComponent(location.hash.slice(6)));
 </script>

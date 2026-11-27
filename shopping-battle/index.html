@@ -223,6 +223,31 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .rank-row{display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:12px;padding:8px 10px;font-weight:800}
 .rank-row .no{font-family:var(--display);font-size:20px;width:36px}
 .rank-row.me{box-shadow:0 0 0 3px var(--ink)}
+/* ---------- 特殊要素 ---------- */
+.poster{position:relative}
+.secret{position:absolute;right:6px;bottom:4px;font-family:var(--emoji);font-size:15px;opacity:.13;width:26px;height:26px}
+.flyer{display:flex;gap:10px;align-items:center;background:var(--paper);border:3px dashed var(--sale);border-radius:12px;padding:8px 12px;font-size:12px;line-height:1.45;width:min(100%,380px);text-align:left}
+.flyer .emo{font-size:28px}
+#scr-loadout .flyer{width:100%;border-color:var(--ink)}
+.lane.legend{background:rgba(255,236,153,.75);box-shadow:0 0 0 3px #f59e0b,0 0 18px #fbbf24}
+.lane.gacha{background:rgba(186,230,253,.6)}
+.card.legend{background:linear-gradient(135deg,#fff3b0,#fbbf24 55%,#fff3b0);animation:shine 1.6s infinite}
+.card.legend::after{content:"★★伝説";position:absolute;right:-26px;top:30px;transform:rotate(40deg);background:#b45309;color:#fff;font-size:10px;font-weight:800;padding:1px 26px}
+@keyframes shine{50%{filter:brightness(1.12)}}
+.card.gacha{background:linear-gradient(160deg,#e0f2fe,#bae6fd)}
+.mm.legend{background:#b45309;box-shadow:0 0 0 2px #fde68a inset;animation:bob .6s infinite}
+.char.locked{background:#e2e5ee;color:#5b6280;box-shadow:none}
+.char.locked .face{background:#cbd0de;border-color:#9aa3c0;font-family:var(--display);font-size:26px;color:#5b6280}
+.hid{white-space:nowrap;font-family:var(--body);font-size:10px;background:var(--ink);color:#fff;border-radius:6px;padding:1px 5px;vertical-align:middle}
+.irow.lg,.ib.lg{background:#fff1c2;box-shadow:0 0 0 2px #f59e0b inset}
+.sp.lg{background:#fff1c2}
+.sp.fixed{border-color:var(--ink);background:#e2e8f0}
+.sp.fixed .chk{background:var(--ink);color:#fff;border-color:var(--ink);font-size:12px}
+.qs.pay{background:#fce7f3;min-width:92px}
+.hp-chip.boss{box-shadow:0 0 0 3px #ef4444}
+.rv.boss b{color:#dc2626}
+.panel.unlock{background:#fff1c2;box-shadow:0 0 0 3px #f59e0b}
+.sbtn.lg{background:#fde68a}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -235,13 +260,16 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <span class="kicker">本日限り！大特売</span>
     <h1>列に並べ！</h1>
     <h2>ショッピングバトル</h2>
-    <div class="price">10本のレジ列で商品を取り合い、集めた力で4人バトル！</div>
+    <div class="price">10本のレジ列で商品を取り合い、集めた力で乱戦バトル！</div>
+    <button class="secret" id="secretBtn" aria-label="ひみつ">🕵️</button>
   </div>
+  <div class="flyer" id="flyerBox"></div>
   <div class="parade" id="parade"></div>
   <div class="title-btns">
     <button class="btn" id="startBtn">開店へ行く！</button>
     <button class="btn sub" id="howBtn">あそびかた</button>
   </div>
+  <div class="small-note" id="record"></div>
   <div class="small-note">スマホ縦画面推奨・音が出ます</div>
 </section>
 
@@ -279,8 +307,9 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 <!-- 準備 -->
 <section id="scr-loadout" class="screen" hidden>
   <h3 class="sec-h">バトルの準備</h3>
+  <div class="flyer" id="stageBox"></div>
   <div class="panel">
-    <h4>使うスキルを3つまで選ぶ <span id="pickCount" style="opacity:.6"></span></h4>
+    <h4>使うスキルを選ぶ <span id="pickCount" style="opacity:.6"></span></h4>
     <div class="skill-pick" id="skillPick"></div>
   </div>
   <div class="panel"><h4>あなたの能力</h4><div class="stats" id="myStats"></div><div class="inv-list" id="myPassives" style="margin-top:8px"></div></div>
@@ -445,13 +474,36 @@ const CHARS = [
     hp: 115, atk: 8.5, def: 1.5, spd: 104, aspd: 1.0, walk: 0.9, cut: 3, chat: 10,
     trait: '井戸端の女王：井戸端会議×2で10秒止める。おにぎり常備で自然回復',
     start: { active: { sample: 1 }, queue: { chat: 2 }, passive: { regen: 1 } } },
+  // ---- 隠しキャラ ----
+  { id: 'tencho', name: '店長', role: 'ならぶ屋の店長', emoji: '🧑‍💼', color: '#94a3b8', hidden: true,
+    hp: 175, atk: 12, def: 3.5, spd: 92, aspd: 0.9, walk: 0.9, cut: 3, chat: 7, slots: 2, sig: ['shutter'], conne: true,
+    trait: '強気のコネ：開店時に商品3つを入手（その商品は売り場に出ない）。自分の列はいつも速い。攻撃・防御が高いが遅い。スキル2枚＋固有「閉店」',
+    how: '10%で乱入する「本気の店長」を差し置いて1位になる',
+    start: { active: { shutter: 1 }, queue: {} } },
+  { id: 'tenbai', name: 'テンバイ', role: '転売ヤー', emoji: '🕴️', color: '#a78bfa', hidden: true,
+    hp: 95, atk: 9, def: 1, spd: 122, aspd: 1.05, walk: 1.5, cut: 3, chat: 7, hoarder: true,
+    trait: '買い占めの鬼：いつも2個買う。そのかわり列の移動が遅く、一般客によく割り込まれる。体力は低め',
+    how: '累計3回 1位になる', winsNeed: 3,
+    start: { active: { seal: 1 }, queue: {} } },
+  { id: 'madam', name: 'マダム', role: '大富豪マダム', emoji: '👸', color: '#f472b6', hidden: true,
+    hp: 110, atk: 7.5, def: 1, spd: 92, aspd: 0.95, walk: 1.0, cut: 3, chat: 7, pay: true, butler: true,
+    trait: 'お金で解決：「お釣りはいらないわ」で前の2人を買収（15秒ごと）。執事セバスが別の列に並び、バトルでも一緒に戦う。本人は遅い',
+    how: '累計5回 1位になる', winsNeed: 5,
+    start: { active: { point: 1 }, queue: {} } },
+  { id: 'gmen', name: 'Gメン', role: '万引きGメン', emoji: '🕵️', color: '#22d3ee', hidden: true,
+    hp: 120, atk: 9.5, def: 1.5, spd: 124, aspd: 1.0, walk: 0.7, cut: 3, chat: 7, slots: 1, sig: ['arrest', 'stealth'], gmen: true,
+    trait: '取り締まり＆変装：割り込みやバナナを使ったライバルを捕まえて最後尾へ。客にまぎれてバナナ・井戸端会議が効かない。固有スキル「確保」「変装」',
+    how: '？？？（タイトル画面のどこかに秘密が…）',
+    start: { active: { arrest: 1, stealth: 1 }, queue: {} } },
 ];
+const BUTLER = { id: 'butler', name: 'セバス', role: 'マダムの執事', emoji: '🤵', color: '#f472b6', hp: 85, atk: 7, def: 1, spd: 130, aspd: 1.05, walk: 0.6, cut: 3, chat: 7, start: { active: {}, queue: {} } };
 const CAT = {
   active: { label: 'スキル', color: 'var(--c-active)' },
   passive: { label: 'パッシブ', color: 'var(--c-passive)' },
   stat: { label: '基礎強化', color: 'var(--c-stat)' },
   queue: { label: '並びスキル', color: 'var(--c-queue)' },
   bag: { label: '福袋', color: 'var(--c-bag)' },
+  gacha: { label: 'ガチャ', color: '#0ea5e9' },
 };
 const ITEMS = {};
 function defItems(cat, list) { for (const [id, name, icon, desc, extra] of list) ITEMS[id] = Object.assign({ id, cat, name, icon, desc }, extra || {}); }
@@ -466,6 +518,13 @@ defItems('active', [
   ['timesale', 'タイムセール宣言', '⏰', '5秒間、移動と攻撃がとても速くなる', { cd: 14 }],
   ['point', 'ポイントカードバリア', '💳', '5秒間、最大体力30%分のバリア', { cd: 12 }],
   ['seal', '半額シール', '🏷️', '追いかけるシール。貼られた相手は4秒間ダメージ+30%', { cd: 6 }],
+  // 伝説 (★★)
+  ['goldcart', '黄金のカート', '🏎️', '★★伝説。会場を突き抜ける超ダッシュ。通り道の全員に特大ダメージ', { cd: 9, legend: 1 }],
+  ['storm', 'バーゲンの嵐', '🌪️', '★★伝説。ほかの全員の今の体力を25%けずり、気絶させる', { cd: 20, legend: 1 }],
+  // 固有スキル (売り場には出ない)
+  ['shutter', '閉店', '🚪', '店長の固有スキル。周りの全員を大きく吹き飛ばして気絶させる', { cd: 10, sig: 1 }],
+  ['arrest', '確保', '🚨', 'Gメンの固有スキル。近くの相手を捕まえて長く動けなくする', { cd: 9, sig: 1 }],
+  ['stealth', '変装', '🥸', 'Gメンの固有スキル。数秒間ほぼ見えなくなり、次の攻撃が2.5倍', { cd: 11, sig: 1 }],
 ]);
 defItems('passive', [
   ['lifesteal', '試食の達人', '🍢', '与えたダメージの8%回復'],
@@ -478,6 +537,8 @@ defItems('passive', [
   ['crit', '目利き', '👀', '会心率+12%（会心は1.8倍）'],
   ['dodge', 'すり抜け上手', '💨', '10%で攻撃を回避（最大40%）'],
   ['push', '押しの強さ', '🦵', '通常攻撃のダメージ+15%、ふっとばし強化'],
+  ['blackcard', 'ブラックカード', '🖤', '★★伝説。スキルCT-35%、スキルダメージ+25%', { legend: 1 }],
+  ['vip', '永久VIP会員証', '👑', '★★伝説。最大体力+60、毎秒1.5%回復、根性+1', { legend: 1 }],
 ]);
 defItems('stat', [
   ['hp', '特盛弁当', '🍱', '最大体力+25'],
@@ -495,8 +556,11 @@ defItems('queue', [
   ['hoard', '買い占め', '🛍️', '次の買い物で2個もらえる'],
 ]);
 defItems('bag', [['lucky', '福袋', '🎁', 'ランダムな商品が3個入っている（★なら5個）']]);
+defItems('gacha', [['gacha', 'ガチャガチャ', '🎰', '回すまで中身がわからない。普通の商品・★レア・福袋、まれに★★伝説アイテムが出る']]);
+// 売り場に並ぶ商品の候補 (伝説・固有は除く)
 const IDS = { active: [], passive: [], stat: [], queue: [], bag: [] };
-for (const k in ITEMS) IDS[ITEMS[k].cat].push(k);
+for (const k in ITEMS) { const d = ITEMS[k]; if (IDS[d.cat] && !d.legend && !d.sig) IDS[d.cat].push(k); }
+const LEGEND_IDS = Object.keys(ITEMS).filter(k => ITEMS[k].legend);
 const CAT_WEIGHT = [['active', 30], ['passive', 22], ['stat', 26], ['queue', 17], ['bag', 5]];
 const NPC_EMO = ['🧑', '👱', '🧔', '👴', '👩‍🦳', '🧓', '👨‍🦰', '👩‍🦰', '🧑‍🦱', '👲', '🧕', '👷', '🧑‍🍳', '👨‍🦲', '🧑‍🦯', '👩‍🍼'];
 const DIFF = [
@@ -505,14 +569,45 @@ const DIFF = [
   { name: '激戦', think: 0.7, qskill: 0.85, smart: 1.0, react: 0.6, aggro: 1.0, dmg: 1.12 },
 ];
 
+// ---- 日替わりチラシ ----
+const FLYERS = [
+  { id: 'skill', name: 'スキル大放出デー', icon: '🥊', desc: 'スキルが売り場に2倍出る', w: { active: 2 } },
+  { id: 'passive', name: 'パッシブ祭り', icon: '🔮', desc: 'パッシブが売り場に2倍出る', w: { passive: 2 } },
+  { id: 'stat', name: '筋トレ応援デー', icon: '🏋️', desc: '基礎強化が売り場に2倍出る', w: { stat: 2 } },
+  { id: 'queue', name: 'ならび名人デー', icon: '🙋', desc: '並びスキルが2倍出て、全員が割り込み+1で開店', w: { queue: 2 }, startCut: 1 },
+  { id: 'rare', name: 'レア大放出の日', icon: '⭐', desc: '★レアが出る確率が2倍', rare: 2 },
+  { id: 'sale', name: 'タイムセール連発デー', icon: '📣', desc: 'タイムセールが2倍の頻度で起こる', sale: 0.5 },
+  { id: 'bag', name: '福袋・ガチャの日', icon: '🎁', desc: '福袋が3倍出て、ガチャの★★伝説率が2倍', w: { bag: 3 }, gacha: 2 },
+];
+function dayIndex() { const d = new Date(); const k = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); return ((k * 2654435761) >>> 0) % FLYERS.length; }
+const FLYER = FLYERS[dayIndex()];
+
+// ---- セーブ (このブラウザだけに保存) ----
+const SAVE_KEY = 'narabe_shopping_battle_v1';
+const SAVE = (() => { const d = { wins: 0, plays: 0, unlocked: {} }; try { return Object.assign(d, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { return d; } })();
+function writeSave() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(SAVE)); } catch (e) {} }
+function isUnlocked(c) { return !c.hidden || !!SAVE.unlocked[c.id]; }
+function unlock(id) {
+  if (SAVE.unlocked[id]) return false;
+  SAVE.unlocked[id] = true; writeSave();
+  const c = CHARS.find(x => x.id === id);
+  toast(`🔓 隠しキャラ解放！<br>${c.emoji} ${c.name}（${c.role}）`, 'get', 3500); Snd.se('rare');
+  return true;
+}
+
 function wpick(pairs) { let s = 0; for (const p of pairs) s += p[1]; let r = Math.random() * s; for (const p of pairs) { r -= p[1]; if (r <= 0) return p[0]; } return pairs[0][0]; }
 function genItem(forceRare) {
-  const cat = wpick(CAT_WEIGHT);
-  const id = pick(IDS[cat]);
-  const rare = forceRare || cat === 'bag' ? Math.random() < 0.35 || !!forceRare : Math.random() < 0.13;
+  const banned = (S && S.banned) || new Set();
+  const cat = wpick(CAT_WEIGHT.map(([c, w]) => [c, w * ((FLYER.w && FLYER.w[c]) || 1)]));
+  let pool = IDS[cat].filter(id => !banned.has(id));
+  if (!pool.length) pool = IDS.stat.filter(id => !banned.has(id));
+  if (!pool.length) pool = IDS.stat;
+  const id = pick(pool);
+  const rc = 0.13 * (FLYER.rare || 1);
+  const rare = forceRare ? true : cat === 'bag' ? Math.random() < 0.35 : Math.random() < rc;
   return { id, rare };
 }
-function itemLabel(it) { return (it.rare ? '★' : '') + ITEMS[it.id].name; }
+function itemLabel(it) { return (it.legend || ITEMS[it.id].legend ? '★★' : it.rare ? '★' : '') + ITEMS[it.id].name; }
 
 // ---- 効果の説明 (数値つき) ----
 function skillCT(id, lv, cdr = 0) { return ITEMS[id].cd * Math.max(0.45, 1 - 0.08 * (lv - 1)) * (1 - cdr); }
@@ -532,6 +627,11 @@ function effectText(id, n = 1, atk = 9, cdr = 0, ch) {
       timesale: `${(5 + 0.5 * (n - 1)).toFixed(1)}秒間 移動+40%・攻撃速度+60%`,
       point: `最大体力の${30 + 6 * (n - 1)}%のバリア（5秒）`,
       seal: `ダメージ${d(1.1, 6)}・4秒間受けるダメージ+30%`,
+      goldcart: `ダメージ${d(3, 20)}・超ダッシュで突き抜ける`,
+      storm: `相手全員の今の体力の${25 + 3 * (n - 1)}%をけずる・気絶0.6秒`,
+      shutter: `ダメージ${d(1.4, 10)}・周りを大きく吹き飛ばす・気絶0.8秒`,
+      arrest: `ダメージ${d(1.0, 6)}・${(1.6 + 0.2 * (n - 1)).toFixed(1)}秒動けなくする`,
+      stealth: `${(3 + 0.5 * (n - 1)).toFixed(1)}秒間ほぼ透明・次の攻撃2.5倍`,
     }[id];
     return `${t} ／ CT ${skillCT(id, n, cdr).toFixed(1)}秒`;
   }
@@ -540,6 +640,8 @@ function effectText(id, n = 1, atk = 9, cdr = 0, ch) {
     berserk: `体力50%以下で与ダメージ+${30 * n}%`, skilldmg: `スキルダメージ+${20 * n}%`, guts: `${n}回まで体力1で耐える`,
     regen: `毎秒 最大体力の${(1.2 * n).toFixed(1)}%回復`, crit: `会心率+${12 * n}%（会心は1.8倍）`, dodge: `回避率${Math.min(40, 10 * n)}%`,
     push: `通常攻撃ダメージ+${15 * n}%・ふっとばし強化`,
+    blackcard: `スキルCT -${Math.min(60, 35 * n)}%・スキルダメージ+${25 * n}%`,
+    vip: `最大体力+${60 * n}・毎秒${(1.5 * n).toFixed(1)}%回復・根性+${n}`,
   }[id];
   if (def.cat === 'stat') return { hp: `最大体力+${25 * n}`, atk: `攻撃力+${2 * n}`, def: `防御力+${(1.5 * n).toFixed(1)}`, spd: `移動速度+${8 * n}%`, aspd: `通常攻撃の速さ+${12 * n}%` }[id];
   if (def.cat === 'queue') {
@@ -548,21 +650,27 @@ function effectText(id, n = 1, atk = 9, cdr = 0, ch) {
     if (id === 'chat') return `ライバルが並ぶ他の列のレジを${ch.chat}秒止める`;
     return def.desc;
   }
+  if (def.cat === 'gacha') return `普通の商品62%・★レア28%・福袋7%・★★伝説${3 * (FLYER.gacha || 1)}%`;
   return def.desc;
 }
-function myAtk() { try { const p = G.actors.find(a => a.isPlayer); if (p) return buildFighter(p, 0, true); } catch (e) {} return null; }
+function myAtk() { try { const p = G.actors.find(a => a.isPlayer); if (p) return buildFighter(p, true); } catch (e) {} return null; }
 function infoRow(id, n, opt = {}) {
   const def = ITEMS[id], lab = def.cat === 'active' ? `Lv${n}` : def.cat === 'bag' ? '' : `×${n}`;
-  return `<button class="irow" data-info="${id}" data-n="${n}"${opt.atk ? ` data-atk="${opt.atk}"` : ''}><span class="ic">${def.icon}</span><span class="txt"><span class="nm">${def.name} <small>${lab}</small></span><br><span class="fx">${effectText(id, n, opt.atk || 9, opt.cdr || 0)}</span></span></button>`;
+  return `<button class="irow${def.legend ? ' lg' : ''}" data-info="${id}" data-n="${n}"${opt.atk ? ` data-atk="${opt.atk}"` : ''}><span class="ic">${def.icon}</span><span class="txt"><span class="nm">${def.legend ? '★★' : ''}${def.sig ? '［固有］' : ''}${def.name} <small>${lab}</small></span><br><span class="fx">${effectText(id, n, opt.atk || 9, opt.cdr || 0)}</span></span></button>`;
 }
-function infoBadge(id, n, atk) { return `<span class="ib" data-info="${id}" data-n="${n || 1}"${atk ? ` data-atk="${atk}"` : ''}><span class="emo">${ITEMS[id].icon}</span>${ITEMS[id].cat === 'active' ? 'Lv' + (n || 1) : n > 1 ? '×' + n : ''}</span>`; }
+function infoBadge(id, n, atk) { return `<span class="ib${ITEMS[id].legend ? ' lg' : ''}" data-info="${id}" data-n="${n || 1}"${atk ? ` data-atk="${atk}"` : ''}><span class="emo">${ITEMS[id].icon}</span>${ITEMS[id].cat === 'active' ? 'Lv' + (n || 1) : n > 1 ? '×' + n : ''}</span>`; }
+function catBadge(def) {
+  const lab = def.legend ? '★★伝説' : def.sig ? '固有スキル' : CAT[def.cat].label, col = def.legend ? '#b45309' : CAT[def.cat].color;
+  return `<span class="badge" style="background:${col};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${lab}</span>`;
+}
 function showInfo(id, n = 1, atk) {
   const def = ITEMS[id], f = myAtk();
   const a = atk || (f ? f.atk : 9), cdr = atk ? 0 : (f ? f.cdr : 0);
   let more = '';
-  if (def.cat === 'active') more = `<div class="kv"><b>今（Lv${n}）</b><span class="fx">${effectText(id, n, a, cdr)}</span><b>次（Lv${n + 1}）</b><span class="fx">${effectText(id, n + 1, a, cdr)}</span></div><p class="hint">ダメージは攻撃力${a.toFixed(1)}で計算。同じスキルを買うとLvアップ（★レアは+2）</p>`;
+  if (def.cat === 'active') more = `<div class="kv"><b>今（Lv${n}）</b><span class="fx">${effectText(id, n, a, cdr)}</span>${def.sig ? '' : `<b>次（Lv${n + 1}）</b><span class="fx">${effectText(id, n + 1, a, cdr)}</span>`}</div><p class="hint">ダメージは攻撃力${a.toFixed(1)}で計算。${def.sig ? '固有スキルはいつも使える（外せない）' : '同じスキルを買うとLvアップ（★レアは+2）'}</p>`;
+  else if (def.cat === 'gacha') more = `<p class="fx">${effectText(id)}</p>`;
   else if (def.cat !== 'bag') more = `<div class="kv"><b>${n}個で</b><span class="fx">${effectText(id, n)}</span><b>もう1個で</b><span class="fx">${effectText(id, n + 1)}</span></div>`;
-  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div><span class="badge" style="background:${CAT[def.cat].color};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${CAT[def.cat].label}</span>
+  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div>${catBadge(def)}
     <h3 style="margin:4px 0 0">${def.name}</h3></div></div><p>${def.desc}</p>${more}
     <div class="row"><button class="btn" data-close>${G.screen === 'scr-battle' ? 'バトルに戻る' : 'とじる'}</button></div>`);
 }
@@ -577,25 +685,58 @@ document.addEventListener('click', e => {
 //  ゲーム全体の状態
 // =====================================================================
 const G = { charIdx: 0, diff: 1, actors: [], screen: 'title' };
+let S = null; // 買い物の状態
+let FORCE_BOSS = false;
+try { FORCE_BOSS = new URLSearchParams(location.search).has('boss'); } catch (e) {}
 
 function newInv() { return { active: {}, passive: {}, stat: {}, queue: {}, count: 0 }; }
-function makeActors(playerIdx) {
-  return CHARS.map((c, i) => {
-    const inv = newInv();
+let actorSeq = 0;
+function makeActor(c, isPlayer, opt = {}) {
+  const inv = opt.inv || newInv();
+  if (!opt.inv) {
     for (const k of ['active', 'queue', 'passive']) Object.assign(inv[k], JSON.parse(JSON.stringify(c.start[k] || {})));
-    return { id: i, char: c, name: c.name, emoji: c.emoji, color: c.color, isPlayer: i === playerIdx, inv,
-      lane: null, walkTo: null, walkT: 0, hoard: 0, think: rnd(0.3, 1.2), qThink: rnd(1, 2), loadout: [], log: [],
-      // ライバルの好み (性格)
-      pref: { active: rnd(0.8, 1.3), passive: rnd(0.8, 1.3), stat: rnd(0.8, 1.3), queue: rnd(0.7, 1.2), bag: 1.1 } };
-  });
+    if (FLYER.startCut) inv.queue.cut = (inv.queue.cut || 0) + FLYER.startCut;
+  }
+  return { id: ++actorSeq, char: c, name: opt.name || c.name, emoji: c.emoji, color: c.color, isPlayer, inv,
+    boss: !!opt.boss, isButler: !!opt.owner, owner: opt.owner || null, payCd: 0,
+    lane: null, walkTo: null, walkT: 0, hoard: 0, think: rnd(0.3, 1.2), qThink: rnd(1, 2), loadout: [], log: [],
+    pref: { active: rnd(0.8, 1.3), passive: rnd(0.8, 1.3), stat: rnd(0.8, 1.3), queue: rnd(0.7, 1.2), bag: 1.1, gacha: 1 } };
 }
-// 商品を受け取る
+function makeActors() {
+  const pc = CHARS[G.charIdx];
+  const pool = CHARS.filter(c => c !== pc && isUnlocked(c)).sort(() => Math.random() - 0.5);
+  const list = [makeActor(pc, true), ...pool.slice(0, 3).map(c => makeActor(c, false))];
+  // 10%で「本気の店長」が5人目として乱入
+  const tencho = CHARS.find(c => c.id === 'tencho');
+  if (!list.some(a => a.char.id === 'tencho') && (FORCE_BOSS || Math.random() < 0.1)) {
+    const b = makeActor(tencho, false, { boss: true, name: '本気の店長' });
+    for (const q of IDS.queue) b.inv.queue[q] = (b.inv.queue[q] || 0) + 1;
+    list.push(b);
+  }
+  // マダムには執事がつく (持ち物は共有)
+  for (const a of [...list]) if (a.char.butler) list.push(makeActor(BUTLER, false, { owner: a, inv: a.inv }));
+  return list;
+}
+const mains = () => G.actors.filter(a => !a.isButler);
+// 商品を受け取る。福袋・ガチャは中身のアイコン一覧を返す
 function giveItem(actor, it, mult = 1) {
-  const def = ITEMS[it.id], m = (it.rare ? 2 : 1) * mult;
-  const inv = actor.inv; inv.count += mult;
+  const def = ITEMS[it.id], inv = actor.inv;
+  if (def.cat === 'gacha') {
+    const got = [], g = FLYER.gacha || 1;
+    for (let i = 0; i < mult; i++) {
+      const r = Math.random(); let sub;
+      if (r < 0.03 * g) sub = { id: pick(LEGEND_IDS), legend: true };
+      else if (r < 0.03 * g + 0.07) sub = { id: 'lucky', rare: false };
+      else { sub = genItem(); if (sub.id === 'lucky') sub = { id: pick(IDS.stat) }; sub.rare = r < 0.38; }
+      const inner = giveItem(actor, sub, 1);
+      got.push((sub.legend ? '★★' : sub.rare ? '★' : '') + ITEMS[sub.id].icon + (inner ? '(' + inner.join('') + ')' : ''));
+      if (sub.legend) { addFeed(`🎰 ${actor.isPlayer ? 'あなた' : actor.name}がガチャで ★★${ITEMS[sub.id].name} を引いた！`); if (!actor.isPlayer) toast(`🎰 ${actor.name}がガチャで★★伝説を引いた！`, 'bad', 2200); }
+    }
+    return got;
+  }
+  inv.count += mult;
   if (def.cat === 'bag') {
-    const got = [];
-    const n = (it.rare ? 5 : 3) * mult;
+    const got = [], n = (it.rare ? 5 : 3) * mult;
     for (let i = 0; i < n; i++) {
       let sub; do { sub = genItem(); } while (sub.id === 'lucky');
       sub.rare = false; giveItem(actor, sub, 1); got.push(ITEMS[sub.id].icon);
@@ -603,6 +744,7 @@ function giveItem(actor, it, mult = 1) {
     inv.count -= n;
     return got;
   }
+  const m = (it.rare && !def.legend ? 2 : 1) * mult;
   inv[def.cat][it.id] = (inv[def.cat][it.id] || 0) + m;
   return null;
 }
@@ -627,26 +769,40 @@ $('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.ta
 // =====================================================================
 //  タイトル・キャラ選択
 // =====================================================================
+function renderTitle() {
+  $('#flyerBox').innerHTML = `<span class="emo">${FLYER.icon}</span><span><b>本日のチラシ：${FLYER.name}</b><br>${FLYER.desc}</span>`;
+  const n = CHARS.filter(c => c.hidden && SAVE.unlocked[c.id]).length;
+  $('#record').textContent = `優勝 ${SAVE.wins}回 ／ 隠しキャラ ${n}/4`;
+}
 (function initTitle() {
   const p = $('#parade'), emos = ['🛒', '👩', '🧔', '👧', '👵', '👨', '🛍️', '🧑‍🦱', '👴', '🛒'];
   emos.forEach((e, i) => { const s = document.createElement('span'); s.textContent = e; s.style.animationDelay = (-i * 0.9) + 's'; p.appendChild(s); });
+  renderTitle();
 })();
-$('#startBtn').onclick = () => { Snd.init(); Snd.se('tap'); Snd.bgm('title'); renderSelect(); show('scr-select'); };
+// 隠しボタン (万引きGメン)
+$('#secretBtn').onclick = () => {
+  Snd.init();
+  if (!unlock('gmen')) toast('🕵️ ……もう見つかっている', '', 1400);
+  renderTitle();
+};
+$('#startBtn').onclick = () => { Snd.init(); Snd.se('tap'); Snd.bgm('title'); if (!isUnlocked(CHARS[G.charIdx])) G.charIdx = 0; renderSelect(); show('scr-select'); };
 $('#howBtn').onclick = () => { Snd.init(); Snd.se('tap'); showHowTo(); };
 function showHowTo() {
   openModal(`<div class="howto"><h3>あそびかた</h3>
   <p><b>① 買い物フェーズ（2分）</b></p>
-  <ol><li>店には<b>10本のレジ列</b>。横にスクロールして商品を見よう。</li>
+  <ol><li>店には<b>10本のレジ列＋ガチャガチャ</b>。横にスクロールして商品を見よう。</li>
   <li>「ここに並ぶ」で最後尾へ。先頭まで進むと商品をゲット！</li>
   <li>一般のお客さんも商品を買っていく。<b>在庫が0になると別の商品に入れ替わる</b>。</li>
-  <li>ライバル3人も同じ商品を狙っている。<b>並びスキル</b>（割り込み・バナナの皮など）で出し抜こう。</li>
-  <li>ときどき<b>タイムセール</b>！ その列のレジが速くなり★レア商品に。</li></ol>
-  <p><b>② バトルフェーズ（4人乱戦）</b></p>
+  <li>ライバルも同じ商品を狙っている。<b>並びスキル</b>（割り込み・バナナの皮など）で出し抜こう。</li>
+  <li>ときどき<b>タイムセール</b>。さらに<b>伝説のレジ</b>が現れると★★伝説アイテムが1個だけ並ぶ！</li>
+  <li>残り20秒は<b>投げ売りタイム</b>：全レジ2倍速・全部★レア。</li></ol>
+  <p><b>② バトルフェーズ（乱戦）</b></p>
   <ol><li>買ったスキルから3つ選んで戦う。同じスキルを重ねるとレベルアップ。</li>
-  <li>左のスティックで移動、👊で攻撃、右のボタンでスキル。</li>
-  <li>パッシブと基礎強化は全部効く。時間が経つと閉店シャッターで場外が狭くなる。</li>
-  <li>最後まで残った人が優勝！</li>
+  <li>左のスティックで移動、👊で攻撃、右のボタンでスキル。会場は広く、画面は自分を追いかける。</li>
+  <li>会場は4種類。値引きシールのアイテムや、エスカレーター・暴走カート・倒れる棚など仕掛けがある。</li>
+  <li>時間が経つと閉店シャッターで場外が狭くなる。最後まで残った人が優勝！</li>
   <li>⏸ボタンで一時停止して、スキルやライバルの効果を確認できる。</li></ol>
+  <p><b>隠しキャラ</b>：4人いる。キャラ選択画面で解放条件を確認できる。</p>
   <p><b>効果の確認</b>：アイコンや持ち物をタップすると、いつでも効果と次のレベルの数値が見られる。並びスキルは長押しで説明。</p>
   <p class="small-note">PC：WASD/矢印で移動、J/スペースで攻撃、K・L・;（または1・2・3）でスキル、P/Escで一時停止</p>
   <div class="row"><button class="btn" data-close>わかった</button></div></div>`);
@@ -654,77 +810,102 @@ function showHowTo() {
 function statBar(v, max) { return `<i style="width:${clamp(v / max, 0.05, 1) * 100}%"></i>`; }
 function renderSelect() {
   $('#chars').innerHTML = CHARS.map((c, i) => {
-    const st = [...Object.entries(c.start.active), ...Object.entries(c.start.queue), ...Object.entries(c.start.passive || {})].map(([k, n]) => infoBadge(k, n, c.atk)).join('');
+    if (!isUnlocked(c)) {
+      const prog = c.winsNeed ? `（今 ${Math.min(SAVE.wins, c.winsNeed)}/${c.winsNeed}）` : '';
+      return `<div class="char locked"><div style="display:flex;gap:8px;align-items:center"><div class="face">？</div><div><div class="nm">？？？</div><div class="role">隠しキャラ</div></div></div><div class="trait">🔒 解放条件：${c.how}${prog}</div></div>`;
+    }
+    const st = [...Object.entries(c.start.active), ...Object.entries(c.start.queue), ...Object.entries(c.start.passive || {})].map(([k, n]) => infoBadge(k, n, c.atk)).join('') || '<span class="hint">なし</span>';
     return `<button class="char ${i === G.charIdx ? 'sel' : ''}" data-i="${i}" style="--c:${c.color}">
-      <div style="display:flex;gap:8px;align-items:center"><div class="face">${c.emoji}</div><div><div class="nm">${c.name}</div><div class="role">${c.role}</div></div></div>
-      <div class="bars"><span>体力</span>${statBar(c.hp, 170)}<span>攻撃</span>${statBar(c.atk, 10.5)}<span>速さ</span>${statBar(c.spd, 145)}</div>
+      <div style="display:flex;gap:8px;align-items:center"><div class="face">${c.emoji}</div><div><div class="nm">${c.name}${c.hidden ? ' <span class="hid">隠し</span>' : ''}</div><div class="role">${c.role}</div></div></div>
+      <div class="bars"><span>体力</span>${statBar(c.hp, 175)}<span>攻撃</span>${statBar(c.atk, 12)}<span>速さ</span>${statBar(c.spd, 145)}</div>
       <div class="trait">${c.trait}</div><div class="trait">初期: ${st}</div><div class="hint">アイコンをタップで効果</div></button>`;
   }).join('');
-  document.querySelectorAll('#chars .char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); });
+  document.querySelectorAll('#chars button.char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); });
 }
 document.querySelectorAll('#diff button').forEach(b => b.onclick = () => {
   G.diff = +b.dataset.d; Snd.se('tap');
   document.querySelectorAll('#diff button').forEach(x => x.classList.toggle('sel', x === b));
 });
-$('#selBack').onclick = () => { Snd.se('tap'); show('scr-title'); };
+$('#selBack').onclick = () => { Snd.se('tap'); renderTitle(); show('scr-title'); };
 $('#selGo').onclick = () => { Snd.se('tap'); startShop(); };
 
 // =====================================================================
 //  買い物フェーズ
 // =====================================================================
-const SHOP_TIME = FAST ? 25 : 120;
-let S = null; // shop state
+const SHOP_TIME = FAST ? 30 : 120;
+const NAGE_TIME = FAST ? 8 : 20;   // 閉店前の投げ売り
+const LEGEND_LANE = 11, GACHA_LANE = 10;
 let pid = 0;
 
-function newLane(i) {
-  const l = { i, item: genItem(), stock: 0, speed: rnd(1.9, 3.3), progress: 0, queue: [], stopT: 0, fastT: 0, saleT: 0, flash: 0, ver: 0 };
-  l.stock = stockFor(l.item);
+function newLane(i, kind = 'normal') {
+  const l = { i, kind, item: null, stock: 0, speed: rnd(1.9, 3.3), progress: 0, queue: [], stopT: 0, fastT: 0, saleT: 0, flash: 0, closed: false, openT: 0 };
+  if (kind === 'gacha') { l.item = { id: 'gacha' }; l.stock = Infinity; l.speed = 2.9; }
+  else if (kind === 'legend') { l.item = { id: LEGEND_IDS[0], legend: true }; l.stock = 0; l.closed = true; l.speed = 2.4; }
+  else { l.item = genItem(); l.stock = stockFor(l.item); }
   return l;
 }
 function stockFor(it) { return it.rare ? ri(1, 2) : ri(2, 5); }
 function npc() { return { id: ++pid, emoji: pick(NPC_EMO), actor: null }; }
-function laneRate(l) { return (1 / l.speed) * (l.fastT > 0 ? 3 : 1) * (l.saleT > 0 ? 2 : 1); }
+function laneRate(l) {
+  let r = (1 / l.speed) * (l.fastT > 0 ? 3 : 1) * (l.saleT > 0 ? 2 : 1) * (S && S.nage ? 2 : 1);
+  if (l.queue.some(p => p.actor && p.actor.char.conne)) r *= 1.6; // 店長のコネ
+  return r;
+}
+const laneName = l => l.kind === 'gacha' ? 'ガチャ' : l.kind === 'legend' ? '伝説のレジ' : `レジ${l.i + 1}`;
+const whoName = a => a.isPlayer ? 'あなた' : a.name;
 
 function startShop() {
-  G.actors = makeActors(G.charIdx);
-  const lanes = [];
-  for (let i = 0; i < 10; i++) { const l = newLane(i); const n = ri(2, 7); for (let k = 0; k < n; k++) l.queue.push(npc()); lanes.push(l); }
-  S = { t: SHOP_TIME, lanes, spawnT: 0, saleT: rnd(14, 20), leaveT: 1, feed: [], ended: false, renderT: 0, sig: [], cardSig: [], started: false, viewLane: 0, maxV: 9 };
+  S = { t: SHOP_TIME, lanes: [], banned: new Set(), spawnT: 0, saleT: rnd(14, 20) * (FLYER.sale || 1), leaveT: 1, feed: [], ended: false,
+    renderT: 0, sig: [], cardSig: [], viewLane: 0, maxV: 9, nage: false,
+    legendAt: [SHOP_TIME * rnd(0.58, 0.7), SHOP_TIME * rnd(0.25, 0.36)] };
+  G.actors = makeActors();
+  // 店長のコネ：商品3つを先にもらい、その商品は売り場に出なくなる
+  for (const a of G.actors) if (a.char.conne) {
+    const pool = [...IDS.active, ...IDS.passive, ...IDS.stat].filter(id => !S.banned.has(id)).sort(() => Math.random() - 0.5).slice(0, 3);
+    for (const id of pool) { S.banned.add(id); giveItem(a, { id }); }
+    a.conneItems = pool;
+  }
+  for (let i = 0; i < 10; i++) { const l = newLane(i); const n = ri(2, 7); for (let k = 0; k < n; k++) l.queue.push(npc()); S.lanes.push(l); }
+  const g = newLane(GACHA_LANE, 'gacha'); for (let k = 0; k < 4; k++) g.queue.push(npc()); S.lanes.push(g);
+  S.lanes.push(newLane(LEGEND_LANE, 'legend'));
   show('scr-shop');
-  buildLanes();
-  measureQueue();
-  renderShop(true);
-  Snd.bgm('shop');
-  banner('開店！', '並ぶ列を選ぼう', 1300);
-  Snd.se('open');
-  S.started = true;
+  buildLanes(); measureQueue(); renderShop(true);
+  Snd.bgm('shop'); Snd.se('open');
+  banner('開店！', `本日のチラシ：${FLYER.name}`, 1500);
+  const me = player();
+  if (me.conneItems) setTimeout(() => toast(`🧑‍💼 店長のコネで入手：<span class="emo">${me.conneItems.map(id => ITEMS[id].icon).join(' ')}</span><br><small>この商品は売り場に出ない</small>`, 'get', 3200), 900);
+  const boss = G.actors.find(a => a.boss);
+  if (boss) setTimeout(() => { banner('店長が本気で参戦！', '倒して1位になると…？', 2200); Snd.se('stop'); addFeed('🧑‍💼 本気の店長が買い物に参戦！'); }, 1700);
   lastT = performance.now();
 }
 function banner(txt, sub, ms = 1500) {
   const host = G.screen === 'scr-battle' ? $('#scr-battle') : $('#app');
+  document.querySelectorAll('.banner').forEach(x => x.remove());
   const b = document.createElement('div'); b.className = 'banner'; b.innerHTML = txt + (sub ? `<small>${sub}</small>` : '');
   host.appendChild(b); setTimeout(() => b.remove(), ms);
 }
-function addFeed(msg) { if (!S) return; S.feed.unshift(msg); S.feed.length = 4; $('#feed').innerHTML = S.feed[0] || ''; }
+function addFeed(msg) { if (!S) return; S.feed.unshift(msg); S.feed.length = 4; const f = $('#feed'); if (f) f.innerHTML = S.feed[0] || ''; }
 
 function buildLanes() {
   const box = $('#lanes'); box.innerHTML = '';
+  const mm = $('#minimap'); mm.innerHTML = '';
   S.lanes.forEach((l, i) => {
-    const el = document.createElement('div'); el.className = 'lane'; el.dataset.i = i;
+    const el = document.createElement('div'); el.className = 'lane ' + l.kind; el.dataset.i = i;
     el.innerHTML = `<div class="card"></div><div class="reg"><span class="emo">🧾</span><span class="lbl">レジ</span><span class="tg"></span><div class="bar"></div></div><div class="q"></div><button class="join"></button>`;
     el.querySelector('.card').onclick = () => { Snd.se('tap'); showItemDetail(i); };
     el.querySelector('.join').onclick = () => playerJoin(i);
     box.appendChild(el);
-  });
-  const mm = $('#minimap'); mm.innerHTML = '';
-  for (let i = 0; i < 10; i++) {
     const b = document.createElement('button'); b.className = 'mm'; b.dataset.i = i;
     b.onclick = () => scrollToLane(i);
     mm.appendChild(b);
-  }
-  box.onscroll = () => { const w = 158; S.viewLane = clamp(Math.round(box.scrollLeft / w), 0, 9); };
+  });
+  box.onscroll = () => {
+    const els = [...box.children].filter(e => !e.hidden);
+    let best = 0, bd = 1e9; els.forEach(e => { const d = Math.abs(e.offsetLeft - 12 - box.scrollLeft); if (d < bd) { bd = d; best = +e.dataset.i; } });
+    S.viewLane = best;
+  };
 }
-function scrollToLane(i) { const box = $('#lanes'); box.scrollTo({ left: Math.max(0, i * 158 - 10), behavior: 'smooth' }); Snd.se('tap'); }
+function scrollToLane(i) { const el = $('#lanes').children[i]; if (el) $('#lanes').scrollTo({ left: Math.max(0, el.offsetLeft - 12), behavior: 'smooth' }); Snd.se('tap'); }
 function measureQueue() {
   const q = document.querySelector('.lane .q');
   if (q) S.maxV = Math.max(4, Math.floor((q.clientHeight - 10) / 36));
@@ -738,14 +919,36 @@ function removeFromLane(a) {
   a.lane = null;
 }
 function joinLane(a, i) {
-  if (a.lane === i || a.walkTo === i) return;
+  if (a.lane === i || a.walkTo === i || S.lanes[i].closed) return;
   removeFromLane(a); a.walkTo = i; a.walkT = a.char.walk;
 }
 function playerJoin(i) {
   if (!S || S.ended) return;
   const p = player();
   if (p.lane === i || p.walkTo === i) return;
+  if (S.lanes[i].closed) { toast('このレジは閉まっている', 'bad'); return; }
   Snd.se('walk'); joinLane(p, i);
+}
+function moveTo(l, idx, newIdx) { const [x] = l.queue.splice(idx, 1); l.queue.splice(newIdx, 0, x); if (idx === 0 || newIdx === 0) l.progress = 0; }
+
+// ---- 伝説のレジ ----
+function openLegend() {
+  const l = S.lanes[LEGEND_LANE];
+  l.closed = false; l.item = { id: pick(LEGEND_IDS), legend: true }; l.stock = 1; l.openT = 25; l.progress = 0; l.flash = 1;
+  l.queue = []; for (let k = 0; k < ri(2, 4); k++) l.queue.push(npc());
+  const d = ITEMS[l.item.id];
+  banner('伝説のレジ 出現！', `${d.icon} ★★${d.name} が1個だけ！`, 2200);
+  toast(`✨ 伝説のレジ：${d.icon} ★★${d.name}<br><small>ミニマップの右端からすぐ行ける</small>`, 'get', 2600);
+  addFeed(`✨ 伝説のレジに ★★${d.name}！`);
+  Snd.se('rare');
+}
+function closeLegend(msg) {
+  const l = S.lanes[LEGEND_LANE];
+  l.closed = true; l.stock = 0;
+  for (const p of l.queue) if (p.actor) p.actor.lane = null;
+  for (const a of G.actors) if (a.walkTo === LEGEND_LANE) a.walkTo = null;
+  l.queue = [];
+  if (msg) addFeed(msg);
 }
 
 function shopUpdate(dt) {
@@ -754,44 +957,72 @@ function shopUpdate(dt) {
   S.t -= dt;
   if (S.t <= 10 && Math.ceil(S.t) !== prevSec && S.t > 0) Snd.se('tick');
   if (S.t <= 0) { S.t = 0; endShop(); return; }
+  // 閉店前の投げ売り
+  if (!S.nage && S.t <= NAGE_TIME) {
+    S.nage = true;
+    for (const l of S.lanes) if (l.kind === 'normal') { l.item.rare = true; l.stock = Math.max(l.stock, 1); l.flash = 1; }
+    banner('投げ売りタイム！', '全レジ2倍速・全部★レア', 2000); Snd.se('bell');
+    addFeed('📣 閉店前の投げ売り！全レジ2倍速・全部★レア');
+  }
+  // 伝説のレジ
+  if (S.legendAt.length && S.t <= S.legendAt[0]) { S.legendAt.shift(); if (S.lanes[LEGEND_LANE].closed) openLegend(); }
+  const lg = S.lanes[LEGEND_LANE];
+  if (!lg.closed) { lg.openT -= dt; if (lg.openT <= 0) closeLegend('✨ 伝説のレジは閉まった…'); }
   // 一般客の来店
   S.spawnT -= dt;
   const total = S.lanes.reduce((s, l) => s + l.queue.length, 0);
   if (S.spawnT <= 0) {
     S.spawnT = rnd(0.25, 0.55);
-    if (total < 78) {
-      const l = wpick(S.lanes.map(l => [l, (l.item.rare ? 3 : 1) * (l.saleT > 0 ? 3 : 1) / (1 + l.queue.length * 0.22)]));
+    if (total < 84) {
+      const l = wpick(S.lanes.filter(l => !l.closed).map(l => [l, (l.item.rare ? 3 : 1) * (l.saleT > 0 ? 3 : 1) * (l.kind === 'legend' ? 4 : l.kind === 'gacha' ? 1.2 : 1) / (1 + l.queue.length * 0.22)]));
       l.queue.push(npc());
     }
   }
-  // 長すぎる列から一般客が帰る
+  // 毎秒の処理: 長すぎる列から一般客が帰る／転売ヤーは割り込まれる／マダムのCT
   S.leaveT -= dt;
   if (S.leaveT <= 0) {
     S.leaveT = 1;
     for (const l of S.lanes) if (l.queue.length > 11 && Math.random() < 0.3) {
       for (let k = l.queue.length - 1; k > l.queue.length - 4 && k > 0; k--) if (!l.queue[k].actor) { l.queue.splice(k, 1); break; }
     }
+    for (const a of G.actors) if (a.char.hoarder && a.lane !== null && Math.random() < 0.22) {
+      const l = S.lanes[a.lane], pos = posInLane(a);
+      const k = l.queue.findIndex((p, j) => j > pos && !p.actor);
+      if (pos >= 0 && k > pos) {
+        moveTo(l, k, pos);
+        addFeed(`😤 一般客が${whoName(a)}の前に割り込んだ！「転売ヤーには譲らない」`);
+        if (a.isPlayer) toast('😤 一般客に割り込まれた…', 'bad');
+      }
+    }
   }
   // タイムセール
   S.saleT -= dt;
   if (S.saleT <= 0) {
-    S.saleT = rnd(20, 28);
-    const cand = S.lanes.filter(l => l.saleT <= 0);
-    const l = pick(cand);
-    l.saleT = 12; l.item = { id: l.item.id === 'lucky' ? 'lucky' : l.item.id, rare: true }; l.stock = Math.max(l.stock, 2); l.flash = 1;
-    addFeed(`📣 タイムセール！レジ${l.i + 1}で ${itemLabel(l.item)}`);
-    toast(`📣 タイムセール！<br>レジ${l.i + 1}：${ITEMS[l.item.id].icon} ${itemLabel(l.item)}`, 'bad', 2200);
-    Snd.se('bell');
+    S.saleT = rnd(20, 28) * (FLYER.sale || 1);
+    const cand = S.lanes.filter(l => l.kind === 'normal' && l.saleT <= 0);
+    if (cand.length) {
+      const l = pick(cand);
+      l.saleT = 12; l.item = { id: l.item.id, rare: true }; l.stock = Math.max(l.stock, 2); l.flash = 1;
+      addFeed(`📣 タイムセール！${laneName(l)}で ${itemLabel(l.item)}`);
+      toast(`📣 タイムセール！<br>${laneName(l)}：${ITEMS[l.item.id].icon} ${itemLabel(l.item)}`, 'bad', 2200);
+      Snd.se('bell');
+    }
   }
   // 移動中の人
   for (const a of G.actors) {
+    if (a.payCd > 0) a.payCd -= dt;
     if (a.walkTo !== null) {
       a.walkT -= dt;
-      if (a.walkT <= 0) { const l = S.lanes[a.walkTo]; l.queue.push({ id: ++pid, emoji: a.emoji, actor: a }); a.lane = a.walkTo; a.walkTo = null; }
+      if (a.walkT <= 0) {
+        const l = S.lanes[a.walkTo];
+        if (l.closed) { a.walkTo = null; continue; }
+        l.queue.push({ id: ++pid, emoji: a.emoji, actor: a }); a.lane = a.walkTo; a.walkTo = null;
+      }
     }
   }
   // レジ処理
   for (const l of S.lanes) {
+    if (l.closed) continue;
     if (l.saleT > 0) l.saleT -= dt;
     if (l.fastT > 0) l.fastT -= dt;
     if (l.stopT > 0) { l.stopT -= dt; continue; }
@@ -805,46 +1036,77 @@ function shopUpdate(dt) {
 function serve(l) {
   const p = l.queue.shift(); if (!p) return;
   if (!p.actor) {
-    if (Math.random() < 0.6) { l.stock--; if (G.screen === 'scr-shop' && l.i === S.viewLane) Snd.se('beep'); }
+    // 一般客は普通の商品だけ買う (伝説は高すぎて買えない・ガチャは無限)
+    if (l.kind === 'normal' && Math.random() < 0.6) { l.stock--; if (G.screen === 'scr-shop' && l.i === S.viewLane) Snd.se('beep'); }
   } else {
-    const a = p.actor; a.lane = null;
+    const a = p.actor, owner = a.owner || a; a.lane = null;
     let mult = 1;
-    if (a.hoard > 0 && l.stock >= 2) { mult = 2; a.hoard--; }
-    const it = l.item, got = giveItem(a, it, mult);
+    if (owner.char.hoarder && l.stock >= 2) mult = 2;      // 転売ヤーはいつも2個
+    if (a.hoard > 0 && l.stock >= mult + 1) { mult += 1; a.hoard--; }
+    const it = l.item, got = giveItem(owner, it, mult);
     l.stock -= mult;
-    a.log.push(it);
-    const name = `${ITEMS[it.id].icon} ${itemLabel(it)}${mult > 1 ? ' ×2' : ''}`;
-    if (a.isPlayer) {
-      Snd.se(it.rare ? 'rare' : 'buy');
-      toast(`ゲット！ ${name}${got ? `<br><span class="emo">${got.join(' ')}</span>` : ''}`, 'get', 2000);
-      addFeed(`🧺 あなたが ${name} を買った`);
+    owner.log.push(it);
+    const via = a.isButler ? `（${a.name}が代わりに）` : '';
+    const name = `${ITEMS[it.id].icon} ${itemLabel(it)}${mult > 1 ? ' ×' + mult : ''}`;
+    const gotTxt = got ? `<br><span class="emo">${got.join(' ')}</span>` : '';
+    if (owner.isPlayer) {
+      Snd.se(it.rare || it.legend || l.kind === 'legend' ? 'rare' : 'buy');
+      toast(`ゲット！${via} ${name}${gotTxt}`, 'get', 2200);
+      addFeed(`🧺 あなた${via}が ${name} を買った`);
     } else {
-      addFeed(`${a.emoji} ${a.name}が ${name} を買った`);
+      addFeed(`${owner.emoji} ${owner.name}${via}が ${name} を買った`);
+      if (l.kind === 'legend') toast(`✨ ${owner.name}が ★★${ITEMS[it.id].name} を手に入れた！`, 'bad', 2400);
     }
   }
-  if (l.stock <= 0) restock(l);
+  if (l.kind === 'legend' && l.stock <= 0) closeLegend('✨ 伝説のレジは売り切れ！');
+  else if (l.kind === 'normal' && l.stock <= 0) restock(l);
 }
 function restock(l) {
-  l.item = genItem(l.saleT > 0); l.stock = stockFor(l.item); l.flash = 1;
+  l.item = genItem(l.saleT > 0 || S.nage); l.stock = stockFor(l.item); l.flash = 1;
 }
 
 // ---- 並びスキル ----
+// Gメンが割り込み・バナナを見つけたら最後尾へ
+function gmenCheck(a) {
+  if (a.char.gmen) return;
+  for (const g of G.actors) {
+    if (!g.char.gmen || g === a) continue;
+    const chance = g.lane !== null && g.lane === a.lane ? 1 : 0.35;
+    if (Math.random() >= chance || a.lane === null) continue;
+    const l = S.lanes[a.lane], k = posInLane(a);
+    if (k < 0) return;
+    moveTo(l, k, l.queue.length - 1);
+    Snd.se('stop');
+    addFeed(`🕵️ ${whoName(g)}が${whoName(a)}を現行犯で確保！最後尾へ`);
+    if (a.isPlayer) toast(`🕵️ Gメンに見つかった！最後尾へ…`, 'bad', 2200);
+    else if (g.isPlayer) toast(`🕵️ ${a.name}を現行犯で確保！`, 'get');
+    return;
+  }
+}
 function useQueueSkill(a, id) {
   const inv = a.inv.queue;
-  if (!inv[id]) return false;
   const l = a.lane !== null ? S.lanes[a.lane] : null;
   const pos = posInLane(a);
   const me = a.isPlayer;
   const fail = msg => { if (me) { toast(msg, 'bad'); Snd.se('bad'); } return false; };
   const needLane = () => { if (!l || pos < 0) return fail('列に並んでいる時だけ使える'); return true; };
+  if (id === 'pay') { // マダム「お釣りはいらないわ」
+    if (!needLane()) return false;
+    if (pos === 0) return fail('もう先頭よ');
+    if (a.payCd > 0) return fail(`まだ使えない（あと${Math.ceil(a.payCd)}秒）`);
+    moveTo(l, pos, Math.max(0, pos - 2)); a.payCd = 15;
+    Snd.se('buy'); addFeed(`💴 ${whoName(a)}「お釣りはいらないわ」前の人を買収！`);
+    if (me) toast('💴 お釣りはいらないわ！2人抜いた');
+    return true;
+  }
+  if (!inv[id]) return false;
   switch (id) {
     case 'cut': {
       if (!needLane()) return false;
       if (pos === 0) return fail('もう先頭だよ');
-      const n = a.char.cut, np = Math.max(0, pos - n);
-      const [me2] = l.queue.splice(pos, 1); l.queue.splice(np, 0, me2);
-      if (np === 0) l.progress = 0;
-      Snd.se('cut'); addFeed(`🙋 ${me ? 'あなた' : a.name}がレジ${l.i + 1}で割り込み！`);
+      const np = Math.max(0, pos - a.char.cut);
+      moveTo(l, pos, np);
+      Snd.se('cut'); addFeed(`🙋 ${whoName(a)}が${laneName(l)}で割り込み！`);
       if (!me) notifyVictim(l, np, pos, a);
       break;
     }
@@ -852,13 +1114,14 @@ function useQueueSkill(a, id) {
       if (!needLane()) return false;
       if (pos === 0) return fail('前に誰もいない');
       let k = -1;
-      for (let j = pos - 1; j >= 0; j--) if (l.queue[j].actor) { k = j; break; }
-      if (k < 0) k = pos - 1;
-      const [v] = l.queue.splice(k, 1); l.queue.push(v);
-      if (k === 0) l.progress = 0;
+      for (let j = pos - 1; j >= 0; j--) if (l.queue[j].actor && !l.queue[j].actor.char.gmen) { k = j; break; }
+      if (k < 0) for (let j = pos - 1; j >= 0; j--) if (!l.queue[j].actor || !l.queue[j].actor.char.gmen) { k = j; break; }
+      if (k < 0) return fail('前の人は転ばない（Gメンだ…）');
+      const v = l.queue[k];
+      moveTo(l, k, l.queue.length - 1);
       Snd.se('banana');
-      const vn = v.actor ? (v.actor.isPlayer ? 'あなた' : v.actor.name) : 'お客さん';
-      addFeed(`🍌 ${me ? 'あなた' : a.name}のバナナで${vn}が最後尾へ！`);
+      const vn = v.actor ? whoName(v.actor) : 'お客さん';
+      addFeed(`🍌 ${whoName(a)}のバナナで${vn}が最後尾へ！`);
       if (v.actor && v.actor.isPlayer) toast(`🍌 ${a.name}にバナナで転ばされた！最後尾へ…`, 'bad', 2200);
       else if (me) toast(`🍌 ${vn}を転ばせた！`);
       break;
@@ -866,11 +1129,11 @@ function useQueueSkill(a, id) {
     case 'chat': {
       let n = 0;
       for (const ol of S.lanes) {
-        if (ol === l) continue;
-        if (ol.queue.some(p => p.actor && p.actor !== a)) { ol.stopT = Math.max(ol.stopT, a.char.chat); n++; }
+        if (ol === l || ol.closed) continue;
+        if (ol.queue.some(p => p.actor && p.actor !== a && p.actor.owner !== a && !p.actor.char.gmen)) { ol.stopT = Math.max(ol.stopT, a.char.chat); n++; }
       }
       if (!n) return fail('ライバルが他の列にいない');
-      Snd.se('stop'); addFeed(`🗣️ ${me ? 'あなた' : a.name}の井戸端会議！${n}列のレジが止まった`);
+      Snd.se('stop'); addFeed(`🗣️ ${whoName(a)}の井戸端会議！${n}列のレジが止まった`);
       const p = player();
       if (!me && p.lane !== null && S.lanes[p.lane].stopT > 0 && p.lane !== a.lane) toast(`🗣️ ${a.name}の井戸端会議でレジが止まった！`, 'bad', 2000);
       else if (me) toast(`🗣️ ${n}列のレジを止めた！`);
@@ -878,23 +1141,25 @@ function useQueueSkill(a, id) {
     }
     case 'selfreg': {
       if (!needLane()) return false;
-      l.fastT = 8; Snd.se('fast'); addFeed(`🏃 レジ${l.i + 1}がセルフレジで3倍速！`);
+      l.fastT = 8; Snd.se('fast'); addFeed(`🏃 ${laneName(l)}がセルフレジで3倍速！`);
       if (me) toast('🏃 レジが3倍速！');
       break;
     }
     case 'bell': {
       if (!needLane()) return false;
-      l.stock += 2; Snd.se('bell'); addFeed(`🔔 レジ${l.i + 1}に追加入荷！`);
+      if (l.kind !== 'normal') return fail('このレジには使えない');
+      l.stock += 2; Snd.se('bell'); addFeed(`🔔 ${laneName(l)}に追加入荷！`);
       if (me) toast('🔔 在庫+2！');
       break;
     }
     case 'hoard': {
       a.hoard++; Snd.se('skill');
-      if (me) toast('🛍️ 次の買い物は2個！');
+      if (me) toast('🛍️ 次の買い物は1個多くもらえる！');
       break;
     }
   }
   inv[id]--; if (!inv[id]) delete inv[id];
+  if (id === 'cut' || id === 'banana') gmenCheck(a);
   return true;
 }
 function notifyVictim(l, np, oldPos, a) {
@@ -905,21 +1170,24 @@ function notifyVictim(l, np, oldPos, a) {
 // ---- ライバルの買い物AI ----
 function itemValue(a, it) {
   const def = ITEMS[it.id], inv = a.inv, pref = a.pref[def.cat] || 1;
+  if (def.legend) return 32;
   let v = 6;
   if (def.cat === 'active') {
-    const owned = Object.keys(inv.active).length;
+    const owned = Object.keys(inv.active).filter(k => !ITEMS[k].sig).length;
     v = inv.active[it.id] ? 8.5 : owned < 3 ? 10 : 4.5;
   } else if (def.cat === 'passive') v = 7;
   else if (def.cat === 'stat') v = 6;
   else if (def.cat === 'queue') v = 3 + 3 * (S.t / SHOP_TIME);
+  else if (def.cat === 'gacha') v = 7.5;
   else v = 9;
-  return v * pref * (it.rare ? 1.9 : 1);
+  return v * pref * (it.rare ? 1.9 : 1) * (a.char.hoarder && it.rare ? 1.2 : 1);
 }
 function laneScore(a, l, ahead, npcAhead, actorsAhead) {
-  const consume = 0.6 * npcAhead + actorsAhead;
-  const ok = l.stock - consume >= 0.8 ? 1 : 0.45;
+  if (l.closed) return 0;
+  const consume = (l.kind === 'normal' ? 0.6 * npcAhead : 0) + actorsAhead;
+  const ok = l.stock - consume >= 0.8 ? 1 : l.kind === 'legend' ? 0.1 : 0.45;
   const eta = (ahead + (1 - l.progress)) / laneRate(l) + l.stopT;
-  if (eta > S.t) return 0;
+  if (eta > S.t || (l.kind === 'legend' && eta > l.openT)) return 0;
   return itemValue(a, l.item) * ok / (eta + 0.8);
 }
 function scoreForJoin(a, l) {
@@ -935,10 +1203,11 @@ function rivalShopAI(a, dt) {
     a.think = rnd(0.2, 0.6) * D.think;
     let best = null, bs = -1;
     for (const l of S.lanes) {
+      if (a.isButler && a.owner.lane === l.i) continue; // 執事は主と別の列へ
       const s = scoreForJoin(a, l) * (Math.random() < D.smart ? 1 : rnd(0.3, 1.7));
       if (s > bs) { bs = s; best = l; }
     }
-    if (best) joinLane(a, best.i);
+    if (best && bs > 0) joinLane(a, best.i);
   } else {
     if (a.think <= 0) {
       a.think = rnd(2.5, 4) * D.think;
@@ -951,6 +1220,7 @@ function rivalShopAI(a, dt) {
         if (best && Math.random() < D.smart) joinLane(a, best.i);
       }
     }
+    if (a.isButler) return;
     a.qThink -= dt;
     if (a.qThink <= 0) { a.qThink = rnd(0.8, 1.6); if (Math.random() < D.qskill) rivalQueueSkill(a); }
   }
@@ -959,11 +1229,14 @@ function rivalQueueSkill(a) {
   const q = a.inv.queue, l = a.lane !== null ? S.lanes[a.lane] : null; if (!l) return;
   const pos = posInLane(a); if (pos < 0) return;
   const v = itemValue(a, l.item);
-  if (q.banana && pos > 0 && l.queue.slice(Math.max(0, pos - 4), pos).some(p => p.actor)) return useQueueSkill(a, 'banana');
-  if (q.cut && pos >= 3 && v > 5) return useQueueSkill(a, 'cut');
+  if (a.char.pay && pos >= 2 && a.payCd <= 0) return useQueueSkill(a, 'pay');
+  // Gメンが同じ列にいたら悪いことはしない
+  const gmenHere = l.queue.some(p => p.actor && p.actor.char.gmen && p.actor !== a);
+  if (!gmenHere && q.banana && pos > 0 && l.queue.slice(Math.max(0, pos - 4), pos).some(p => p.actor && !p.actor.char.gmen)) return useQueueSkill(a, 'banana');
+  if (!gmenHere && q.cut && pos >= 3 && v > 5) return useQueueSkill(a, 'cut');
   if (q.chat) { const p = player(); const pp = posInLane(p); if (p.lane !== null && p.lane !== a.lane && pp >= 0 && pp <= 3) return useQueueSkill(a, 'chat'); }
   if (q.selfreg && pos >= 2) return useQueueSkill(a, 'selfreg');
-  if (q.bell && l.stock <= 1 && pos <= 4) return useQueueSkill(a, 'bell');
+  if (q.bell && l.kind === 'normal' && l.stock <= 1 && pos <= 4) return useQueueSkill(a, 'bell');
   if (q.hoard && pos <= 2 && !a.hoard && l.stock >= 2) return useQueueSkill(a, 'hoard');
 }
 
@@ -971,7 +1244,8 @@ function rivalQueueSkill(a) {
 function personHTML(p, idx) {
   if (!p.actor) return `<div class="p${idx === 0 ? ' front' : ''}">${p.emoji}</div>`;
   const a = p.actor;
-  return `<div class="p actor${a.isPlayer ? ' me' : ''}${idx === 0 ? ' front' : ''}" style="--c:${a.color}">${a.emoji}<i>${a.isPlayer ? 'YOU ' + (idx + 1) + '番' : a.name}</i></div>`;
+  const label = a.isPlayer ? 'YOU ' + (idx + 1) + '番' : a.isButler && a.owner.isPlayer ? 'あなたの執事' : a.name;
+  return `<div class="p actor${a.isPlayer ? ' me' : ''}${idx === 0 ? ' front' : ''}" style="--c:${a.color}">${a.emoji}<i>${label}</i></div>`;
 }
 function queueHTML(l) {
   const q = l.queue, maxV = S.maxV;
@@ -985,25 +1259,31 @@ function queueHTML(l) {
   for (const a of G.actors) if (a.walkTo === l.i) html += `<div class="p actor walking${a.isPlayer ? ' me' : ''}" style="--c:${a.color}">${a.emoji}<i>${a.isPlayer ? '移動中' : a.name}</i></div>`;
   return html;
 }
-function stockDots(n) { return n > 6 ? '●×' + n : '●'.repeat(n); }
-function speedLabel(l) { return l.speed < 2.3 ? '🐇速い' : l.speed < 2.8 ? '🚶ふつう' : '🐢遅い'; }
+function stockDots(n) { return n === Infinity ? '∞' : n > 6 ? '●×' + n : '●'.repeat(Math.max(0, n)); }
+function speedLabel(l) { const r = laneRate(l) * l.speed; const s = l.speed / r; return s < 2.3 ? '🐇速い' : s < 2.8 ? '🚶ふつう' : '🐢遅い'; }
 function renderShop(force) {
   const p = player(), lanesEl = $('#lanes').children, mm = $('#minimap').children;
+  let visible = 0;
   S.lanes.forEach((l, i) => {
     const el = lanesEl[i]; if (!el) return;
+    el.hidden = l.closed; mm[i].hidden = l.closed;
+    if (l.closed) return;
+    visible++;
     const def = ITEMS[l.item.id];
-    const csig = l.item.id + l.item.rare + l.stock + l.speed.toFixed(1) + l.flash;
+    const csig = l.item.id + l.item.rare + l.stock + laneRate(l).toFixed(2) + l.flash + (l.kind === 'legend' ? Math.ceil(l.openT) : '');
     if (force || S.cardSig[i] !== csig) {
       S.cardSig[i] = csig;
       const c = el.querySelector('.card');
-      c.className = 'card' + (l.item.rare ? ' rare' : '') + (l.flash ? ' flash' : '');
-      c.style.setProperty('--cc', CAT[def.cat].color);
-      c.innerHTML = `<span class="lno">レジ${i + 1}</span><span class="info">?</span><div class="ic">${def.icon}</div><div class="nm">${def.name}</div><span class="badge">${CAT[def.cat].label}</span><div class="meta"><span class="stock">在庫${stockDots(l.stock)}</span></div><div class="meta">${speedLabel(l)}</div>`;
+      c.className = 'card' + (l.kind === 'legend' ? ' legend' : l.kind === 'gacha' ? ' gacha' : l.item.rare ? ' rare' : '') + (l.flash ? ' flash' : '');
+      c.style.setProperty('--cc', l.kind === 'legend' ? '#b45309' : CAT[def.cat].color);
+      const badge = l.kind === 'legend' ? '★★伝説' : CAT[def.cat].label;
+      const extra = l.kind === 'legend' ? `<div class="meta"><b>あと${Math.ceil(l.openT)}秒で閉店</b></div>` : `<div class="meta">${speedLabel(l)}</div>`;
+      c.innerHTML = `<span class="lno">${laneName(l)}</span><span class="info">?</span><div class="ic">${def.icon}</div><div class="nm">${def.name}</div><span class="badge">${badge}</span><div class="meta"><span class="stock">在庫${stockDots(l.stock)}</span></div>${extra}`;
       if (l.flash) { l.flash = 0; setTimeout(() => c.classList.remove('flash'), 700); }
     }
     const qsig = l.queue.map(x => x.id).join(',') + '|' + G.actors.map(a => a.walkTo).join(',') + S.maxV;
     if (force || S.sig[i] !== qsig) { S.sig[i] = qsig; el.querySelector('.q').innerHTML = queueHTML(l); }
-    const tg = l.stopT > 0 ? `<span class="tagx stop">💬停止${Math.ceil(l.stopT)}</span>` : l.saleT > 0 ? `<span class="tagx sale">タイムセール</span>` : l.fastT > 0 ? `<span class="tagx fast">⚡3倍速</span>` : '';
+    const tg = l.stopT > 0 ? `<span class="tagx stop">💬停止${Math.ceil(l.stopT)}</span>` : S.nage && l.kind === 'normal' ? `<span class="tagx sale">投げ売り</span>` : l.saleT > 0 ? `<span class="tagx sale">タイムセール</span>` : l.fastT > 0 ? `<span class="tagx fast">⚡3倍速</span>` : '';
     const tgEl = el.querySelector('.tg'); if (tgEl.innerHTML !== tg) tgEl.innerHTML = tg;
     const mine = p.lane === i, walking = p.walkTo === i;
     el.classList.toggle('mine', mine || walking);
@@ -1014,28 +1294,35 @@ function renderShop(force) {
     // ミニマップ
     const m = mm[i];
     const dots = G.actors.filter(a => a.lane === i || a.walkTo === i).map(a => `<i style="--c:${a.color}"></i>`).join('');
-    const mh = `<span>${i + 1}</span><span class="ic">${def.icon}</span><span>${l.queue.length}人</span><div class="dots">${dots}</div>`;
+    const num = l.kind === 'gacha' ? 'ガチャ' : l.kind === 'legend' ? '伝説' : i + 1;
+    const mh = `<span>${num}</span><span class="ic">${def.icon}</span><span>${l.queue.length}人</span><div class="dots">${dots}</div>`;
     if (m.innerHTML !== mh) m.innerHTML = mh;
-    m.className = 'mm' + (l.item.rare ? ' rare' : '') + (mine || walking ? ' me' : '') + (i === S.viewLane ? ' view' : '');
+    m.className = 'mm' + (l.kind === 'legend' ? ' legend' : l.item.rare ? ' rare' : '') + (mine || walking ? ' me' : '') + (i === S.viewLane ? ' view' : '');
   });
+  $('#minimap').style.gridTemplateColumns = `repeat(${visible},1fr)`;
   // ステータス
   const pos = posInLane(p);
   let st;
-  if (p.walkTo !== null) st = `🚶 レジ${p.walkTo + 1}へ移動中…`;
+  if (p.walkTo !== null) st = `🚶 ${laneName(S.lanes[p.walkTo])}へ移動中…`;
   else if (p.lane !== null) {
     const l = S.lanes[p.lane], eta = Math.ceil((pos + (1 - l.progress)) / laneRate(l) + l.stopT);
-    st = pos === 0 ? `🧾 レジ${l.i + 1}：お会計中！` : `🧍 レジ${l.i + 1}：あと${pos}人（約${eta}秒）`;
-    if (p.hoard) st += ' 🛍️×2';
+    st = pos === 0 ? `🧾 ${laneName(l)}：お会計中！` : `🧍 ${laneName(l)}：あと${pos}人（約${eta}秒）`;
+    if (p.hoard) st += ' 🛍️+1';
   } else st = '👆 並ぶ列を選ぼう！（商品カードをタップで詳細）';
+  const butler = G.actors.find(a => a.isButler && a.owner === p);
+  if (butler) st += butler.lane !== null ? `　🤵執事：${laneName(S.lanes[butler.lane])}` : '';
   const ps = $('#pstatus'); if (ps.textContent !== st) ps.textContent = st;
   // 並びスキル
   const qs = p.inv.queue, keys = IDS.queue.filter(k => qs[k]);
-  const qsig = keys.map(k => k + qs[k]).join(',') || 'none';
+  const payCd = p.char.pay ? Math.max(0, Math.ceil(p.payCd)) : -1;
+  const qsig = keys.map(k => k + qs[k]).join(',') + '|' + payCd || 'none';
   if (force || S.qsSig !== qsig) {
     S.qsSig = qsig;
-    $('#qskills').innerHTML = (keys.length ? keys.map(k => `<button class="qs" data-q="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="nm">${ITEMS[k].name}</span><span class="n">${qs[k]}</span></button>`).join('')
-      : '<div class="qs-empty">並びスキルなし（列で買えるよ）</div>') + `<button class="qs help" id="qsHelp">？<span class="nm">説明</span></button>`;
+    const payBtn = p.char.pay ? `<button class="qs pay" data-pay="1"><span class="ic">💴</span><span class="nm">${payCd > 0 ? 'あと' + payCd + '秒' : 'お釣りはいらないわ'}</span></button>` : '';
+    $('#qskills').innerHTML = payBtn + (keys.length ? keys.map(k => `<button class="qs" data-q="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="nm">${ITEMS[k].name}</span><span class="n">${qs[k]}</span></button>`).join('')
+      : (payBtn ? '' : '<div class="qs-empty">並びスキルなし（列で買えるよ）</div>')) + `<button class="qs help" id="qsHelp">？<span class="nm">説明</span></button>`;
     document.querySelectorAll('#qskills .qs[data-q]').forEach(b => longPress(b, () => useQueueSkill(player(), b.dataset.q), () => showInfo(b.dataset.q, qs[b.dataset.q] || 1)));
+    const pb = $('#qskills [data-pay]'); if (pb) pb.onclick = () => useQueueSkill(player(), 'pay');
     $('#qsHelp').onclick = () => { Snd.se('tap'); showQueueHelp(); };
   }
   $('#invCount').textContent = p.inv.count;
@@ -1049,13 +1336,19 @@ function longPress(el, tap, hold) {
   const cancel = () => clearTimeout(timer);
   el.addEventListener('pointerleave', cancel); el.addEventListener('pointercancel', cancel);
   el.addEventListener('pointerup', cancel);
-  el.addEventListener('click', e => { clearTimeout(timer); if (held) { held = false; return; } tap(); });
+  el.addEventListener('click', () => { clearTimeout(timer); if (held) { held = false; return; } tap(); });
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
 function showQueueHelp() {
   const p = player(), qs = p.inv.queue;
+  const special = [];
+  if (p.char.pay) special.push(`<div class="irow"><span class="ic">💴</span><span class="txt"><span class="nm">［固有］お釣りはいらないわ</span><br><span class="fx">前の2人を買収して進む。15秒ごとに何度でも使える</span></span></div>`);
+  if (p.char.gmen) special.push(`<div class="irow"><span class="ic">🕵️</span><span class="txt"><span class="nm">［固有］取り締まり・変装</span><br><span class="fx">割り込み・バナナを使ったライバルを自動で確保（同じ列なら必ず、他の列でも35%）。バナナと井戸端会議が効かない</span></span></div>`);
+  if (p.char.hoarder) special.push(`<div class="irow"><span class="ic">🕴️</span><span class="txt"><span class="nm">［固有］買い占めの鬼</span><br><span class="fx">在庫が2個以上ならいつも2個買う。そのかわり一般客に割り込まれやすい</span></span></div>`);
+  if (p.char.conne) special.push(`<div class="irow"><span class="ic">🧑‍💼</span><span class="txt"><span class="nm">［固有］強気のコネ</span><br><span class="fx">自分が並んでいる列のレジが1.6倍速</span></span></div>`);
+  if (p.char.butler) special.push(`<div class="irow"><span class="ic">🤵</span><span class="txt"><span class="nm">［固有］執事セバス</span><br><span class="fx">別の列に自動で並び、買ったものはあなたのものになる</span></span></div>`);
   openModal(`<h3>並びスキル</h3><p class="hint">ボタンをタップで使う・長押しで説明。持っていないものは列で買える</p>
-    <div class="irows">${IDS.queue.map(k => `<div class="irow"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].name} <small>${qs[k] ? '残り' + qs[k] + '回' : '未所持'}</small></span><br><span class="fx">${effectText(k, 1, 9, 0, p.char)}</span></span>${qs[k] ? `<button class="btn" style="font-size:13px;padding:8px 12px" data-use="${k}">使う</button>` : ''}</div>`).join('')}</div>
+    <div class="irows">${special.join('')}${IDS.queue.map(k => `<div class="irow"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].name} <small>${qs[k] ? '残り' + qs[k] + '回' : '未所持'}</small></span><br><span class="fx">${effectText(k, 1, 9, 0, p.char)}</span></span>${qs[k] ? `<button class="btn" style="font-size:13px;padding:8px 12px" data-use="${k}">使う</button>` : ''}</div>`).join('')}</div>
     <div class="row"><button class="btn sub" data-close>とじる</button></div>`);
   document.querySelectorAll('#modal [data-use]').forEach(b => b.onclick = () => { const k = b.dataset.use; closeModal(); useQueueSkill(player(), k); });
 }
@@ -1065,28 +1358,30 @@ function renderBars() {
 }
 function showItemDetail(i) {
   const l = S.lanes[i], def = ITEMS[l.item.id], p = player();
-  const npcs = l.queue.filter(x => !x.actor).length;
   const rivals = l.queue.filter(x => x.actor && !x.actor.isPlayer).map(x => x.actor.emoji + x.actor.name).join('、') || 'なし';
   const eta = Math.ceil((l.queue.length + 1) / laneRate(l) + l.stopT);
   let own = '', fxHtml = '';
-  const f = myAtk(), add = l.item.rare ? 2 : 1, id = l.item.id;
+  const f = myAtk(), add = l.item.rare && !def.legend ? 2 : 1, id = l.item.id;
   if (def.cat === 'active') {
     const lv = p.inv.active[id] || 0; own = lv ? `持っている（Lv${lv}）→ Lv${lv + add}に` : '新しいスキル';
     fxHtml = `${lv ? `<b>今 Lv${lv}</b><span class="fx">${effectText(id, lv, f.atk, f.cdr)}</span>` : ''}<b>買うと Lv${lv + add}</b><span class="fx">${effectText(id, lv + add, f.atk, f.cdr)}</span>`;
+  } else if (def.cat === 'gacha') {
+    fxHtml = `<b>中身</b><span class="fx">${effectText('gacha')}</span>`;
   } else if (def.cat !== 'bag') {
     const n = p.inv[def.cat][id] || 0; own = n ? `${n}個持っている` : 'まだ持っていない';
     fxHtml = `${n ? `<b>今 ×${n}</b><span class="fx">${effectText(id, n, 9, 0, p.char)}</span>` : ''}<b>買うと ×${n + add}</b><span class="fx">${def.cat === 'queue' ? effectText(id, 1, 9, 0, p.char) + `（${n + add}回使える）` : effectText(id, n + add)}</span>`;
   }
-  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div><span class="badge" style="background:${CAT[def.cat].color};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${CAT[def.cat].label}</span>
-    <h3 style="margin:4px 0 0">${l.item.rare ? '★' : ''}${def.name}</h3></div></div>
-    <p>${def.desc}${l.item.rare ? '<br><b style="color:var(--sale)">★レア：効果2倍（スキルは2レベル上がる）</b>' : ''}</p>
-    <div class="kv"><b>在庫</b><span>${l.stock}個（一般客も60%の確率で買っていく）</span><b>並んでいる</b><span>${l.queue.length}人（ライバル：${rivals}）</span>
+  const stockTxt = l.kind === 'gacha' ? '無限（何回でも回せる）' : l.kind === 'legend' ? `${l.stock}個だけ（一般客は買わない）・あと${Math.ceil(l.openT)}秒で閉店` : `${l.stock}個（一般客も60%の確率で買っていく）`;
+  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div>${catBadge(def)}
+    <h3 style="margin:4px 0 0">${itemLabel(l.item)}</h3></div></div>
+    <p>${def.desc}${l.item.rare && !def.legend ? '<br><b style="color:var(--sale)">★レア：効果2倍（スキルは2レベル上がる）</b>' : ''}</p>
+    <div class="kv"><b>在庫</b><span>${stockTxt}</span><b>並んでいる</b><span>${l.queue.length}人（ライバル：${rivals}）</span>
     <b>レジ</b><span>${speedLabel(l)}・今並ぶと約${eta}秒</span><b>あなた</b><span>${own || '-'}</span>${fxHtml}</div>
     <div class="row"><button class="btn sub" data-close>とじる</button><button class="btn" id="mdJoin">この列に並ぶ</button></div>`);
   $('#mdJoin').onclick = () => { closeModal(); playerJoin(i); };
 }
 function invHTML(a) {
-  const inv = a.inv, g = [], f = buildFighter(a, 0, true);
+  const inv = a.inv, g = [], f = buildFighter(a, true);
   for (const cat of ['active', 'passive', 'stat', 'queue']) {
     const keys = Object.keys(inv[cat]); if (!keys.length) continue;
     g.push(`<div class="inv-group" style="--cc:${CAT[cat].color}"><h4>${CAT[cat].label}</h4><div class="irows">${keys.map(k => infoRow(k, inv[cat][k], { atk: f.atk, cdr: f.cdr })).join('')}</div></div>`);
@@ -1106,38 +1401,46 @@ function endShop() {
 // =====================================================================
 //  準備画面
 // =====================================================================
+const slotsOf = a => a.char.slots || 3;
+const sigsOf = a => a.char.sig || [];
 function autoLoadout(a) {
-  return Object.keys(a.inv.active).sort((x, y) => a.inv.active[y] - a.inv.active[x] || Math.random() - 0.5).slice(0, 3);
+  return Object.keys(a.inv.active).filter(k => !ITEMS[k].sig)
+    .sort((x, y) => (ITEMS[y].legend ? 9 : 0) + a.inv.active[y] - (ITEMS[x].legend ? 9 : 0) - a.inv.active[x] || Math.random() - 0.5).slice(0, slotsOf(a));
 }
 function startLoadout() {
-  for (const a of G.actors) { a.lane = null; a.walkTo = null; a.loadout = autoLoadout(a); }
+  for (const a of G.actors) { a.lane = null; a.walkTo = null; a.loadout = a.isButler ? [] : autoLoadout(a); }
+  G.stage = pick(STAGES);
   show('scr-loadout'); Snd.bgm('title');
   renderLoadout();
 }
 function renderLoadout() {
-  const p = player(), keys = Object.keys(p.inv.active).sort((x, y) => p.inv.active[y] - p.inv.active[x]);
-  $('#pickCount').textContent = `（${p.loadout.length}/3）`;
-  const f = buildFighter(p, 0, true);
-  $('#skillPick').innerHTML = keys.map(k => {
+  const p = player(), slots = slotsOf(p), sigs = sigsOf(p);
+  const keys = Object.keys(p.inv.active).filter(k => !ITEMS[k].sig).sort((x, y) => p.inv.active[y] - p.inv.active[x]);
+  $('#pickCount').textContent = `（${p.loadout.length}/${slots}${sigs.length ? '＋固有' + sigs.length : ''}）`;
+  const f = buildFighter(p, true);
+  const st = G.stage;
+  $('#stageBox').innerHTML = `<span class="emo">${st.icon}</span><span><b>会場：${st.name}</b><br>${st.desc}</span>`;
+  const sigHtml = sigs.map(k => `<div class="sp sel fixed"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">［固有］${ITEMS[k].name}<span class="lv">Lv${p.inv.active[k] || 1}</span></span><br><span class="d">${ITEMS[k].desc}</span><br><span class="fx">${effectText(k, p.inv.active[k] || 1, f.atk, f.cdr)}</span></span><span class="chk">固</span></div>`).join('');
+  $('#skillPick').innerHTML = sigHtml + keys.map(k => {
     const lv = p.inv.active[k], on = p.loadout.includes(k);
-    return `<button class="sp ${on ? 'sel' : ''}" data-k="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].name}<span class="lv">Lv${lv}</span></span><br><span class="d">${ITEMS[k].desc}</span><br><span class="fx">${effectText(k, lv, f.atk, f.cdr)}</span></span><span class="chk">${on ? p.loadout.indexOf(k) + 1 : ''}</span></button>`;
-  }).join('') + '<p class="hint" style="margin:2px 0 0">タップで選ぶ／外す。数字はバトルでのボタンの順番</p>';
-  document.querySelectorAll('#skillPick .sp').forEach(b => b.onclick = () => {
+    return `<button class="sp ${on ? 'sel' : ''}${ITEMS[k].legend ? ' lg' : ''}" data-k="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].legend ? '★★' : ''}${ITEMS[k].name}<span class="lv">Lv${lv}</span></span><br><span class="d">${ITEMS[k].desc}</span><br><span class="fx">${effectText(k, lv, f.atk, f.cdr)}</span></span><span class="chk">${on ? sigs.length + p.loadout.indexOf(k) + 1 : ''}</span></button>`;
+  }).join('') + `<p class="hint" style="margin:2px 0 0">タップで選ぶ／外す（${slots}つまで）。数字はバトルでのボタンの順番</p>`;
+  document.querySelectorAll('#skillPick button.sp').forEach(b => b.onclick = () => {
     const k = b.dataset.k, i = p.loadout.indexOf(k);
-    if (i >= 0) p.loadout.splice(i, 1); else if (p.loadout.length < 3) p.loadout.push(k); else { toast('3つまで！外してから選んでね', 'bad'); return; }
+    if (i >= 0) p.loadout.splice(i, 1); else if (p.loadout.length < slots) p.loadout.push(k); else { toast(`${slots}つまで！外してから選んでね`, 'bad'); return; }
     Snd.se('tap'); renderLoadout();
   });
   $('#myStats').innerHTML = `<span>体力 <b>${Math.round(f.maxHp)}</b></span><span>攻撃 <b>${f.atk.toFixed(1)}</b></span><span>防御 <b>${f.def.toFixed(1)}</b></span>
     <span>速さ <b>${Math.round(f.spd)}</b></span><span>攻速 <b>${f.aspd.toFixed(2)}</b></span><span>会心 <b>${Math.round(f.crit * 100)}%</b></span>`;
-  const pas = Object.keys(p.inv.passive);
-  const sts = Object.keys(p.inv.stat);
+  const pas = Object.keys(p.inv.passive), sts = Object.keys(p.inv.stat);
   $('#myPassives').innerHTML = pas.length || sts.length
     ? `<div class="irows" style="width:100%">${[...pas.map(k => infoRow(k, p.inv.passive[k])), ...sts.map(k => infoRow(k, p.inv.stat[k]))].join('')}</div>`
     : '<span class="small-note">パッシブ・基礎強化なし</span>';
   $('#rivalList').innerHTML = G.actors.filter(a => !a.isPlayer).map(a => {
-    const rf = buildFighter(a, 0, true);
-    return `<div class="rv"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}・買い物${a.inv.count}個<br>
-      ${a.loadout.map(k => infoBadge(k, a.inv.active[k], rf.atk)).join('')}${Object.keys(a.inv.passive).map(k => infoBadge(k, a.inv.passive[k])).join('')}</div></div>`;
+    const rf = buildFighter(a, true);
+    if (a.isButler) return `<div class="rv"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>（${a.owner.isPlayer ? 'あなた' : a.owner.name}の執事・味方）　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}</div></div>`;
+    return `<div class="rv${a.boss ? ' boss' : ''}"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>${a.boss ? ' <span class="hid">乱入</span>' : ''}　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}・買い物${a.inv.count}個<br>
+      ${[...sigsOf(a), ...a.loadout].map(k => infoBadge(k, a.inv.active[k] || 1, rf.atk)).join('')}${Object.keys(a.inv.passive).map(k => infoBadge(k, a.inv.passive[k])).join('')}</div></div>`;
   }).join('') + '<p class="hint" style="margin:0">アイコンをタップで効果を確認</p>';
 }
 $('#fightBtn').onclick = () => { Snd.se('tap'); startBattle(); };
@@ -1145,70 +1448,118 @@ $('#fightBtn').onclick = () => { Snd.se('tap'); startBattle(); };
 // =====================================================================
 //  バトル
 // =====================================================================
-const AW = 360, AH = 560;
-const SHELVES = [{ x: 50, y: 150, w: 90, h: 26 }, { x: 220, y: 150, w: 90, h: 26 }, { x: 50, y: 384, w: 90, h: 26 }, { x: 220, y: 384, w: 90, h: 26 }, { x: 150, y: 268, w: 60, h: 24 }];
-SHELVES.forEach(s => { s.goods = Array.from({ length: Math.floor(s.w / 12) }, () => pick(['#ff6b6b', '#ffd43b', '#4dabf7', '#69db7c', '#f783ac', '#ffa94d'])); });
-const SPAWNS = [[50, 60], [310, 60], [50, 500], [310, 500]];
+const STAGES = [
+  { id: 'super', name: 'スーパーならぶ屋', icon: '🛒', W: 720, H: 1000, floor: ['#e6f4ee', '#d4ece2'], pickupT: 3, desc: '値引きシールのアイテムがよく落ちてくる' },
+  { id: 'depart', name: 'ならぶ百貨店', icon: '🏬', W: 760, H: 1000, floor: ['#f6eee2', '#ebdfca'], pickupT: 5, desc: 'エスカレーターに乗ると流される' },
+  { id: 'street', name: 'ならぶ商店街', icon: '🏮', W: 700, H: 1080, floor: ['#dcdee5', '#d0d3db'], pickupT: 5, desc: '無人カートが暴走して横切る（赤い帯に注意）' },
+  { id: 'conveni', name: '深夜のコンビニ', icon: '🌙', W: 680, H: 960, floor: ['#3b4263', '#333a58'], pickupT: 5, dark: true, desc: '暗くて遠くが見えない。棚が倒れてくる（赤い所に注意）' },
+];
+const GOODS = ['#ff6b6b', '#ffd43b', '#4dabf7', '#69db7c', '#f783ac', '#ffa94d'];
+function stageLayout(st) {
+  const walls = [], belts = [];
+  const shelf = (x, y, w, h, kind = 'shelf') => walls.push({ x, y, w, h, kind, goods: Array.from({ length: Math.max(1, Math.floor(w / 12)) }, () => pick(GOODS)) });
+  if (st.id === 'super') {
+    for (const y of [170, 830]) for (const x of [70, 290, 510]) shelf(x, y, 140, 28);
+    for (const y of [400, 600]) for (const x of [70, 510]) shelf(x, y, 140, 28);
+  } else if (st.id === 'depart') {
+    for (const [x, y] of [[110, 190], [550, 190], [110, 730], [550, 730]]) shelf(x, y, 100, 80, 'island');
+    belts.push({ x: 60, y: 470, w: 230, h: 60, vx: 230, vy: 0 }, { x: 470, y: 470, w: 230, h: 60, vx: -230, vy: 0 },
+      { x: 330, y: 110, w: 100, h: 230, vx: 0, vy: 230 }, { x: 330, y: 660, w: 100, h: 230, vx: 0, vy: -230 });
+  } else if (st.id === 'street') {
+    for (const y of [60, 340, 620, 900]) { shelf(0, y, 56, 180, 'shop'); shelf(st.W - 56, y, 56, 180, 'shop'); }
+    shelf(300, 300, 100, 22, 'bench'); shelf(300, 760, 100, 22, 'bench');
+  } else {
+    for (const y of [180, 400, 620, 800]) for (const x of [80, 300, 470]) if (!(y === 400 && x === 300) && !(y === 620 && x === 300)) shelf(x, y, 130, 26);
+  }
+  return { walls, belts };
+}
+const PICKUPS = {
+  heal: { icon: '🍙', txt: '体力回復！' }, power: { icon: '🌶️', txt: '攻撃+40%！' },
+  speed: { icon: '👟', txt: '速さ+35%！' }, guard: { icon: '🧈', txt: 'バリア！' },
+};
+const BATTLE_HP = 1; // バトル中の体力倍率
 let B = null;
 const cv = $('#cv'), cx = cv.getContext('2d');
 
-function buildFighter(actor, i, preview) {
+function buildFighter(actor, preview) {
   const c = actor.char, inv = actor.inv, n = k => inv.passive[k] || 0, s = k => inv.stat[k] || 0;
-  const maxHp = c.hp + 25 * s('hp');
-  const cdr = Math.min(0.5, 0.1 * n('cdr'));
+  const minion = actor.isButler;
+  let maxHp = c.hp + (minion ? 0 : 25 * s('hp') + 60 * n('vip'));
+  let atk = c.atk + (minion ? 0.5 * s('atk') : 2 * s('atk')), def = c.def + (minion ? 0 : 1.5 * s('def'));
+  if (actor.boss) { maxHp *= 1.25; atk *= 1.3; def = def * 1.3 + 1; }
+  maxHp *= BATTLE_HP;
+  const cdr = Math.min(0.65, 0.1 * n('cdr') + 0.35 * n('blackcard'));
   const f = {
-    actor, name: actor.name, emoji: c.emoji, color: c.color, isPlayer: actor.isPlayer,
-    x: SPAWNS[i][0], y: SPAWNS[i][1], r: 16, kx: 0, ky: 0,
-    maxHp, hp: maxHp, atk: c.atk + 2 * s('atk'), def: c.def + 1.5 * s('def'),
+    actor, name: actor.name, emoji: c.emoji, color: c.color, isPlayer: actor.isPlayer, boss: actor.boss, minion,
+    team: actor.owner ? actor.owner.id : actor.id,
+    x: 0, y: 0, r: actor.boss ? 19 : minion ? 14 : 16, kx: 0, ky: 0,
+    maxHp, hp: maxHp, atk, def,
     spd: c.spd * (1 + 0.08 * s('spd')), aspd: c.aspd * (1 + 0.12 * s('aspd')),
-    lifesteal: 0.08 * n('lifesteal'), thorns: 0.2 * n('thorns'), cdr, berserk: 0.3 * n('berserk'), skilldmg: 0.2 * n('skilldmg'),
-    guts: n('guts'), regen: 0.012 * n('regen'), crit: 0.05 + 0.12 * n('crit'), dodge: Math.min(0.4, 0.1 * n('dodge')), push: n('push'),
-    dmgMul: actor.isPlayer ? 1 : DIFF[G.diff].dmg,
-    skills: [], dir: { x: i % 2 ? -1 : 1, y: i < 2 ? 1 : -1 }, atkCd: 0.5, shield: 0, shieldT: 0, hasteT: 0, markT: 0, slowT: 0, stunT: 0,
-    dashT: 0, dashX: 0, dashY: 0, dashHit: null, dashDmg: 0, swingT: 0, hitT: 0, alive: true, deadAt: 0,
-    ai: { think: 0, target: null, strafe: 1, mode: 'fight', skillDelay: 1 + Math.random(), stuck: 0, lx: 0, ly: 0, ax: 0, ay: 0 },
+    lifesteal: minion ? 0 : 0.08 * n('lifesteal'), thorns: minion ? 0 : 0.2 * n('thorns'), cdr, berserk: minion ? 0 : 0.3 * n('berserk'),
+    skilldmg: 0.2 * n('skilldmg') + 0.25 * n('blackcard'),
+    guts: minion ? 0 : n('guts') + n('vip'), regen: minion ? 0 : 0.012 * n('regen') + 0.015 * n('vip'),
+    crit: 0.05 + (minion ? 0 : 0.12 * n('crit')), dodge: minion ? 0 : Math.min(0.4, 0.1 * n('dodge')), push: minion ? 0 : n('push'),
+    dmgMul: actor.isPlayer || (actor.owner && actor.owner.isPlayer) ? 1 : DIFF[G.diff].dmg,
+    skills: [], dir: { x: 0, y: 1 }, atkCd: 0.5, shield: 0, shieldT: 0, hasteT: 0, markT: 0, slowT: 0, stunT: 0, powT: 0, spdT: 0, stealthT: 0,
+    dashT: 0, dashX: 0, dashY: 0, dashHit: null, dashDmg: 0, dashKnock: 280, gold: false, swingT: 0, hitT: 0, alive: true, deadAt: 0,
+    ai: { think: 0, target: null, strafe: Math.random() < 0.5 ? 1 : -1, mode: 'fight', skillDelay: 1 + Math.random(), stuck: 0, ax: 0, ay: 0, stuckT: 0 },
   };
-  const dl = Math.hypot(f.dir.x, f.dir.y); f.dir.x /= dl; f.dir.y /= dl;
-  if (!preview) f.skills = actor.loadout.map(id => { const lv = inv.active[id]; return { id, lv, cd: 1.5, max: ITEMS[id].cd * Math.max(0.45, 1 - 0.08 * (lv - 1)) * (1 - cdr) }; });
+  if (!preview && !minion) f.skills = [...sigsOf(actor), ...actor.loadout].slice(0, 3).map(id => { const lv = inv.active[id] || 1; return { id, lv, cd: 1.5, max: skillCT(id, lv, cdr) }; });
   return f;
 }
 
 function startBattle() {
   show('scr-battle');
-  const fs = G.actors.map((a, i) => buildFighter(a, i));
-  B = { fs, t: 0, proj: [], fx: [], parts: [], texts: [], over: false, speed: 1, deaths: [], start: 2.2, zone: { x0: 0, y0: 0, x1: AW, y1: AH }, me: fs.find(f => f.isPlayer), shake: 0, endT: 0 };
+  const st = G.stage || pick(STAGES), lay = stageLayout(st);
+  const fs = G.actors.map(a => buildFighter(a));
+  B = { st, W: st.W, H: st.H, walls: lay.walls, belts: lay.belts, fs, t: 0, proj: [], fx: [], parts: [], texts: [], pickups: [], carts: [], falls: [],
+    pickT: 2, gimT: 4, over: false, speed: 1, deaths: [], start: 2.2, zone: { x0: 0, y0: 0, x1: st.W, y1: st.H },
+    me: fs.find(f => f.isPlayer), shake: 0, cam: { x: st.W / 2, y: st.H / 2 }, hadBoss: fs.some(f => f.boss) };
+  // 出現位置: 会場の中心を囲む円周上
+  const mainsF = fs.filter(f => !f.minion), R = Math.min(st.W, st.H) * 0.36;
+  mainsF.forEach((f, i) => {
+    const a = -Math.PI / 2 + i * Math.PI * 2 / mainsF.length + (Math.PI / 4);
+    f.x = st.W / 2 + Math.cos(a) * R; f.y = st.H / 2 + Math.sin(a) * R * 1.15;
+    f.dir = { x: -Math.cos(a), y: -Math.sin(a) };
+    for (const w of B.walls) collideCircleRect(f, w);
+  });
+  for (const f of fs) if (f.minion) { const o = fs.find(x => x.actor === f.actor.owner); f.x = o.x + 34; f.y = o.y; f.dir = { ...o.dir }; }
+  B.cam = { x: B.me.x, y: B.me.y };
   layoutBattle();
   buildBattleUI();
   Snd.bgm('battle');
   $('#bover').hidden = true;
+  banner(`${st.icon} ${st.name}`, st.desc, 1800);
   lastT = performance.now();
 }
 function layoutBattle() {
   if (!B) return;
   const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.width = r.width * dpr; cv.height = r.height * dpr;
-  const top = 66, bottom = 196;
-  const availH = Math.max(200, r.height - top - bottom), availW = r.width - 16;
-  const sc = Math.min(availW / AW, availH / AH);
-  B.view = { dpr, sc, ox: (r.width - AW * sc) / 2, oy: top + (availH - AH * sc) / 2 };
+  const top = 62, bottom = 190;
+  const ah = Math.max(200, r.height - top - bottom);
+  const sc = Math.min(r.width / 440, ah / 520);
+  B.view = { dpr, sc, sw: r.width, top, ah, vw: r.width / sc, vh: ah / sc };
 }
 function showPause() {
   if (!B) return;
   const me = B.me, inv = me.actor.inv;
-  const others = B.fs.filter(f => !f.isPlayer).map(o => `<div class="rv"><div class="face" style="--c:${o.color}">${o.emoji}</div><div style="flex:1"><b>${o.name}</b> ${o.alive ? `体力${Math.ceil(o.hp)}/${Math.round(o.maxHp)}` : 'ダウン'}<br>${o.skills.map(s => infoBadge(s.id, s.lv, o.atk)).join('')}${Object.keys(o.actor.inv.passive).map(k => infoBadge(k, o.actor.inv.passive[k])).join('')}</div></div>`).join('');
+  const others = B.fs.filter(f => !f.isPlayer).map(o => `<div class="rv"><div class="face" style="--c:${o.color}">${o.emoji}</div><div style="flex:1"><b>${o.name}</b>${o.minion ? `（${o.actor.owner.isPlayer ? 'あなた' : o.actor.owner.name}の執事）` : ''} ${o.alive ? `体力${Math.ceil(o.hp)}/${Math.round(o.maxHp)}` : 'ダウン'}<br>${o.skills.map(s => infoBadge(s.id, s.lv, o.atk)).join('')}${o.minion ? '' : Object.keys(o.actor.inv.passive).map(k => infoBadge(k, o.actor.inv.passive[k])).join('')}</div></div>`).join('');
   openModal(`<h3>⏸ 一時停止中</h3>
+    <p class="hint">${B.st.icon} ${B.st.name}：${B.st.desc}</p>
     <div class="panel" style="box-shadow:none;padding:0"><h4>あなたのスキル</h4><div class="irows">${me.skills.map((s, i) => infoRow(s.id, s.lv, { atk: me.atk, cdr: me.cdr }).replace('<span class="nm">', `<span class="nm">[${['K/1', 'L/2', ';/3'][i]}] `)).join('') || '<p class="hint">スキルなし</p>'}</div></div>
     <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>パッシブ・基礎強化</h4><div class="irows">${[...Object.keys(inv.passive).map(k => infoRow(k, inv.passive[k])), ...Object.keys(inv.stat).map(k => infoRow(k, inv.stat[k]))].join('') || '<p class="hint">なし</p>'}</div>
     <p class="hint">攻撃${me.atk.toFixed(1)}・防御${me.def.toFixed(1)}・会心${Math.round(me.crit * 100)}%・回避${Math.round(me.dodge * 100)}%</p></div>
-    <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>ライバル</h4><div class="rivals">${others}</div><p class="hint">アイコンをタップで効果</p></div>
+    <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>落ちているアイテム</h4><p class="hint">${Object.values(PICKUPS).map(p => p.icon + p.txt).join('　')}</p></div>
+    <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>ほかの人</h4><div class="rivals">${others}</div><p class="hint">アイコンをタップで効果</p></div>
     <div class="row"><button class="btn" data-close>バトルに戻る</button></div>`);
 }
 function buildBattleUI() {
-  $('#bhud').innerHTML = B.fs.map((f, i) => `<div class="hp-chip ${f.isPlayer ? 'me' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('') + '<button id="pauseBtn" aria-label="一時停止">⏸</button>';
+  $('#bhud').innerHTML = B.fs.map((f, i) => f.minion ? '' : `<div class="hp-chip ${f.isPlayer ? 'me' : ''}${f.boss ? ' boss' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('') + '<button id="pauseBtn" aria-label="一時停止">⏸</button>';
   $('#pauseBtn').onclick = () => { Snd.se('tap'); showPause(); };
   const me = B.me, wrap = $('#sbtns');
-  const pos = [[118, 22], [96, 104], [22, 132]]; // right, bottom offsets
-  wrap.innerHTML = me.skills.map((s, i) => `<button class="abtn sbtn" data-s="${i}" style="right:calc(max(16px,env(safe-area-inset-right,0px)) + ${pos[i][0]}px);bottom:calc(env(safe-area-inset-bottom,0px) + ${pos[i][1]}px)">${ITEMS[s.id].icon}<span class="cdv"></span><span class="lvb">Lv${s.lv}</span></button>`).join('');
+  const pos = [[118, 22], [96, 104], [22, 132]];
+  wrap.innerHTML = me.skills.map((s, i) => `<button class="abtn sbtn${ITEMS[s.id].legend ? ' lg' : ''}" data-s="${i}" style="right:calc(max(16px,env(safe-area-inset-right,0px)) + ${pos[i][0]}px);bottom:calc(env(safe-area-inset-bottom,0px) + ${pos[i][1]}px)">${ITEMS[s.id].icon}<span class="cdv"></span><span class="lvb">Lv${s.lv}</span></button>`).join('');
   wrap.querySelectorAll('.sbtn').forEach(b => {
     b.addEventListener('pointerdown', e => { e.preventDefault(); Snd.init(); useSkill(B.me, +b.dataset.s); });
   });
@@ -1254,34 +1605,39 @@ function playerMoveVec() {
 }
 
 // ---- 戦闘ロジック ----
-const enemies = f => B.fs.filter(o => o !== f && o.alive);
+const enemies = f => B.fs.filter(o => o.alive && o.team !== f.team);
+const hidden = (f, o) => o.stealthT > 0 && Math.hypot(o.x - f.x, o.y - f.y) > 50;
 function nearest(f, maxD = 1e9) {
   let best = null, bd = maxD;
-  for (const o of enemies(f)) { const d = Math.hypot(o.x - f.x, o.y - f.y) - o.r; if (d < bd) { bd = d; best = o; } }
+  for (const o of enemies(f)) { if (hidden(f, o)) continue; const d = Math.hypot(o.x - f.x, o.y - f.y) - o.r; if (d < bd) { bd = d; best = o; } }
   return best;
 }
 function aimAt(f, t) { if (!t) return { ...f.dir }; const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1; return { x: dx / d, y: dy / d }; }
 function addText(x, y, txt, color = '#fff', size = 16) { B.texts.push({ x, y, txt, color, size, t: 0.9 }); }
 function burst(x, y, color, n = 8, sp = 140) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, v = rnd(sp * 0.4, sp); B.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: rnd(0.3, 0.6), color, r: rnd(2, 4) }); } }
+const fname = f => f ? (f.isPlayer ? 'あなた' : f.name) : '';
 
 function damage(src, tgt, base, o = {}) {
   if (!tgt.alive || B.over) return 0;
-  if (!o.reflect && !o.zone && Math.random() < tgt.dodge) { addText(tgt.x, tgt.y - 24, 'MISS', '#cbd5e1', 13); return 0; }
+  const env = o.zone || o.hazard || o.true;
+  if (!o.reflect && !env && Math.random() < tgt.dodge) { addText(tgt.x, tgt.y - 24, 'MISS', '#cbd5e1', 13); return 0; }
   let amt = base;
-  if (src && !o.zone) {
+  if (src && !o.zone && !o.hazard && !o.true) {
     amt *= src.dmgMul;
     if (src.berserk && src.hp < src.maxHp * 0.5) amt *= 1 + src.berserk;
     if (o.skill) amt *= 1 + src.skilldmg;
+    if (src.powT > 0) amt *= 1.4;
+    if (src.stealthT > 0 && !o.reflect) { amt *= 2.5; src.stealthT = 0; addText(src.x, src.y - 40, '不意打ち！', '#22d3ee', 16); }
   }
-  if (tgt.markT > 0) amt *= 1.3;
+  if (tgt.markT > 0 && !env) amt *= 1.3;
   let crit = false;
-  if (src && !o.reflect && !o.zone && Math.random() < src.crit) { amt *= 1.8; crit = true; }
-  if (!o.zone) amt = Math.max(1, amt - tgt.def);
-  if (tgt.shield > 0 && !o.zone) { const a = Math.min(tgt.shield, amt); tgt.shield -= a; amt -= a; if (amt <= 0) { addText(tgt.x, tgt.y - 24, 'ガード', '#93c5fd', 13); return 0; } }
-  tgt.hp -= amt; tgt.hitT = 0.15;
-  if (!o.zone) addText(tgt.x + rnd(-8, 8), tgt.y - 26, (crit ? '会心 ' : '') + Math.round(amt), crit ? '#ffd43b' : '#fff', crit ? 19 : 15);
+  if (src && !o.reflect && !env && Math.random() < src.crit) { amt *= 1.8; crit = true; }
+  if (!env) amt = Math.max(1, amt - tgt.def);
+  if (tgt.shield > 0 && !o.zone && !o.true) { const a = Math.min(tgt.shield, amt); tgt.shield -= a; amt -= a; if (amt <= 0) { addText(tgt.x, tgt.y - 24, 'ガード', '#93c5fd', 13); return 0; } }
+  tgt.hp -= amt; tgt.hitT = 0.15; tgt.stealthT = 0;
+  if (!o.zone) addText(tgt.x + rnd(-8, 8), tgt.y - 26, (crit ? '会心 ' : '') + Math.round(amt), crit ? '#ffd43b' : o.hazard ? '#ff8787' : '#fff', crit ? 19 : 15);
   if (src && src.alive && src.lifesteal && !o.reflect) src.hp = Math.min(src.maxHp, src.hp + amt * src.lifesteal);
-  if (src && src.alive && tgt.thorns && !o.reflect && !o.zone && src !== tgt) damage(tgt, src, amt * tgt.thorns, { reflect: true });
+  if (src && src.alive && tgt.thorns && !o.reflect && !env && src !== tgt) damage(tgt, src, amt * tgt.thorns, { reflect: true });
   if (o.knock && src) { const d = aimAt(src, tgt); tgt.kx += d.x * o.knock; tgt.ky += d.y * o.knock; }
   if (o.stun) tgt.stunT = Math.max(tgt.stunT, o.stun);
   if (o.slow) tgt.slowT = Math.max(tgt.slowT, o.slow);
@@ -1290,15 +1646,19 @@ function damage(src, tgt, base, o = {}) {
   if (tgt.isPlayer && !o.zone) B.shake = Math.max(B.shake, 0.15);
   if (tgt.hp <= 0) {
     if (tgt.guts > 0) { tgt.guts--; tgt.hp = 1; addText(tgt.x, tgt.y - 40, '根性！', '#ff6b6b', 18); }
-    else kill(tgt, src);
+    else kill(tgt, src, o);
   }
   return amt;
 }
-function kill(f, src) {
-  f.alive = false; f.hp = 0; f.deadAt = B.t; B.deaths.push(f);
-  burst(f.x, f.y, f.color, 24, 220); Snd.se('ko');
-  const who = src && src !== f ? (src.isPlayer ? 'あなた' : src.name) : '閉店シャッター';
-  banner(`${f.isPlayer ? 'あなた' : f.name} ダウン！`, `${who}の勝ち`, 1200);
+function kill(f, src, o = {}) {
+  f.alive = false; f.hp = 0; f.deadAt = B.t;
+  burst(f.x, f.y, f.color, f.minion ? 12 : 24, 220); Snd.se('ko');
+  if (f.minion) { addText(f.x, f.y - 30, `${f.name}退場`, '#fff', 14); return; }
+  B.deaths.push(f);
+  // 主がやられたら執事も退場
+  for (const m of B.fs) if (m.minion && m.alive && m.actor.owner === f.actor) { m.alive = false; burst(m.x, m.y, m.color, 10, 160); addText(m.x, m.y - 30, 'お嬢様ーっ！', '#fff', 14); }
+  const who = src && src !== f ? fname(src) : o.hazard ? '会場の仕掛け' : '閉店シャッター';
+  banner(`${fname(f)} ダウン！`, `${who}の勝ち`, 1200);
   if (f.isPlayer) {
     const bo = $('#bover'); bo.hidden = false;
     bo.innerHTML = `<div class="big">やられた…</div><button class="btn" id="ffBtn">早送りで結果へ</button>`;
@@ -1320,11 +1680,12 @@ function basicAttack(f) {
     damage(f, o, f.atk * (1 + 0.15 * f.push), { knock: 120 + 70 * f.push });
   }
 }
+function startDash(f, aim, speed, dur, dmg, knock, gold) { f.dashT = dur; f.dashX = aim.x * speed; f.dashY = aim.y * speed; f.dashHit = new Set(); f.dashDmg = dmg; f.dashKnock = knock; f.gold = gold; }
 function useSkill(f, i) {
   if (!B || B.over || B.start > 0 || !f.alive) return false;
   if (f.isPlayer && !$('#modal').hidden) return false;
   const s = f.skills[i]; if (!s || s.cd > 0 || f.stunT > 0) return false;
-  const M = 1 + 0.3 * (s.lv - 1), atk = f.atk, t = nearest(f, 340);
+  const M = 1 + 0.3 * (s.lv - 1), atk = f.atk, t = nearest(f, 360);
   const aim = aimAt(f, t); f.dir = aim;
   s.cd = s.max;
   if (f.isPlayer || Math.random() < 0.5) Snd.se('skill');
@@ -1333,10 +1694,12 @@ function useSkill(f, i) {
       B.fx.push({ kind: 'ring', x: f.x, y: f.y, r: 72, t: 0.3, max: 0.3, color: '#ffd43b' });
       for (const o of enemies(f)) if (Math.hypot(o.x - f.x, o.y - f.y) < 72 + o.r) damage(f, o, (1.3 * atk + 6) * M, { skill: 1, knock: 260 });
       f.spinT = 0.35; break;
-    case 'cart':
-      f.dashT = 0.3; f.dashX = aim.x * 640; f.dashY = aim.y * 640; f.dashHit = new Set(); f.dashDmg = (1.5 * atk + 8) * M; break;
+    case 'cart': startDash(f, aim, 640, 0.3, (1.5 * atk + 8) * M, 280, false); break;
+    case 'goldcart':
+      startDash(f, aim, 1000, 0.5, (3 * atk + 20) * M, 420, true);
+      addText(f.x, f.y - 40, '黄金のカート！', '#ffd43b', 17); B.shake = Math.max(B.shake, 0.15); break;
     case 'flyer':
-      for (let k = -2; k <= 2; k++) { const a = Math.atan2(aim.y, aim.x) + k * 0.22; B.proj.push({ kind: 'line', x: f.x, y: f.y, vx: Math.cos(a) * 390, vy: Math.sin(a) * 390, r: 10, owner: f, dmg: (0.6 * atk + 3) * M, life: 0.75, icon: '📰', hit: new Set(), rot: 0 }); }
+      for (let k = -2; k <= 2; k++) { const a = Math.atan2(aim.y, aim.x) + k * 0.22; B.proj.push({ kind: 'line', x: f.x, y: f.y, vx: Math.cos(a) * 390, vy: Math.sin(a) * 390, r: 10, owner: f, dmg: (0.6 * atk + 3) * M, life: 0.8, icon: '📰', hit: new Set(), rot: 0 }); }
       break;
     case 'tuna': {
       B.fx.push({ kind: 'arc', x: f.x, y: f.y, a: Math.atan2(aim.y, aim.x), r: 90, t: 0.25, max: 0.25, color: '#93c5fd' });
@@ -1358,13 +1721,29 @@ function useSkill(f, i) {
       const h = f.maxHp * (0.25 + 0.05 * (s.lv - 1)); f.hp = Math.min(f.maxHp, f.hp + h);
       addText(f.x, f.y - 30, '+' + Math.round(h), '#4ade80', 18); burst(f.x, f.y, '#4ade80', 12); Snd.se('heal'); break;
     }
-    case 'timesale':
-      f.hasteT = 5 + 0.5 * (s.lv - 1); addText(f.x, f.y - 30, 'タイムセール！', '#ffd43b', 15); break;
-    case 'point':
-      f.shield = f.maxHp * (0.3 + 0.06 * (s.lv - 1)); f.shieldT = 5; addText(f.x, f.y - 30, 'バリア', '#93c5fd', 15); break;
+    case 'timesale': f.hasteT = 5 + 0.5 * (s.lv - 1); addText(f.x, f.y - 30, 'タイムセール！', '#ffd43b', 15); break;
+    case 'point': f.shield = f.maxHp * (0.3 + 0.06 * (s.lv - 1)); f.shieldT = 5; addText(f.x, f.y - 30, 'バリア', '#93c5fd', 15); break;
     case 'seal':
       B.proj.push({ kind: 'home', x: f.x, y: f.y, vx: aim.x * 300, vy: aim.y * 300, r: 11, owner: f, target: t, dmg: (1.1 * atk + 6) * M, life: 2.2, icon: '🏷️', hit: new Set(), rot: 0 });
       break;
+    case 'storm':
+      addText(f.x, f.y - 40, 'バーゲンの嵐！', '#f472b6', 18); Snd.se('boom'); B.shake = Math.max(B.shake, 0.3);
+      for (const o of enemies(f)) { B.fx.push({ kind: 'ring', x: o.x, y: o.y, r: 50, t: 0.5, max: 0.5, color: '#f472b6' }); damage(f, o, o.hp * (0.25 + 0.03 * (s.lv - 1)), { true: 1, stun: 0.6 }); }
+      break;
+    case 'shutter':
+      B.fx.push({ kind: 'ring', x: f.x, y: f.y, r: 125, t: 0.4, max: 0.4, color: '#94a3b8' });
+      addText(f.x, f.y - 40, '閉店！', '#e2e8f0', 20); Snd.se('boom'); B.shake = Math.max(B.shake, 0.2);
+      for (const o of enemies(f)) if (Math.hypot(o.x - f.x, o.y - f.y) < 125 + o.r) damage(f, o, (1.4 * atk + 10) * M, { skill: 1, knock: 420, stun: 0.8 });
+      break;
+    case 'arrest': {
+      const tg = nearest(f, 85);
+      if (!tg) { s.cd = 1; if (f.isPlayer) addText(f.x, f.y - 30, '近くにいない', '#fff', 13); break; }
+      tg.x = f.x + aim.x * (f.r + tg.r + 4); tg.y = f.y + aim.y * (f.r + tg.r + 4);
+      damage(f, tg, (1.0 * atk + 6) * M, { skill: 1, stun: 1.6 + 0.2 * (s.lv - 1) });
+      addText(tg.x, tg.y - 44, '確保！', '#22d3ee', 18); B.fx.push({ kind: 'ring', x: tg.x, y: tg.y, r: 30, t: 0.4, max: 0.4, color: '#22d3ee' });
+      break;
+    }
+    case 'stealth': f.stealthT = 3 + 0.5 * (s.lv - 1); addText(f.x, f.y - 30, '変装！', '#22d3ee', 15); burst(f.x, f.y, '#cbd5e1', 14); break;
   }
   return true;
 }
@@ -1374,7 +1753,7 @@ function collideCircleRect(f, s) {
   const dx = f.x - nx, dy = f.y - ny, d = Math.hypot(dx, dy);
   if (d < f.r) {
     if (d > 0.01) { f.x = nx + dx / d * f.r; f.y = ny + dy / d * f.r; }
-    else { // 中心が棚の中
+    else {
       const l = f.x - s.x, r = s.x + s.w - f.x, t = f.y - s.y, b = s.y + s.h - f.y, m = Math.min(l, r, t, b);
       if (m === l) f.x = s.x - f.r; else if (m === r) f.x = s.x + s.w + f.r; else if (m === t) f.y = s.y - f.r; else f.y = s.y + s.h + f.r;
     }
@@ -1382,7 +1761,68 @@ function collideCircleRect(f, s) {
   }
   return false;
 }
+const inRect = (x, y, r) => x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h;
 function inZone(x, y) { const z = B.zone; return x > z.x0 && x < z.x1 && y > z.y0 && y < z.y1; }
+function freeSpot() {
+  const z = B.zone;
+  for (let k = 0; k < 20; k++) {
+    const x = rnd(z.x0 + 30, z.x1 - 30), y = rnd(z.y0 + 30, z.y1 - 30);
+    if (!B.walls.some(w => x > w.x - 20 && x < w.x + w.w + 20 && y > w.y - 20 && y < w.y + w.h + 20)) return { x, y };
+  }
+  return { x: (z.x0 + z.x1) / 2, y: (z.y0 + z.y1) / 2 };
+}
+
+// ---- 会場の仕掛け ----
+function gimmickUpdate(dt) {
+  // 落ちているアイテム
+  B.pickT -= dt;
+  if (B.pickT <= 0) {
+    B.pickT = B.st.pickupT * rnd(0.8, 1.2);
+    if (B.pickups.length < 5) { const p = freeSpot(); B.pickups.push({ ...p, kind: pick(Object.keys(PICKUPS)), t: 0 }); }
+  }
+  for (const pk of B.pickups) {
+    pk.t += dt;
+    for (const f of B.fs) if (f.alive && !pk.used && Math.hypot(f.x - pk.x, f.y - pk.y) < f.r + 14) {
+      pk.used = true;
+      if (pk.kind === 'heal') f.hp = Math.min(f.maxHp, f.hp + f.maxHp * 0.25);
+      if (pk.kind === 'power') f.powT = 8;
+      if (pk.kind === 'speed') f.spdT = 8;
+      if (pk.kind === 'guard') { f.shield = Math.max(f.shield, f.maxHp * 0.25); f.shieldT = 6; }
+      addText(f.x, f.y - 34, PICKUPS[pk.kind].txt, '#ffd43b', 15); burst(pk.x, pk.y, '#ffd43b', 10);
+      if (f.isPlayer) Snd.se('heal');
+    }
+  }
+  B.pickups = B.pickups.filter(p => !p.used && p.t < 20);
+  // ステージ固有
+  B.gimT -= dt;
+  if (B.st.id === 'street' && B.gimT <= 0) {
+    B.gimT = rnd(3.5, 5.5);
+    const z = B.zone, y = rnd(Math.max(40, z.y0 + 20), Math.min(B.H - 40, z.y1 - 20)), dir = Math.random() < 0.5 ? 1 : -1;
+    B.carts.push({ y, x: dir > 0 ? -40 : B.W + 40, vx: 430 * dir, warn: 1.1, hit: new Set() });
+  }
+  for (const c of B.carts) {
+    if (c.warn > 0) { c.warn -= dt; continue; }
+    c.x += c.vx * dt;
+    for (const f of B.fs) if (f.alive && !c.hit.has(f) && Math.abs(f.x - c.x) < f.r + 18 && Math.abs(f.y - c.y) < f.r + 14) {
+      c.hit.add(f); f.kx += Math.sign(c.vx) * 420; f.ky += rnd(-120, 120);
+      damage(null, f, 14, { hazard: 1 }); Snd.se('hit');
+    }
+  }
+  B.carts = B.carts.filter(c => c.x > -80 && c.x < B.W + 80);
+  if (B.st.id === 'conveni' && B.gimT <= 0) {
+    B.gimT = rnd(4.5, 6.5);
+    const s = pick(B.walls.filter(w => w.kind === 'shelf'));
+    if (s) B.falls.push({ x: s.x - 10, y: s.y + s.h, w: s.w + 20, h: 76, t: 1.3, shelf: s });
+  }
+  for (const fl of B.falls) {
+    fl.t -= dt;
+    if (fl.t <= 0 && !fl.done) {
+      fl.done = true; B.shake = Math.max(B.shake, 0.15); burst(fl.x + fl.w / 2, fl.y + fl.h / 2, '#a1887f', 20, 200); Snd.se('boom');
+      for (const f of B.fs) if (f.alive && inRect(f.x, f.y, { x: fl.x - f.r, y: fl.y - f.r, w: fl.w + 2 * f.r, h: fl.h + 2 * f.r })) damage(null, f, 22, { hazard: 1, stun: 0.6 });
+    }
+  }
+  B.falls = B.falls.filter(fl => fl.t > -0.4);
+}
 
 function battleUpdate(dt) {
   if (!B) return;
@@ -1391,47 +1831,43 @@ function battleUpdate(dt) {
     if (Math.ceil(B.start) !== prev) { if (B.start > 0) { banner(String(Math.ceil(B.start)), '', 600); Snd.se('tick'); } else { banner('ファイト！', '', 800); Snd.se('fight'); } }
     return;
   }
-  if (B.over) { B.endT -= dt; return; }
+  if (B.over) return;
   B.t += dt;
   // 閉店シャッター (場外縮小)
-  const k = clamp((B.t - 35) / 40, 0, 1);
-  const fw = 150, fh = 220;
-  B.zone = { x0: k * (AW - fw) / 2, x1: AW - k * (AW - fw) / 2, y0: k * (AH - fh) / 2, y1: AH - k * (AH - fh) / 2 };
+  const k = clamp((B.t - 35) / 45, 0, 1), fw = 240, fh = 320;
+  B.zone = { x0: k * (B.W - fw) / 2, x1: B.W - k * (B.W - fw) / 2, y0: k * (B.H - fh) / 2, y1: B.H - k * (B.H - fh) / 2 };
   if (B.t > 35 && B.t - dt <= 35) { banner('閉店シャッター！', '外側にいるとダメージ', 1500); Snd.se('stop'); }
+  gimmickUpdate(dt);
 
   for (const f of B.fs) {
     if (!f.alive) continue;
-    // タイマー類
     f.atkCd -= dt; f.swingT -= dt; f.hitT -= dt; f.spinT = (f.spinT || 0) - dt;
-    if (f.hasteT > 0) f.hasteT -= dt; if (f.markT > 0) f.markT -= dt; if (f.slowT > 0) f.slowT -= dt; if (f.stunT > 0) f.stunT -= dt;
+    for (const key of ['hasteT', 'markT', 'slowT', 'stunT', 'powT', 'spdT', 'stealthT']) if (f[key] > 0) f[key] -= dt;
     if (f.shieldT > 0) { f.shieldT -= dt; if (f.shieldT <= 0) f.shield = 0; }
     for (const s of f.skills) if (s.cd > 0) s.cd -= dt;
     if (f.regen) f.hp = Math.min(f.maxHp, f.hp + f.maxHp * f.regen * dt);
     if (!inZone(f.x, f.y)) { f.zoneTick = (f.zoneTick || 0) + dt; if (f.zoneTick > 0.5) { f.zoneTick = 0; damage(null, f, f.maxHp * 0.05, { zone: 1 }); addText(f.x, f.y - 26, '場外', '#ff6b6b', 13); } }
     if (!f.alive) continue;
-    // 移動
     let mv = { x: 0, y: 0 };
     if (f.isPlayer) { mv = playerMoveVec(); if (input.atk || input.keys[' '] || input.keys.j) basicAttack(f); }
     else mv = aiUpdate(f, dt);
-    const sp = f.spd * (f.hasteT > 0 ? 1.4 : 1) * (f.slowT > 0 ? 0.55 : 1);
+    const sp = f.spd * (f.hasteT > 0 ? 1.4 : 1) * (f.spdT > 0 ? 1.35 : 1) * (f.slowT > 0 ? 0.55 : 1);
     if (f.stunT > 0) mv = { x: 0, y: 0 };
     const ox = f.x, oy = f.y;
     if (f.dashT > 0) {
       f.dashT -= dt; f.x += f.dashX * dt; f.y += f.dashY * dt;
-      for (const o of enemies(f)) if (!f.dashHit.has(o) && Math.hypot(o.x - f.x, o.y - f.y) < f.r + o.r + 6) { f.dashHit.add(o); damage(f, o, f.dashDmg, { skill: 1, knock: 280 }); }
-      if (Math.random() < 0.6) B.parts.push({ x: f.x, y: f.y, vx: 0, vy: 0, t: 0.3, color: f.color, r: 6 });
+      for (const o of enemies(f)) if (!f.dashHit.has(o) && Math.hypot(o.x - f.x, o.y - f.y) < f.r + o.r + 6) { f.dashHit.add(o); damage(f, o, f.dashDmg, { skill: 1, knock: f.dashKnock }); }
+      if (Math.random() < 0.7) B.parts.push({ x: f.x, y: f.y, vx: 0, vy: 0, t: 0.3, color: f.gold ? '#ffd43b' : f.color, r: f.gold ? 9 : 6 });
     } else {
       f.x += mv.x * sp * dt; f.y += mv.y * sp * dt;
       if (Math.hypot(mv.x, mv.y) > 0.2) { const d = Math.hypot(mv.x, mv.y); if (f.swingT <= 0) f.dir = { x: mv.x / d, y: mv.y / d }; }
     }
-    // ノックバック
+    for (const b of B.belts) if (inRect(f.x, f.y, b)) { f.x += b.vx * dt; f.y += b.vy * dt; }
     f.x += f.kx * dt; f.y += f.ky * dt; f.kx *= Math.pow(0.002, dt); f.ky *= Math.pow(0.002, dt);
-    // 壁・棚
-    for (const s of SHELVES) collideCircleRect(f, s);
-    f.x = clamp(f.x, f.r, AW - f.r); f.y = clamp(f.y, f.r, AH - f.r);
+    for (const w of B.walls) collideCircleRect(f, w);
+    f.x = clamp(f.x, f.r, B.W - f.r); f.y = clamp(f.y, f.r, B.H - f.r);
     f.ai.moved = Math.hypot(f.x - ox, f.y - oy);
   }
-  // 体同士の押し合い
   for (let i = 0; i < B.fs.length; i++) for (let j = i + 1; j < B.fs.length; j++) {
     const a = B.fs[i], b = B.fs[j]; if (!a.alive || !b.alive) continue;
     const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), m = a.r + b.r;
@@ -1464,7 +1900,7 @@ function battleUpdate(dt) {
       }
     }
     p.x += p.vx * dt; p.y += p.vy * dt;
-    if (p.life <= 0 || p.x < -30 || p.x > AW + 30 || p.y < -30 || p.y > AH + 30) p.dead = true;
+    if (p.life <= 0 || p.x < -30 || p.x > B.W + 30 || p.y < -30 || p.y > B.H + 30) p.dead = true;
     for (const o of enemies(p.owner)) {
       if (p.hit.has(o)) continue;
       if (Math.hypot(o.x - p.x, o.y - p.y) < p.r + o.r) {
@@ -1480,9 +1916,9 @@ function battleUpdate(dt) {
   for (const t of B.texts) { t.t -= dt; t.y -= 40 * dt; } B.texts = B.texts.filter(t => t.t > 0);
   if (B.shake > 0) B.shake -= dt;
   // 決着
-  const alive = B.fs.filter(f => f.alive);
+  const alive = B.fs.filter(f => f.alive && !f.minion);
   if (alive.length <= 1 && !B.over) {
-    B.over = true; B.endT = 2.2; B.speed = 1;
+    B.over = true; B.speed = 1;
     const w = alive[0];
     banner(w ? (w.isPlayer ? '優勝！！' : `${w.name}の優勝`) : '引き分け', '', 2000);
     Snd.stopBgm(); Snd.se(w && w.isPlayer ? 'win' : 'lose');
@@ -1494,52 +1930,75 @@ function battleUpdate(dt) {
 function aiUpdate(f, dt) {
   const a = f.ai, D = DIFF[G.diff];
   a.think -= dt; a.skillDelay -= dt;
-  if (a.think <= 0 || !a.target || !a.target.alive) {
+  const owner = f.minion ? B.fs.find(x => x.actor === f.actor.owner) : null;
+  if (a.think <= 0 || !a.target || !a.target.alive || hidden(f, a.target)) {
     a.think = rnd(0.5, 1.1) * D.react;
     let best = null, bs = 1e9;
     for (const o of enemies(f)) {
+      if (hidden(f, o)) continue;
       const d = Math.hypot(o.x - f.x, o.y - f.y);
-      const s = d * (0.55 + 0.9 * o.hp / o.maxHp) * (o === a.target ? 0.8 : 1);
+      if (owner && Math.hypot(o.x - owner.x, o.y - owner.y) > 300) continue;
+      const s = d * (0.55 + 0.9 * o.hp / o.maxHp) * (o === a.target ? 0.8 : 1) * (o.minion ? 1.6 : 1);
       if (s < bs) { bs = s; best = o; }
     }
     a.target = best;
     if (Math.random() < 0.3) a.strafe *= -1;
-    a.mode = f.hp < f.maxHp * 0.3 && Math.random() < 0.45 ? 'flee' : 'fight';
+    a.mode = !f.minion && f.hp < f.maxHp * 0.3 && Math.random() < 0.45 ? 'flee' : 'fight';
   }
-  const t = a.target; if (!t) return { x: 0, y: 0 };
-  const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
-  let mx = 0, my = 0;
-  if (a.mode === 'flee') { mx = -ux + -uy * a.strafe * 0.5; my = -uy + ux * a.strafe * 0.5; }
-  else if (d > 46) { mx = ux - uy * a.strafe * 0.35; my = uy + ux * a.strafe * 0.35; }
-  else { mx = -uy * a.strafe * 0.6; my = ux * a.strafe * 0.6; }
-  // 場外を避ける
+  const t = a.target;
+  let mx = 0, my = 0, d = 1e9;
+  if (t) {
+    const dx = t.x - f.x, dy = t.y - f.y; d = Math.hypot(dx, dy) || 1; const ux = dx / d, uy = dy / d;
+    if (a.mode === 'flee') { mx = -ux - uy * a.strafe * 0.5; my = -uy + ux * a.strafe * 0.5; }
+    else if (d > 46) { mx = ux - uy * a.strafe * 0.35; my = uy + ux * a.strafe * 0.35; }
+    else { mx = -uy * a.strafe * 0.6; my = ux * a.strafe * 0.6; }
+  }
+  // 執事は主のそばに戻る
+  if (owner && owner.alive) { const od = Math.hypot(owner.x - f.x, owner.y - f.y); if (od > 180 || !t) { mx = (owner.x - f.x) / od; my = (owner.y - f.y) / od; } }
+  // 近くのアイテムを拾いにいく
+  if (!t || d > 140) {
+    let pk = null, pd = 200;
+    for (const p of B.pickups) { const q = Math.hypot(p.x - f.x, p.y - f.y); if (q < pd) { pd = q; pk = p; } }
+    if (pk) { mx = (pk.x - f.x) / pd; my = (pk.y - f.y) / pd; }
+  }
+  // 中央に寄っていく (広い会場で迷子にならない)
+  if (!t) { const cxz = B.W / 2 - f.x, cyz = B.H / 2 - f.y, cd = Math.hypot(cxz, cyz) || 1; mx += cxz / cd * 0.6; my += cyz / cd * 0.6; }
+  // 場外・倒れる棚・暴走カートを避ける
   const z = B.zone, cxz = (z.x0 + z.x1) / 2, cyz = (z.y0 + z.y1) / 2;
   if (!inZone(f.x, f.y) || f.x - z.x0 < 24 || z.x1 - f.x < 24 || f.y - z.y0 < 24 || z.y1 - f.y < 24) {
     const ex = cxz - f.x, ey = cyz - f.y, ed = Math.hypot(ex, ey) || 1; mx += ex / ed * 1.5; my += ey / ed * 1.5;
   }
-  // 引っかかり対策
+  if (Math.random() < D.smart) {
+    for (const fl of B.falls) if (!fl.done && inRect(f.x, f.y, { x: fl.x - 20, y: fl.y - 20, w: fl.w + 40, h: fl.h + 40 })) { my += 2; }
+    for (const c of B.carts) if (Math.abs(f.y - c.y) < 40) { my += f.y > c.y ? 1.8 : -1.8; }
+  }
   const want = Math.hypot(mx, my);
-  if (want > 0.3 && f.ai.moved !== undefined && f.ai.moved < f.spd * dt * 0.25) a.stuck += dt; else a.stuck = Math.max(0, a.stuck - dt);
+  if (want > 0.3 && a.moved !== undefined && a.moved < f.spd * dt * 0.25) a.stuck += dt; else a.stuck = Math.max(0, a.stuck - dt);
   if (a.stuck > 0.25) { a.ax = -my * a.strafe; a.ay = mx * a.strafe; a.stuckT = 0.5; a.stuck = 0; }
   if (a.stuckT > 0) { a.stuckT -= dt; mx = a.ax * 1.2 + mx * 0.3; my = a.ay * 1.2 + my * 0.3; }
   const ml = Math.hypot(mx, my); if (ml > 1) { mx /= ml; my /= ml; }
   mx *= D.aggro + 0.15; my *= D.aggro + 0.15;
-  // 攻撃
+  if (!t) return { x: mx, y: my };
   if (d - t.r < 42 && Math.random() < D.aggro + 0.1) basicAttack(f);
-  // スキル
   if (a.skillDelay <= 0) {
     for (let i = 0; i < f.skills.length; i++) {
       const s = f.skills[i]; if (s.cd > 0) continue;
       const hpF = f.hp / f.maxHp; let use = false;
+      const near = r => enemies(f).some(o => Math.hypot(o.x - f.x, o.y - f.y) < r);
       switch (s.id) {
-        case 'bag': use = enemies(f).some(o => Math.hypot(o.x - f.x, o.y - f.y) < 80); break;
+        case 'bag': use = near(80); break;
+        case 'shutter': use = near(115); break;
         case 'tuna': use = d < 95; break;
+        case 'arrest': use = d < 80; break;
         case 'cart': use = d < 230 && d > 40; break;
+        case 'goldcart': use = d < 320 && d > 40; break;
         case 'flyer': case 'seal': case 'bread': use = d < 260; break;
         case 'egg': use = d < 300; break;
+        case 'storm': use = enemies(f).length >= 2 || t.hp > t.maxHp * 0.4; break;
         case 'sample': use = hpF < 0.55; break;
         case 'timesale': use = d < 160; break;
         case 'point': use = hpF < 0.75 && d < 120; break;
+        case 'stealth': use = d < 240 && d > 70; break;
       }
       if (use) { useSkill(f, i); a.skillDelay = rnd(0.4, 1.2) * D.react; break; }
     }
@@ -1548,72 +2007,118 @@ function aiUpdate(f, dt) {
 }
 
 // ---- バトル描画 ----
-function drawBattle() {
+const EF = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+function camFocus() {
+  if (B.me.alive) return B.me;
+  const alive = B.fs.filter(f => f.alive && !f.minion);
+  return alive.sort((a, b) => b.hp - a.hp)[0] || B.me;
+}
+function drawBattle(dt) {
   if (!B || !B.view) return;
-  const { dpr, sc, ox, oy } = B.view;
+  const { dpr, sc, sw, top, ah, vw, vh } = B.view, st = B.st;
+  // カメラ
+  const fc = camFocus();
+  B.cam.x += (fc.x - B.cam.x) * Math.min(1, dt * 7); B.cam.y += (fc.y - B.cam.y) * Math.min(1, dt * 7);
+  const cxm = B.W <= vw ? B.W / 2 : clamp(B.cam.x, vw / 2, B.W - vw / 2);
+  const cym = B.H <= vh ? B.H / 2 : clamp(B.cam.y, vh / 2, B.H - vh / 2);
   cx.setTransform(1, 0, 0, 1, 0, 0);
-  cx.fillStyle = '#2a2f4f'; cx.fillRect(0, 0, cv.width, cv.height);
-  let sx = 0, sy = 0; if (B.shake > 0) { sx = rnd(-4, 4); sy = rnd(-4, 4); }
-  cx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * (ox + sx), dpr * (oy + sy));
+  cx.fillStyle = st.dark ? '#111427' : '#2a2f4f'; cx.fillRect(0, 0, cv.width, cv.height);
+  let shx = 0, shy = 0; if (B.shake > 0) { shx = rnd(-4, 4); shy = rnd(-4, 4); }
+  const ox = sw / 2 - cxm * sc + shx, oy = top + ah / 2 - cym * sc + shy;
+  const toScreen = (x, y) => ({ x: x * sc + ox, y: y * sc + oy });
+  cx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  const x0 = cxm - vw / 2 - 40, x1 = cxm + vw / 2 + 40, y0 = cym - vh / 2 - 80, y1 = cym + vh / 2 + 260;
   // 床
-  for (let y = 0; y < AH; y += 40) for (let x = 0; x < AW; x += 40) { cx.fillStyle = ((x + y) / 40) % 2 ? '#e6f4ee' : '#d4ece2'; cx.fillRect(x, y, 40, 40); }
-  cx.strokeStyle = '#1d2340'; cx.lineWidth = 4; cx.strokeRect(0, 0, AW, AH);
-  // 棚
-  for (const s of SHELVES) {
-    cx.fillStyle = 'rgba(0,0,0,.15)'; cx.fillRect(s.x + 3, s.y + 5, s.w, s.h);
-    cx.fillStyle = '#8d6e63'; cx.fillRect(s.x, s.y, s.w, s.h);
-    cx.fillStyle = '#a1887f'; cx.fillRect(s.x, s.y, s.w, 6);
-    s.goods.forEach((c, i) => { cx.fillStyle = c; cx.fillRect(s.x + 3 + i * 12, s.y + 9, 9, s.h - 13); });
+  for (let y = Math.max(0, Math.floor(y0 / 40) * 40); y < Math.min(B.H, y1); y += 40) for (let x = Math.max(0, Math.floor(x0 / 40) * 40); x < Math.min(B.W, x1); x += 40) {
+    cx.fillStyle = ((x + y) / 40) % 2 ? st.floor[0] : st.floor[1]; cx.fillRect(x, y, 40, 40);
+  }
+  if (st.id === 'street') { cx.fillStyle = 'rgba(255,255,255,.6)'; for (let y = 20; y < B.H; y += 70) cx.fillRect(B.W / 2 - 3, y, 6, 36); }
+  cx.strokeStyle = '#1d2340'; cx.lineWidth = 5; cx.strokeRect(0, 0, B.W, B.H);
+  // エスカレーター
+  for (const b of B.belts) {
+    cx.fillStyle = '#8b95a7'; cx.fillRect(b.x, b.y, b.w, b.h);
+    cx.strokeStyle = '#cbd5e1'; cx.lineWidth = 3;
+    const ph = (B.t * 60) % 30;
+    if (b.vx) for (let x = b.x + (b.vx > 0 ? ph : 30 - ph); x < b.x + b.w; x += 30) { cx.beginPath(); cx.moveTo(x, b.y + 4); cx.lineTo(x, b.y + b.h - 4); cx.stroke(); }
+    else for (let y = b.y + (b.vy > 0 ? ph : 30 - ph); y < b.y + b.h; y += 30) { cx.beginPath(); cx.moveTo(b.x + 4, y); cx.lineTo(b.x + b.w - 4, y); cx.stroke(); }
+    cx.fillStyle = '#fff'; cx.font = '800 20px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+    cx.fillText(b.vx > 0 ? '▶▶' : b.vx < 0 ? '◀◀' : b.vy > 0 ? '▼' : '▲', b.x + b.w / 2, b.y + b.h / 2);
+  }
+  // 倒れる棚の警告
+  for (const fl of B.falls) {
+    cx.fillStyle = fl.done ? 'rgba(161,136,127,.7)' : `rgba(255,59,59,${0.25 + 0.25 * Math.sin(B.t * 20)})`;
+    cx.fillRect(fl.x, fl.y, fl.w, fl.h);
+  }
+  // 暴走カートの警告
+  for (const c of B.carts) if (c.warn > 0) { cx.fillStyle = `rgba(255,59,59,${0.2 + 0.2 * Math.sin(B.t * 18)})`; cx.fillRect(0, c.y - 22, B.W, 44); }
+  // 棚・お店
+  for (const s of B.walls) {
+    cx.fillStyle = 'rgba(0,0,0,.18)'; cx.fillRect(s.x + 3, s.y + 5, s.w, s.h);
+    if (s.kind === 'shop') {
+      cx.fillStyle = '#c2410c'; cx.fillRect(s.x, s.y, s.w, s.h);
+      for (let i = 0; i < s.h; i += 20) { cx.fillStyle = i % 40 ? '#fff' : '#ef4444'; cx.fillRect(s.x + (s.x === 0 ? s.w - 12 : 0), s.y + i, 12, 20); }
+      cx.font = `22px ${EF}`; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(pick(['🏮']), s.x + s.w / 2, s.y + 30);
+      continue;
+    }
+    cx.fillStyle = s.kind === 'island' ? '#d6b88d' : s.kind === 'bench' ? '#78716c' : '#8d6e63'; cx.fillRect(s.x, s.y, s.w, s.h);
+    cx.fillStyle = s.kind === 'island' ? '#ead2ac' : '#a1887f'; cx.fillRect(s.x, s.y, s.w, 6);
+    if (s.kind !== 'bench') s.goods.forEach((c, i) => { cx.fillStyle = c; cx.fillRect(s.x + 3 + i * 12, s.y + 9, 9, Math.min(s.h - 13, 20)); });
   }
   // 場外
   const z = B.zone;
   if (z.x0 > 0.5) {
     cx.fillStyle = 'rgba(255,59,59,.22)';
-    cx.beginPath(); cx.rect(0, 0, AW, AH); cx.rect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.fill('evenodd');
-    cx.setLineDash([8, 6]); cx.strokeStyle = '#ff3b3b'; cx.lineWidth = 3; cx.strokeRect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.setLineDash([]);
+    cx.beginPath(); cx.rect(0, 0, B.W, B.H); cx.rect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.fill('evenodd');
+    cx.setLineDash([10, 8]); cx.strokeStyle = '#ff3b3b'; cx.lineWidth = 4; cx.strokeRect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.setLineDash([]);
+  }
+  cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  // 落ちているアイテム
+  for (const p of B.pickups) {
+    const b = Math.sin(p.t * 5) * 3;
+    cx.fillStyle = 'rgba(255,212,59,.45)'; cx.beginPath(); cx.arc(p.x, p.y, 15, 0, 6.28); cx.fill();
+    cx.font = `20px ${EF}`; cx.fillText(PICKUPS[p.kind].icon, p.x, p.y + b);
   }
   // エフェクト
   for (const e of B.fx) {
     const u = 1 - e.t / e.max;
-    cx.globalAlpha = 1 - u;
-    cx.strokeStyle = e.color; cx.lineWidth = 6;
+    cx.globalAlpha = 1 - u; cx.strokeStyle = e.color; cx.lineWidth = 6;
     if (e.kind === 'ring') { cx.beginPath(); cx.arc(e.x, e.y, e.r * (0.4 + 0.6 * u), 0, 6.28); cx.stroke(); }
     if (e.kind === 'arc') { cx.fillStyle = e.color; cx.beginPath(); cx.moveTo(e.x, e.y); cx.arc(e.x, e.y, e.r, e.a - 1.1, e.a + 1.1); cx.closePath(); cx.fill(); }
     cx.globalAlpha = 1;
   }
-  const EF = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-  cx.textAlign = 'center'; cx.textBaseline = 'middle';
   // キャラ
   const order = [...B.fs].sort((a, b) => a.y - b.y);
   for (const f of order) {
     if (!f.alive) { cx.globalAlpha = 0.35; cx.font = `20px ${EF}`; cx.fillText('💫', f.x, f.y); cx.globalAlpha = 1; continue; }
-    cx.fillStyle = 'rgba(0,0,0,.2)'; cx.beginPath(); cx.ellipse(f.x, f.y + 14, 15, 6, 0, 0, 6.28); cx.fill();
-    if (f.hasteT > 0) { cx.strokeStyle = '#ffd43b'; cx.lineWidth = 2; for (let k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(f.x - f.dir.x * (20 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (20 + k * 5) + f.dir.x * (k - 1) * 8); cx.lineTo(f.x - f.dir.x * (32 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (32 + k * 5) + f.dir.x * (k - 1) * 8); cx.stroke(); } }
-    // 通常攻撃の振り
+    const stealthA = f.stealthT > 0 ? (f.isPlayer || (f.minion && f.actor.owner.isPlayer) ? 0.45 : 0.12) : 1;
+    cx.globalAlpha = stealthA;
+    cx.fillStyle = 'rgba(0,0,0,.2)'; cx.beginPath(); cx.ellipse(f.x, f.y + f.r - 2, f.r, 6, 0, 0, 6.28); cx.fill();
+    if (f.hasteT > 0 || f.spdT > 0) { cx.strokeStyle = '#ffd43b'; cx.lineWidth = 2; for (let k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(f.x - f.dir.x * (20 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (20 + k * 5) + f.dir.x * (k - 1) * 8); cx.lineTo(f.x - f.dir.x * (32 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (32 + k * 5) + f.dir.x * (k - 1) * 8); cx.stroke(); } }
+    if (f.powT > 0) { cx.fillStyle = 'rgba(255,107,107,.3)'; cx.beginPath(); cx.arc(f.x, f.y, f.r + 9, 0, 6.28); cx.fill(); }
     if (f.swingT > 0) {
       const a = Math.atan2(f.dir.y, f.dir.x);
       cx.fillStyle = 'rgba(255,255,255,.55)'; cx.beginPath(); cx.moveTo(f.x, f.y); cx.arc(f.x, f.y, f.r + 36, a - 0.9, a + 0.9); cx.closePath(); cx.fill();
     }
     cx.fillStyle = f.hitT > 0 ? '#fff' : f.color;
     cx.beginPath(); cx.arc(f.x, f.y, f.r, 0, 6.28); cx.fill();
-    cx.lineWidth = 3; cx.strokeStyle = '#1d2340'; cx.stroke();
+    cx.lineWidth = f.boss ? 4 : 3; cx.strokeStyle = f.boss ? '#ef4444' : '#1d2340'; cx.stroke();
     cx.save(); cx.translate(f.x, f.y); if (f.spinT > 0) cx.rotate(f.spinT * 30);
-    cx.font = `21px ${EF}`; cx.fillText(f.emoji, 0, 1); cx.restore();
-    // 向きの手 (エコバッグ)
-    cx.font = `13px ${EF}`; cx.fillText(f.dashT > 0 ? '🛒' : '👜', f.x + f.dir.x * 20, f.y + f.dir.y * 20);
+    cx.font = `${Math.round(f.r * 1.3)}px ${EF}`; cx.fillText(f.emoji, 0, 1); cx.restore();
+    cx.font = `13px ${EF}`; cx.fillText(f.dashT > 0 ? (f.gold ? '🏎️' : '🛒') : '👜', f.x + f.dir.x * (f.r + 4), f.y + f.dir.y * (f.r + 4));
     if (f.shield > 0) { cx.strokeStyle = 'rgba(147,197,253,.9)'; cx.lineWidth = 3; cx.beginPath(); cx.arc(f.x, f.y, f.r + 7, 0, 6.28); cx.stroke(); }
-    if (f.stunT > 0) { cx.font = `12px ${EF}`; cx.fillText('💫', f.x, f.y - 22); }
+    if (f.stunT > 0) { cx.font = `12px ${EF}`; cx.fillText('💫', f.x, f.y - f.r - 6); }
     if (f.markT > 0) { cx.font = `11px ${EF}`; cx.fillText('🏷️', f.x + 14, f.y - 12); }
     if (f.slowT > 0) { cx.font = `11px ${EF}`; cx.fillText('🍳', f.x - 14, f.y - 12); }
-    // HPバー
-    const w = 34, hpu = f.hp / f.maxHp;
-    cx.fillStyle = '#1d2340'; cx.fillRect(f.x - w / 2 - 1, f.y - 31, w + 2, 7);
-    cx.fillStyle = hpu > 0.5 ? '#22c55e' : hpu > 0.25 ? '#facc15' : '#ef4444'; cx.fillRect(f.x - w / 2, f.y - 30, w * hpu, 5);
-    if (f.shield > 0) { cx.fillStyle = '#93c5fd'; cx.fillRect(f.x - w / 2, f.y - 30, w * Math.min(1, f.shield / f.maxHp), 2); }
-    cx.font = 'bold 9px "M PLUS Rounded 1c",sans-serif'; cx.fillStyle = f.isPlayer ? '#b45309' : '#1d2340';
-    cx.fillText(f.isPlayer ? '▼YOU' : f.name, f.x, f.y - 38);
+    const w = f.boss ? 44 : 34, hpu = f.hp / f.maxHp, hy = f.y - f.r - 15;
+    cx.fillStyle = '#1d2340'; cx.fillRect(f.x - w / 2 - 1, hy, w + 2, 7);
+    cx.fillStyle = hpu > 0.5 ? '#22c55e' : hpu > 0.25 ? '#facc15' : '#ef4444'; cx.fillRect(f.x - w / 2, hy + 1, w * hpu, 5);
+    if (f.shield > 0) { cx.fillStyle = '#93c5fd'; cx.fillRect(f.x - w / 2, hy + 1, w * Math.min(1, f.shield / f.maxHp), 2); }
+    cx.font = 'bold 9px "M PLUS Rounded 1c",sans-serif'; cx.fillStyle = st.dark ? '#fff' : f.isPlayer ? '#b45309' : '#1d2340';
+    cx.fillText(f.isPlayer ? '▼YOU' : f.name, f.x, hy - 7);
+    cx.globalAlpha = 1;
   }
-  // 飛び道具
+  // 暴走カート
+  for (const c of B.carts) if (c.warn <= 0) { cx.save(); cx.translate(c.x, c.y); if (c.vx > 0) cx.scale(-1, 1); cx.font = `34px ${EF}`; cx.fillText('🛒', 0, 0); cx.restore(); }
   for (const p of B.proj) {
     cx.save(); cx.translate(p.x, p.y - (p.z || 0));
     if (p.kind === 'lob') { cx.fillStyle = 'rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(0, p.z || 0, 8, 3, 0, 0, 6.28); cx.fill(); }
@@ -1626,17 +2131,39 @@ function drawBattle() {
     cx.lineWidth = 3; cx.strokeStyle = '#1d2340'; cx.strokeText(t.txt, t.x, t.y); cx.fillStyle = t.color; cx.fillText(t.txt, t.x, t.y);
   }
   cx.globalAlpha = 1;
+  // 画面座標で描くもの
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (st.dark) { // 深夜のコンビニ: 自分の周りだけ明るい
+    const c = toScreen(fc.x, fc.y), R = 210 * sc;
+    const g = cx.createRadialGradient(c.x, c.y, R * 0.35, c.x, c.y, R);
+    g.addColorStop(0, 'rgba(5,6,20,0)'); g.addColorStop(1, 'rgba(5,6,20,.86)');
+    cx.fillStyle = g; cx.fillRect(0, 0, sw, cv.height / dpr);
+  }
+  // 画面の外にいる相手の矢印
+  cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  for (const f of B.fs) {
+    if (!f.alive || f.isPlayer || f.stealthT > 0) continue;
+    const p = toScreen(f.x, f.y);
+    if (p.x > 0 && p.x < sw && p.y > top && p.y < top + ah) continue;
+    const ex = clamp(p.x, 22, sw - 22), ey = clamp(p.y, top + 22, top + ah - 22);
+    const a = Math.atan2(p.y - ey, p.x - ex);
+    cx.fillStyle = f.color; cx.beginPath(); cx.arc(ex, ey, 15, 0, 6.28); cx.fill();
+    cx.strokeStyle = '#fff'; cx.lineWidth = 2; cx.stroke();
+    cx.fillStyle = '#fff'; cx.beginPath(); cx.moveTo(ex + Math.cos(a) * 24, ey + Math.sin(a) * 24); cx.lineTo(ex + Math.cos(a + 2.6) * 14, ey + Math.sin(a + 2.6) * 14); cx.lineTo(ex + Math.cos(a - 2.6) * 14, ey + Math.sin(a - 2.6) * 14); cx.fill();
+    cx.font = `15px ${EF}`; cx.fillText(f.emoji, ex, ey + 1);
+  }
 }
 function updateBattleHUD() {
-  const chips = $('#bhud').children;
-  B.fs.forEach((f, i) => { const c = chips[i]; if (!c) return; c.querySelector('.hb i').style.width = Math.max(0, f.hp / f.maxHp * 100) + '%'; c.classList.toggle('dead', !f.alive); });
+  document.querySelectorAll('#bhud .hp-chip').forEach(c => {
+    const f = B.fs[+c.dataset.i]; c.querySelector('.hb i').style.width = Math.max(0, f.hp / f.maxHp * 100) + '%'; c.classList.toggle('dead', !f.alive);
+  });
   const me = B.me;
   document.querySelectorAll('#sbtns .sbtn').forEach(b => {
     const s = me.skills[+b.dataset.s]; const p = s.cd > 0 ? (s.cd / s.max) * 100 : 0;
     b.querySelector('.cdv').style.setProperty('--p', p + '%'); b.classList.toggle('ready', s.cd <= 0 && me.alive);
   });
   const z = B.t < 35 ? `閉店シャッターまで ${Math.ceil(35 - B.t)}秒` : '閉店シャッター 作動中！';
-  const el = $('#btime'); const txt = B.start > 0 ? '' : z; if (el.textContent !== txt) el.textContent = txt;
+  const el = $('#btime'); const txt = B.start > 0 ? '' : `${B.st.icon} ${z}`; if (el.textContent !== txt) el.textContent = txt;
 }
 
 // =====================================================================
@@ -1644,19 +2171,32 @@ function updateBattleHUD() {
 // =====================================================================
 function showResult() {
   if (!B) return;
-  const alive = B.fs.filter(f => f.alive);
-  const ranking = [...alive, ...[...B.deaths].reverse()];
-  const myRank = ranking.findIndex(f => f.isPlayer) + 1;
-  const msgs = { 1: '本日のお買い得王！', 2: 'おしい！あと一歩', 3: 'まずまずの戦果', 4: 'また明日の特売で…' };
+  const mainsF = B.fs.filter(f => !f.minion);
+  const ranking = [...mainsF.filter(f => f.alive), ...[...B.deaths].reverse()];
+  const myRank = ranking.findIndex(f => f.isPlayer) + 1, N = ranking.length;
+  const hadBoss = B.hadBoss;
+  const msgs = { 1: '本日のお買い得王！', 2: 'おしい！あと一歩', 3: 'まずまずの戦果' };
   const p = player();
-  $('#scr-result').innerHTML = `<div class="rank-hero"><div class="emo">${myRank === 1 ? '👑' : myRank === 4 ? '😵' : '🛍️'}</div><div class="r">${myRank}位</div><div style="font-weight:800">${msgs[myRank]}</div></div>
-    <div class="rank-list">${ranking.map((f, i) => `<div class="rank-row ${f.isPlayer ? 'me' : ''}"><span class="no">${i + 1}位</span><span class="emo" style="font-size:24px">${f.emoji}</span><span style="flex:1">${f.isPlayer ? 'あなた（' + f.name + '）' : f.name}</span><span style="font-size:12px;opacity:.7">買い物${f.actor.inv.count}個</span></div>`).join('')}</div>
+  // 記録と隠しキャラ解放
+  SAVE.plays++;
+  if (myRank === 1) SAVE.wins++;
+  writeSave();
+  const newly = [];
+  const tryUnlock = id => { if (unlock(id)) newly.push(CHARS.find(c => c.id === id)); };
+  if (myRank === 1 && hadBoss) tryUnlock('tencho');
+  if (SAVE.wins >= 3) tryUnlock('tenbai');
+  if (SAVE.wins >= 5) tryUnlock('madam');
+  const next = CHARS.filter(c => c.hidden && !SAVE.unlocked[c.id] && c.winsNeed).map(c => `あと${c.winsNeed - SAVE.wins}回優勝で隠しキャラ解放`)[0] || '';
+  $('#scr-result').innerHTML = `<div class="rank-hero"><div class="emo">${myRank === 1 ? '👑' : myRank === N ? '😵' : '🛍️'}</div><div class="r">${myRank}位</div><div style="font-weight:800">${msgs[myRank] || 'また明日の特売で…'}</div><div class="hint">累計優勝 ${SAVE.wins}回 ${next ? '／ ' + next : ''}</div></div>
+    ${newly.length ? `<div class="panel unlock"><h4>🔓 隠しキャラ解放！</h4>${newly.map(c => `<div class="rv"><div class="face" style="--c:${c.color}">${c.emoji}</div><div><b>${c.name}</b>（${c.role}）<br><span class="hint">${c.trait}</span></div></div>`).join('')}</div>` : ''}
+    ${hadBoss && myRank !== 1 && !SAVE.unlocked.tencho ? '<div class="panel"><p class="hint" style="margin:0">🧑‍💼 本気の店長が乱入した試合で1位になると、何かが起こるらしい…</p></div>' : ''}
+    <div class="rank-list">${ranking.map((f, i) => `<div class="rank-row ${f.isPlayer ? 'me' : ''}"><span class="no">${i + 1}位</span><span class="emo" style="font-size:24px">${f.emoji}</span><span style="flex:1">${f.isPlayer ? 'あなた（' + f.actor.char.name + '）' : f.name}</span><span style="font-size:12px;opacity:.7">買い物${f.actor.inv.count}個</span></div>`).join('')}</div>
     <div class="panel"><h4>あなたの買い物</h4>${invHTML(p)}</div>
     <div class="row" style="display:flex;gap:10px"><button class="btn sub" id="toTitle" style="flex:1">タイトルへ</button><button class="btn" id="again" style="flex:1">もう一度！</button></div>`;
   show('scr-result'); B = null;
   Snd.bgm('title');
   $('#again').onclick = () => { Snd.se('tap'); startShop(); };
-  $('#toTitle').onclick = () => { Snd.se('tap'); show('scr-title'); };
+  $('#toTitle').onclick = () => { Snd.se('tap'); renderTitle(); show('scr-title'); };
 }
 
 // =====================================================================
@@ -1673,13 +2213,13 @@ function loop(now) {
   } else if (G.screen === 'scr-battle' && B) {
     const steps = $('#modal').hidden ? B.speed : 0; // 説明を開いている間は一時停止
     for (let i = 0; i < steps && B; i++) battleUpdate(dt);
-    if (B) { drawBattle(); updateBattleHUD(); }
+    if (B) { drawBattle(dt * Math.max(1, steps)); updateBattleHUD(); }
   }
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
-window.__game = { G, get S() { return S; }, get B() { return B; }, shopUpdate, startShop, endShop, startBattle, useQueueSkill, playerJoin };
+window.__game = { G, SAVE, get S() { return S; }, get B() { return B; }, shopUpdate, battleUpdate, startShop, endShop, startLoadout, startBattle, useQueueSkill, playerJoin, useSkill, unlock, openLegend, STAGES };
 </script>
 </body>
 </html>

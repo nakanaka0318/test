@@ -292,6 +292,13 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <button data-p="1">ふつう</button><button data-p="0.6">ゆっくり</button><button data-p="0.4">のんびり</button>
   </div>
   <div class="hint" id="paceNote"></div>
+  <div id="bossOptBox" hidden>
+    <h3 class="sec-h" style="font-size:16px">🧑‍💼 本気の店長</h3>
+    <div class="diff" id="bossOpt">
+      <button data-b="random">ランダム（10%）</button><button data-b="always">必ず乱入させる</button>
+    </div>
+    <div class="hint" id="bossOptNote"></div>
+  </div>
   <div class="select-foot">
     <button class="btn sub" id="selBack">もどる</button>
     <button class="btn" id="selGo">開店！</button>
@@ -728,7 +735,8 @@ function makeActors() {
   const list = [makeActor(pc, true), ...pool.slice(0, 3).map(c => makeActor(c, false))];
   // 10%で「本気の店長」が5人目として乱入
   const tencho = CHARS.find(c => c.id === 'tencho');
-  if (!list.some(a => a.char.id === 'tencho') && (FORCE_BOSS || Math.random() < 0.1)) {
+  if (!list.some(a => a.char.id === 'tencho') && (FORCE_BOSS || SAVE.bossOpt === 'always' && SAVE.bossSeen || Math.random() < 0.1)) {
+    SAVE.bossSeen = true; writeSave(); // 一度出たら、次から自由に出せる
     const b = makeActor(tencho, false, { boss: true, name: '本気の店長' });
     for (const q of IDS.queue) b.inv.queue[q] = (b.inv.queue[q] || 0) + 1;
     list.push(b);
@@ -811,7 +819,7 @@ function openSelect(mode) {
   if (!isUnlocked(CHARS[G.charIdx])) G.charIdx = 0;
   $('#selTitle').textContent = mode === 'boss' ? '👑 ラスボス戦：だれで挑む？' : 'だれで並ぶ？';
   $('#diffTitle').textContent = mode === 'boss' ? 'セールクイーンの強さ' : 'ライバルの強さ';
-  renderSelect(); show('scr-select');
+  renderSelect(); renderBossOpt(); show('scr-select');
 }
 function queenTitle() { const q = SAVE.queen || {}; return q.hard ? 'セールクイーンを超えし者' : '最強戦士を倒した者'; }
 $('#startBtn').onclick = () => openSelect('normal');
@@ -860,7 +868,7 @@ function renderSelect() {
       <div class="bars"><span>体力</span>${statBar(c.hp, 175)}<span>攻撃</span>${statBar(c.atk, 12)}<span>速さ</span>${statBar(c.spd, 145)}</div>
       <div class="trait">${c.trait}</div><div class="trait">初期: ${st}</div><div class="hint">アイコンをタップで効果</div></button>`;
   }).join('');
-  document.querySelectorAll('#chars button.char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); });
+  document.querySelectorAll('#chars button.char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); renderBossOpt(); });
 }
 document.querySelectorAll('#diff button').forEach(b => b.onclick = () => {
   G.diff = +b.dataset.d; Snd.se('tap');
@@ -877,6 +885,19 @@ document.querySelectorAll('#pace button').forEach(b => b.onclick = () => {
 });
 G.pace = [1, 0.6, 0.4].includes(SAVE.pace) ? SAVE.pace : 1;
 renderPace();
+// 本気の店長: 一度乱入されたら、必ず出すかどうかを選べる
+function renderBossOpt() {
+  const box = $('#bossOptBox');
+  box.hidden = !(SAVE.bossSeen && G.mode === 'normal');
+  if (box.hidden) return;
+  const opt = SAVE.bossOpt === 'always' ? 'always' : 'random';
+  document.querySelectorAll('#bossOpt button').forEach(x => x.classList.toggle('sel', x.dataset.b === opt));
+  $('#bossOptNote').textContent = CHARS[G.charIdx].id === 'tencho' ? '店長で遊ぶときは乱入しない'
+    : opt === 'always' ? '毎回5人目として乱入する。倒して1位になると隠しキャラ「店長」が解放される' : '10%の確率で乱入する';
+}
+document.querySelectorAll('#bossOpt button').forEach(b => b.onclick = () => {
+  SAVE.bossOpt = b.dataset.b; writeSave(); Snd.se('tap'); renderBossOpt();
+});
 $('#selBack').onclick = () => { Snd.se('tap'); renderTitle(); show('scr-title'); };
 $('#selGo').onclick = () => { Snd.se('tap'); startShop(); };
 

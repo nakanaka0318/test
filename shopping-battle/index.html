@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>列に並べ！ショッピングバトル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+/* スーパーの特売ポスター: 赤×黄の値札、ミントの床タイル、紺の文字 */
+:root{
+  --floor:#dff3ec; --floor2:#cdebe0; --ink:#1d2340; --paper:#ffffff;
+  --sale:#ff3b3b; --tag:#ffd43b; --mint:#14b8a6; --shade:rgba(29,35,64,.12);
+  --c-active:#ff4d6d; --c-passive:#8b5cf6; --c-stat:#10b981; --c-queue:#f59e0b; --c-bag:#e11d48;
+  --display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --body:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif;
+  --emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--floor);color:var(--ink);font-family:var(--body);font-weight:500;overflow:hidden;
+  background-image:linear-gradient(45deg,var(--floor2) 25%,transparent 25%,transparent 75%,var(--floor2) 75%),linear-gradient(45deg,var(--floor2) 25%,transparent 25%,transparent 75%,var(--floor2) 75%);
+  background-size:48px 48px;background-position:0 0,24px 24px;user-select:none;-webkit-user-select:none}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+#app{position:fixed;inset:0;max-width:520px;margin:0 auto;overflow:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.screen[hidden]{display:none!important}
+.btn{font-family:var(--display);font-size:20px;background:var(--sale);color:#fff;padding:14px 22px;border-radius:14px;
+  box-shadow:0 5px 0 #b51c1c;letter-spacing:.04em;transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #b51c1c}
+.btn.sub{background:var(--paper);color:var(--ink);box-shadow:0 5px 0 #9aa3c0;font-size:16px}
+.btn.sub:active{box-shadow:0 1px 0 #9aa3c0}
+.btn:disabled{opacity:.45}
+.mute{font-size:20px;width:40px;height:40px;border-radius:50%;background:var(--paper);box-shadow:0 2px 0 var(--shade)}
+.emo{font-family:var(--emoji)}
+
+/* ---------- タイトル ---------- */
+#scr-title{align-items:center;justify-content:center;gap:18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));text-align:center}
+.poster{background:var(--tag);border:5px solid var(--ink);border-radius:18px;padding:18px 14px 16px;transform:rotate(-2deg);box-shadow:8px 8px 0 var(--ink);width:min(100%,380px)}
+.poster .kicker{display:inline-block;background:var(--sale);color:#fff;font-family:var(--display);font-size:14px;padding:3px 10px;border-radius:999px;letter-spacing:.1em}
+.poster h1{font-family:var(--display);font-weight:400;font-size:clamp(44px,14vw,64px);line-height:1.05;margin:8px 0 2px;color:var(--sale);
+  text-shadow:3px 3px 0 var(--ink);-webkit-text-stroke:1.5px var(--ink)}
+.poster h2{font-family:var(--display);font-weight:400;font-size:clamp(22px,7vw,30px);margin:0;color:var(--ink)}
+.poster .price{margin-top:8px;font-size:13px}
+.parade{font-family:var(--emoji);font-size:34px;white-space:nowrap;width:100%;overflow:hidden;height:46px;position:relative}
+.parade span{position:absolute;left:100%;animation:walk 9s linear infinite}
+@keyframes walk{to{left:-60px}}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.title-btns{display:flex;flex-direction:column;gap:12px;width:min(100%,300px)}
+.small-note{font-size:12px;opacity:.7}
+
+/* ---------- キャラ選択 ---------- */
+#scr-select{padding:12px max(16px,env(safe-area-inset-left,0px)) 12px max(16px,env(safe-area-inset-right,0px));gap:10px;overflow-y:auto}
+.sec-h{font-family:var(--display);font-size:22px;margin:4px 0 0;display:flex;align-items:center;gap:8px}
+.chars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.char{background:var(--paper);border:3px solid transparent;border-radius:14px;padding:10px;text-align:left;box-shadow:0 3px 0 var(--shade);display:flex;flex-direction:column;gap:4px}
+.char.sel{border-color:var(--c);box-shadow:0 0 0 3px var(--c) inset,0 3px 0 var(--shade)}
+.char .face{font-family:var(--emoji);font-size:38px;width:54px;height:54px;border-radius:50%;background:var(--c);display:grid;place-items:center;border:3px solid var(--ink)}
+.char .nm{font-family:var(--display);font-size:18px}
+.char .role{font-size:11px;opacity:.7}
+.char .trait{font-size:11px;line-height:1.45}
+.bars{display:grid;grid-template-columns:auto 1fr;gap:2px 6px;font-size:10px;align-items:center}
+.bars i{display:block;height:6px;border-radius:3px;background:var(--c);min-width:4px}
+.diff{display:flex;gap:6px}
+.diff button{flex:1;background:var(--paper);border-radius:10px;padding:10px 4px;font-weight:800;box-shadow:0 3px 0 var(--shade)}
+.diff button.sel{background:var(--ink);color:#fff}
+.select-foot{display:flex;gap:10px;margin-top:auto;padding-top:6px}
+.select-foot .btn{flex:1}
+
+/* ---------- 買い物 ---------- */
+#scr-shop{background:transparent}
+.shop-top{display:flex;align-items:center;gap:8px;padding:8px max(12px,env(safe-area-inset-left,0px)) 6px max(12px,env(safe-area-inset-right,0px));background:var(--sale);color:#fff;box-shadow:0 3px 0 #b51c1c}
+.clock{font-family:var(--display);font-size:24px;background:#fff;color:var(--ink);border-radius:10px;padding:2px 10px;font-variant-numeric:tabular-nums;min-width:82px;text-align:center}
+.clock.hurry{background:var(--tag);animation:bob .5s infinite}
+.stitle{flex:1;font-size:12px;line-height:1.1}
+.stitle b{display:block;font-family:var(--display);font-size:17px;font-weight:400}
+.inv-btn{background:#fff;color:var(--ink);border-radius:10px;padding:6px 10px;font-weight:800;font-size:15px}
+#minimap{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;padding:6px 8px;background:var(--ink)}
+.mm{background:#2d3560;border-radius:6px;padding:2px 0 3px;color:#fff;font-size:9px;text-align:center;position:relative;line-height:1.15}
+.mm .ic{font-family:var(--emoji);font-size:15px;display:block}
+.mm.rare{background:#7a5b00;box-shadow:0 0 0 2px var(--tag) inset}
+.mm.view{outline:2px solid #fff}
+.mm .dots{display:flex;justify-content:center;gap:1px;height:6px;margin-top:1px}
+.mm .dots i{width:6px;height:6px;border-radius:50%;background:var(--c);border:1px solid #fff}
+.mm.me{background:#fff;color:var(--ink)}
+#feed{height:20px;font-size:11px;padding:2px 10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;background:rgba(255,255,255,.75)}
+#lanes{flex:1;display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding:10px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#lanes::-webkit-scrollbar{display:none}
+.lane{flex:0 0 148px;scroll-snap-align:start;display:flex;flex-direction:column;background:rgba(255,255,255,.55);border-radius:14px;position:relative;overflow:hidden}
+.lane.mine{background:rgba(255,255,255,.9);box-shadow:0 0 0 3px var(--ink)}
+.card{background:var(--paper);border-radius:14px 14px 0 0;padding:6px 8px 6px;text-align:center;position:relative;border-bottom:4px dashed var(--cc);display:flex;flex-direction:column;align-items:center;gap:1px;min-height:142px}
+.card .lno{position:absolute;left:6px;top:5px;font-family:var(--display);font-size:11px;background:var(--ink);color:#fff;border-radius:6px;padding:1px 5px}
+.card .info{position:absolute;right:6px;top:4px;width:22px;height:22px;border-radius:50%;background:var(--floor);font-weight:800;font-size:13px;line-height:22px}
+.card .ic{font-family:var(--emoji);font-size:40px;line-height:1.1;margin-top:10px}
+.card .nm{font-weight:800;font-size:12px;line-height:1.2;min-height:29px;display:flex;align-items:center}
+.card .badge{font-size:10px;color:#fff;background:var(--cc);border-radius:999px;padding:1px 8px;font-weight:800}
+.card .meta{font-size:10px;display:flex;gap:6px;align-items:center}
+.stock{letter-spacing:-1px;color:var(--sale)}
+.card.rare{background:linear-gradient(160deg,#fff7cc,#ffe27a)}
+.card.rare::after{content:"★レア";position:absolute;right:-24px;top:30px;transform:rotate(40deg);background:var(--sale);color:#fff;font-size:10px;font-weight:800;padding:1px 26px}
+.card.flash{animation:flash .7s}
+@keyframes flash{0%{transform:scale(.6) rotate(-6deg)}60%{transform:scale(1.08)}100%{transform:none}}
+.reg{height:30px;background:#c7ccd9;display:flex;align-items:center;gap:4px;padding:0 6px;position:relative}
+.reg .bar{position:absolute;left:0;bottom:0;height:5px;background:var(--mint);width:0}
+.reg .lbl{font-size:10px;font-weight:800}
+.tagx{position:absolute;right:4px;font-size:10px;font-weight:800;border-radius:6px;padding:1px 4px;color:#fff}
+.tagx.stop{background:#64748b}.tagx.fast{background:var(--mint)}.tagx.sale{background:var(--sale);animation:bob .6s infinite}
+.q{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;overflow:hidden}
+.p{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--emoji);font-size:22px;background:#e8ebf3;position:relative;flex:0 0 auto}
+.p.front{animation:bob .6s infinite;background:#fff}
+.p.actor{background:var(--c);box-shadow:0 0 0 3px var(--ink)}
+.p.actor i{position:absolute;left:36px;top:8px;font-style:normal;font-family:var(--body);font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;padding:1px 4px;white-space:nowrap}
+.p.me{box-shadow:0 0 0 3px var(--ink),0 0 0 6px var(--tag)}
+.p.walking{opacity:.5;animation:bob .3s infinite}
+.more{font-size:11px;font-weight:800;opacity:.6}
+.join{margin:6px;padding:9px 0;border-radius:10px;background:var(--ink);color:#fff;font-weight:800;font-size:13px}
+.join.here{background:var(--tag);color:var(--ink)}
+.shop-bottom{background:var(--paper);padding:8px max(10px,env(safe-area-inset-left,0px)) 10px max(10px,env(safe-area-inset-right,0px));box-shadow:0 -3px 0 var(--shade);display:flex;flex-direction:column;gap:6px}
+#pstatus{font-weight:800;font-size:13px;min-height:18px}
+#qskills{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.qs{flex:0 0 auto;min-width:62px;background:var(--floor);border-radius:12px;padding:5px 6px;display:flex;flex-direction:column;align-items:center;position:relative;box-shadow:0 3px 0 var(--shade)}
+.qs .ic{font-family:var(--emoji);font-size:24px;line-height:1}
+.qs .nm{font-size:10px;font-weight:800;white-space:nowrap}
+.qs .n{position:absolute;right:-3px;top:-4px;background:var(--sale);color:#fff;border-radius:999px;font-size:11px;font-weight:800;min-width:20px;height:20px;line-height:20px}
+.qs:active{transform:translateY(3px);box-shadow:none}
+.qs-empty{font-size:11px;opacity:.6;padding:8px 0}
+.banner{position:absolute;left:0;right:0;top:38%;text-align:center;font-family:var(--display);font-size:44px;color:var(--sale);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink);pointer-events:none;z-index:40;animation:pop .5s}
+.banner small{display:block;font-size:18px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.15)}100%{transform:none}}
+
+/* ---------- 共通モーダル・トースト ---------- */
+#modal{position:fixed;inset:0;background:rgba(29,35,64,.55);display:flex;align-items:flex-end;justify-content:center;z-index:60}
+#modal[hidden]{display:none}
+.sheet{background:var(--paper);width:min(100%,520px);max-height:86%;overflow-y:auto;border-radius:20px 20px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));animation:up .2s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.sheet h3{font-family:var(--display);font-weight:400;font-size:22px;margin:0 0 8px}
+.sheet p{line-height:1.6;margin:6px 0;font-size:14px}
+.sheet .row{display:flex;gap:10px;margin-top:12px}
+.sheet .row .btn{flex:1}
+.item-big{display:flex;gap:12px;align-items:center}
+.item-big .ic{font-family:var(--emoji);font-size:54px;width:76px;height:76px;border-radius:16px;display:grid;place-items:center;background:var(--floor)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin-top:10px}
+.kv b{font-weight:800}
+.inv-group h4{margin:12px 0 6px;font-size:13px;color:var(--cc)}
+.inv-list{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--floor);border-radius:999px;padding:4px 10px 4px 6px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px}
+.chip .emo{font-size:16px}
+.howto ol{padding-left:20px;line-height:1.7;font-size:14px;margin:6px 0}
+#toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;pointer-events:none;display:flex;flex-direction:column;gap:6px;align-items:center;width:90%}
+.toast{background:var(--ink);color:#fff;padding:10px 16px;border-radius:14px;font-weight:800;font-size:15px;box-shadow:0 4px 0 rgba(0,0,0,.25);animation:pop .3s;text-align:center}
+.toast.get{background:var(--tag);color:var(--ink);border:3px solid var(--ink);font-size:17px}
+.toast.bad{background:var(--sale)}
+
+/* ---------- 準備 ---------- */
+#scr-loadout{padding:12px max(16px,env(safe-area-inset-left,0px)) 12px max(16px,env(safe-area-inset-right,0px));gap:8px;overflow-y:auto}
+.panel{background:var(--paper);border-radius:14px;padding:10px 12px;box-shadow:0 3px 0 var(--shade)}
+.panel h4{margin:0 0 6px;font-size:14px}
+.skill-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sp{background:var(--floor);border-radius:12px;padding:8px 4px;text-align:center;border:3px solid transparent;position:relative}
+.sp.sel{border-color:var(--c-active);background:#ffe4ea}
+.sp .ic{font-family:var(--emoji);font-size:30px}
+.sp .nm{font-size:10px;font-weight:800;line-height:1.25}
+.sp .lv{position:absolute;left:4px;top:3px;font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;padding:0 4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;font-size:12px}
+.stats b{font-variant-numeric:tabular-nums}
+.rivals{display:flex;flex-direction:column;gap:6px}
+.rv{display:flex;align-items:center;gap:8px;font-size:12px}
+.rv .face{font-family:var(--emoji);font-size:22px;width:36px;height:36px;border-radius:50%;background:var(--c);display:grid;place-items:center;border:2px solid var(--ink);flex:0 0 auto}
+.rv .sk{font-family:var(--emoji);font-size:16px}
+
+/* ---------- バトル ---------- */
+#scr-battle{background:#2a2f4f}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.bhud{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0px);display:flex;gap:4px;padding:6px max(8px,env(safe-area-inset-left,0px)) 0 max(8px,env(safe-area-inset-right,0px));z-index:5;align-items:flex-start}
+.hp-chip{flex:1;background:rgba(255,255,255,.95);border-radius:10px;padding:3px 5px;display:flex;align-items:center;gap:4px;min-width:0}
+.hp-chip.dead{opacity:.35}
+.hp-chip .face{font-family:var(--emoji);font-size:18px;width:26px;height:26px;border-radius:50%;background:var(--c);display:grid;place-items:center;flex:0 0 auto}
+.hp-chip .col{flex:1;min-width:0}
+.hp-chip .nm{font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden}
+.hp-chip .hb{height:6px;background:#e2e4ee;border-radius:3px;overflow:hidden}
+.hp-chip .hb i{display:block;height:100%;background:#22c55e}
+.hp-chip.me{box-shadow:0 0 0 3px var(--tag)}
+.btime{position:absolute;top:calc(env(safe-area-inset-top,0px) + 46px);left:50%;transform:translateX(-50%);color:#fff;font-family:var(--display);font-size:14px;z-index:5;text-shadow:0 2px 0 #000;white-space:nowrap}
+.controls{position:absolute;left:0;right:0;bottom:0;height:200px;z-index:6;padding-bottom:env(safe-area-inset-bottom,0px)}
+#joyzone{position:absolute;left:0;top:0;bottom:0;width:52%;touch-action:none}
+#joy{position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.14);border:3px solid rgba(255,255,255,.35);left:calc(max(16px,env(safe-area-inset-left,0px)) + 14px);bottom:calc(env(safe-area-inset-bottom,0px) + 34px);pointer-events:none}
+#knob{position:absolute;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.85);left:33px;top:33px;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.abtn{position:absolute;border-radius:50%;display:grid;place-items:center;font-family:var(--emoji);touch-action:none;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+#atkBtn{width:86px;height:86px;right:calc(max(16px,env(safe-area-inset-right,0px)) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 36px);background:var(--sale);font-size:38px;border:4px solid #fff}
+.sbtn{width:58px;height:58px;background:#fff;font-size:28px;border:3px solid var(--ink)}
+.sbtn .cdv{position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(29,35,64,.72) var(--p,0%),transparent 0)}
+.sbtn .lvb{position:absolute;bottom:-4px;right:-4px;font-family:var(--body);font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;padding:0 4px}
+.sbtn.ready{box-shadow:0 0 0 3px var(--tag),0 4px 0 rgba(0,0,0,.35)}
+.bover{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);z-index:8;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.bover .big{font-family:var(--display);font-size:40px;color:#fff;text-shadow:3px 3px 0 #000;white-space:nowrap}
+
+/* ---------- 結果 ---------- */
+#scr-result{padding:16px max(16px,env(safe-area-inset-left,0px)) 16px max(16px,env(safe-area-inset-right,0px));gap:10px;overflow-y:auto;align-items:stretch}
+.rank-hero{text-align:center;background:var(--tag);border:4px solid var(--ink);border-radius:18px;padding:14px;box-shadow:6px 6px 0 var(--ink)}
+.rank-hero .r{font-family:var(--display);font-size:64px;color:var(--sale);-webkit-text-stroke:2px var(--ink);line-height:1}
+.rank-hero .emo{font-size:46px}
+.rank-list{display:flex;flex-direction:column;gap:6px}
+.rank-row{display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:12px;padding:8px 10px;font-weight:800}
+.rank-row .no{font-family:var(--display);font-size:20px;width:36px}
+.rank-row.me{box-shadow:0 0 0 3px var(--ink)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- タイトル -->
+<section id="scr-title" class="screen">
+  <div class="poster">
+    <span class="kicker">本日限り！大特売</span>
+    <h1>列に並べ！</h1>
+    <h2>ショッピングバトル</h2>
+    <div class="price">10本のレジ列で商品を取り合い、集めた力で4人バトル！</div>
+  </div>
+  <div class="parade" id="parade"></div>
+  <div class="title-btns">
+    <button class="btn" id="startBtn">開店へ行く！</button>
+    <button class="btn sub" id="howBtn">あそびかた</button>
+  </div>
+  <div class="small-note">スマホ縦画面推奨・音が出ます</div>
+</section>
+
+<!-- キャラ選択 -->
+<section id="scr-select" class="screen" hidden>
+  <h3 class="sec-h">だれで並ぶ？</h3>
+  <div class="chars" id="chars"></div>
+  <h3 class="sec-h" style="font-size:16px">ライバルの強さ</h3>
+  <div class="diff" id="diff">
+    <button data-d="0">やさしい</button><button data-d="1" class="sel">ふつう</button><button data-d="2">激戦</button>
+  </div>
+  <div class="select-foot">
+    <button class="btn sub" id="selBack">もどる</button>
+    <button class="btn" id="selGo">開店！</button>
+  </div>
+</section>
+
+<!-- 買い物 -->
+<section id="scr-shop" class="screen" hidden>
+  <header class="shop-top">
+    <div class="clock" id="shopTime">2:00</div>
+    <div class="stitle">スーパー<b>ならぶ屋 大特売</b></div>
+    <button class="inv-btn" id="invBtn"><span class="emo">🧺</span> <span id="invCount">0</span></button>
+    <button class="mute" data-mute>🔊</button>
+  </header>
+  <div id="minimap"></div>
+  <div id="feed"></div>
+  <div id="lanes"></div>
+  <footer class="shop-bottom">
+    <div id="pstatus"></div>
+    <div id="qskills"></div>
+  </footer>
+</section>
+
+<!-- 準備 -->
+<section id="scr-loadout" class="screen" hidden>
+  <h3 class="sec-h">バトルの準備</h3>
+  <div class="panel">
+    <h4>使うスキルを3つまで選ぶ <span id="pickCount" style="opacity:.6"></span></h4>
+    <div class="skill-pick" id="skillPick"></div>
+  </div>
+  <div class="panel"><h4>あなたの能力</h4><div class="stats" id="myStats"></div><div class="inv-list" id="myPassives" style="margin-top:8px"></div></div>
+  <div class="panel"><h4>ライバルの戦力</h4><div class="rivals" id="rivalList"></div></div>
+  <button class="btn" id="fightBtn" style="margin-top:4px">バトル開始！</button>
+</section>
+
+<!-- バトル -->
+<section id="scr-battle" class="screen" hidden>
+  <canvas id="cv"></canvas>
+  <div class="bhud" id="bhud"></div>
+  <div class="btime" id="btime"></div>
+  <div class="controls" id="controls">
+    <div id="joyzone"></div>
+    <div id="joy"><div id="knob"></div></div>
+    <button class="abtn" id="atkBtn" aria-label="攻撃">👊</button>
+    <div id="sbtns"></div>
+  </div>
+  <div class="bover" id="bover" hidden></div>
+</section>
+
+<!-- 結果 -->
+<section id="scr-result" class="screen" hidden></section>
+
+<div id="modal" hidden></div>
+<div id="toast"></div>
+</div>
+
+<script>
+'use strict';
+// =====================================================================
+//  ユーティリティ
+// =====================================================================
+const $ = s => document.querySelector(s);
+const rnd = (a, b) => a + Math.random() * (b - a);
+const ri = (a, b) => Math.floor(rnd(a, b + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+let FAST = false;
+try { FAST = new URLSearchParams(location.search).has('fast'); } catch (e) {}
+
+// =====================================================================
+//  サウンド (WebAudioで合成)
+// =====================================================================
+const Snd = {
+  ctx: null, on: true, master: null, bgmGain: null, timer: null, track: null, step: 0, nextT: 0, noise: null,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+    this.ctx = new C();
+    this.master = this.ctx.createGain(); this.master.gain.value = 0.55; this.master.connect(this.ctx.destination);
+    this.bgmGain = this.ctx.createGain(); this.bgmGain.gain.value = 0.28; this.bgmGain.connect(this.master);
+    const len = this.ctx.sampleRate * 0.3, buf = this.ctx.createBuffer(1, len, this.ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    this.noise = buf;
+  },
+  setOn(v) {
+    this.on = v; if (this.master) this.master.gain.value = v ? 0.55 : 0;
+    document.querySelectorAll('[data-mute]').forEach(b => b.textContent = v ? '🔊' : '🔇');
+  },
+  tone(f, t0, dur, type = 'square', vol = 0.15, slide = 0, dest) {
+    if (!this.ctx) return;
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t0);
+    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, slide), t0 + dur);
+    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+    o.connect(g); g.connect(dest || this.master); o.start(t0); o.stop(t0 + dur + 0.02);
+  },
+  hiss(t0, dur, vol = 0.2, freq = 1200) {
+    if (!this.ctx) return;
+    const s = this.ctx.createBufferSource(), f = this.ctx.createBiquadFilter(), g = this.ctx.createGain();
+    s.buffer = this.noise; f.type = 'bandpass'; f.frequency.value = freq;
+    g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    s.connect(f); f.connect(g); g.connect(this.master); s.start(t0); s.stop(t0 + dur);
+  },
+  se(name) {
+    if (!this.ctx || !this.on) return;
+    const t = this.ctx.currentTime, T = (f, d, ty, v, sl, dt = 0) => this.tone(f, t + dt, d, ty, v, sl);
+    switch (name) {
+      case 'beep': T(1760, 0.07, 'sine', 0.12); break;
+      case 'buy': T(880, 0.1, 'square', 0.1); T(1175, 0.1, 'square', 0.1, 0, 0.08); T(1568, 0.22, 'square', 0.1, 0, 0.16); break;
+      case 'rare': [784, 988, 1175, 1568, 1976].forEach((f, i) => T(f, 0.16, 'square', 0.09, 0, i * 0.06)); break;
+      case 'tap': T(660, 0.05, 'triangle', 0.12); break;
+      case 'walk': T(330, 0.06, 'triangle', 0.1); T(392, 0.06, 'triangle', 0.1, 0, 0.07); break;
+      case 'cut': T(400, 0.18, 'sawtooth', 0.08, 1000); break;
+      case 'banana': T(700, 0.35, 'triangle', 0.15, 150); this.hiss(t, 0.15, 0.1, 2000); break;
+      case 'stop': T(220, 0.15, 'square', 0.1); T(196, 0.25, 'square', 0.1, 0, 0.16); break;
+      case 'fast': T(500, 0.3, 'sawtooth', 0.06, 1600); break;
+      case 'bell': T(1318, 0.4, 'sine', 0.15); T(1760, 0.5, 'sine', 0.1, 0, 0.12); break;
+      case 'bad': T(300, 0.2, 'square', 0.1, 150); break;
+      case 'tick': T(1200, 0.04, 'square', 0.06); break;
+      case 'open': [523, 659, 784, 1047].forEach((f, i) => T(f, 0.25, 'triangle', 0.14, 0, i * 0.1)); break;
+      case 'close': [784, 659, 523, 392].forEach((f, i) => T(f, 0.3, 'triangle', 0.14, 0, i * 0.14)); this.hiss(t + 0.5, 0.8, 0.08, 500); break;
+      case 'swing': this.hiss(t, 0.08, 0.12, 2500); break;
+      case 'hit': T(180, 0.12, 'square', 0.12, 70); this.hiss(t, 0.06, 0.15, 900); break;
+      case 'skill': T(500, 0.22, 'triangle', 0.12, 1300); break;
+      case 'boom': this.hiss(t, 0.4, 0.3, 400); T(120, 0.35, 'sine', 0.2, 40); break;
+      case 'heal': [660, 880, 1100].forEach((f, i) => T(f, 0.15, 'sine', 0.1, 0, i * 0.07)); break;
+      case 'ko': T(600, 0.6, 'square', 0.1, 80); break;
+      case 'win': [523, 659, 784, 1047, 784, 1047].forEach((f, i) => T(f, i === 5 ? 0.6 : 0.16, 'square', 0.1, 0, i * 0.13)); break;
+      case 'lose': [392, 370, 349, 330].forEach((f, i) => T(f, 0.3, 'triangle', 0.13, 0, i * 0.25)); break;
+      case 'fight': T(330, 0.15, 'square', 0.12); T(660, 0.4, 'square', 0.12, 0, 0.15); break;
+    }
+  },
+  // BGM: 8分音符のステップシーケンサー (オリジナル曲)
+  TRACKS: {
+    shop: { bpm: 148, lead: 'square',
+      mel: [72,0,76,79,77,76,74,0,72,74,76,72,69,0,71,0,72,0,76,79,81,79,77,76,74,76,77,74,72,0,0,0,
+            77,0,81,77,76,0,79,76,74,0,77,74,72,74,76,0,77,0,81,84,83,81,79,77,76,74,72,71,72,0,0,0],
+      bass:[48,0,55,0,52,0,55,0,53,0,57,0,55,0,59,0,48,0,55,0,52,0,55,0,53,0,55,0,48,0,48,0,
+            53,0,57,0,48,0,52,0,50,0,53,0,48,0,52,0,53,0,57,0,55,0,59,0,48,0,55,0,48,0,0,0] },
+    battle: { bpm: 168, lead: 'sawtooth',
+      mel: [69,0,72,69,76,0,74,72,71,0,74,71,79,0,77,76,69,0,72,69,76,77,79,81,79,77,76,74,76,0,0,0],
+      bass:[45,45,57,45,45,45,57,45,43,43,55,43,43,43,55,43,41,41,53,41,41,41,53,41,40,40,52,40,44,44,47,52] },
+    title: { bpm: 112, lead: 'triangle',
+      mel: [76,0,79,0,84,0,83,81,79,0,76,0,77,0,74,0,72,0,76,0,79,0,81,79,77,76,74,0,72,0,0,0],
+      bass:[48,0,0,0,52,0,0,0,53,0,0,0,55,0,0,0,48,0,0,0,57,0,0,0,53,0,55,0,48,0,0,0] },
+  },
+  bgm(name) {
+    if (!this.ctx) return;
+    if (this.track === name) return;
+    this.stopBgm(); this.track = name; if (!name) return;
+    this.step = 0; this.nextT = this.ctx.currentTime + 0.1;
+    this.timer = setInterval(() => this.sched(), 60);
+  },
+  stopBgm() { clearInterval(this.timer); this.timer = null; this.track = null; },
+  sched() {
+    const tr = this.TRACKS[this.track]; if (!tr || !this.ctx) return;
+    const stepDur = 60 / tr.bpm / 2;
+    while (this.nextT < this.ctx.currentTime + 0.25) {
+      const i = this.step % tr.mel.length, m = tr.mel[i], b = tr.bass[this.step % tr.bass.length];
+      const mf = n => 440 * Math.pow(2, (n - 69) / 12);
+      if (m) this.tone(mf(m), this.nextT, stepDur * 0.9, tr.lead, tr.lead === 'sawtooth' ? 0.06 : 0.09, 0, this.bgmGain);
+      if (b) this.tone(mf(b), this.nextT, stepDur * 0.95, 'triangle', 0.16, 0, this.bgmGain);
+      if (this.track === 'battle' && this.step % 2 === 0) this.tone(this.step % 4 === 0 ? 90 : 3000, this.nextT, 0.05, this.step % 4 === 0 ? 'sine' : 'square', this.step % 4 === 0 ? 0.25 : 0.02, this.step % 4 === 0 ? 40 : 0, this.bgmGain);
+      this.nextT += stepDur; this.step++;
+    }
+  },
+};
+document.addEventListener('click', e => {
+  const m = e.target.closest('[data-mute]');
+  if (m) { Snd.init(); Snd.setOn(!Snd.on); }
+});
+
+// =====================================================================
+//  データ: キャラ・商品
+// =====================================================================
+const CHARS = [
+  { id: 'yoshiko', name: 'ヨシコ', role: 'セールに燃える主婦', emoji: '👩', color: '#ff7aa2',
+    hp: 120, atk: 9, def: 1, spd: 118, aspd: 1.0, walk: 0.8, cut: 4, chat: 7,
+    trait: '割り込み上手：割り込み×2を持って開店。割り込みで4人抜ける',
+    start: { active: { bag: 1 }, queue: { cut: 2 } } },
+  { id: 'goro', name: 'ゴロウ', role: '特売ハンターおじさん', emoji: '👨', color: '#5b9dff',
+    hp: 165, atk: 10, def: 2.5, spd: 100, aspd: 0.85, walk: 0.9, cut: 3, chat: 7,
+    trait: 'タフ：体力と防御が高い。バナナの皮・割り込みを1つずつ持って開店',
+    start: { active: { cart: 1 }, queue: { banana: 1, cut: 1 } } },
+  { id: 'miku', name: 'ミク', role: '放課後の女子高生', emoji: '👧', color: '#4ade80',
+    hp: 100, atk: 8, def: 0.5, spd: 142, aspd: 1.25, walk: 0.4, cut: 3, chat: 7,
+    trait: 'すばしっこい：列の移動が一瞬。バトルでも速い。セルフレジ×2つき',
+    start: { active: { flyer: 1 }, queue: { selfreg: 2 } } },
+  { id: 'ume', name: 'ウメ', role: '顔なじみのおばあちゃん', emoji: '👵', color: '#fbbf24',
+    hp: 115, atk: 8.5, def: 1.5, spd: 104, aspd: 1.0, walk: 0.9, cut: 3, chat: 10,
+    trait: '井戸端の女王：井戸端会議×2で10秒止める。おにぎり常備で自然回復',
+    start: { active: { sample: 1 }, queue: { chat: 2 }, passive: { regen: 1 } } },
+];
+const CAT = {
+  active: { label: 'スキル', color: 'var(--c-active)' },
+  passive: { label: 'パッシブ', color: 'var(--c-passive)' },
+  stat: { label: '基礎強化', color: 'var(--c-stat)' },
+  queue: { label: '並びスキル', color: 'var(--c-queue)' },
+  bag: { label: '福袋', color: 'var(--c-bag)' },
+};
+const ITEMS = {};
+function defItems(cat, list) { for (const [id, name, icon, desc, extra] of list) ITEMS[id] = Object.assign({ id, cat, name, icon, desc }, extra || {}); }
+defItems('active', [
+  ['bag', 'エコバッグ大回転', '👜', '周りをぐるっとなぎ払う。相手をふっとばす', { cd: 6 }],
+  ['cart', 'カート突撃', '🛒', '狙った方向へ猛ダッシュ。ぶつかった相手に大ダメージ', { cd: 7 }],
+  ['flyer', 'チラシ乱れ投げ', '📰', 'チラシ5枚を扇状に投げる', { cd: 5 }],
+  ['tuna', '冷凍マグロ一閃', '🐟', '前方を大きく叩く。大ダメージ＋気絶', { cd: 8 }],
+  ['egg', '卵パック爆弾', '🥚', '近くの相手に投げて爆発。当たると足が遅くなる', { cd: 7 }],
+  ['bread', 'フランスパン・ブーメラン', '🥖', '行って戻るパン。往復で2回当たる', { cd: 5 }],
+  ['sample', '試食タイム', '🍡', '体力を最大の25%回復（Lvで増える）', { cd: 12 }],
+  ['timesale', 'タイムセール宣言', '⏰', '5秒間、移動と攻撃がとても速くなる', { cd: 14 }],
+  ['point', 'ポイントカードバリア', '💳', '5秒間、最大体力30%分のバリア', { cd: 12 }],
+  ['seal', '半額シール', '🏷️', '追いかけるシール。貼られた相手は4秒間ダメージ+30%', { cd: 6 }],
+]);
+defItems('passive', [
+  ['lifesteal', '試食の達人', '🍢', '与えたダメージの8%回復'],
+  ['thorns', '押し返しの肘', '💪', '受けたダメージの20%を相手に返す'],
+  ['cdr', '割引の心', '✂️', 'スキルのクールタイム-10%'],
+  ['berserk', '半額魂', '🔥', '体力50%以下で与ダメージ+30%'],
+  ['skilldmg', 'ポイント2倍デー', '✨', 'スキルのダメージ+20%'],
+  ['guts', '閉店まで粘る根性', '💢', 'やられる攻撃を1回だけ体力1で耐える'],
+  ['regen', 'おにぎり常備', '🍙', '毎秒、最大体力の1.2%回復'],
+  ['crit', '目利き', '👀', '会心率+12%（会心は1.8倍）'],
+  ['dodge', 'すり抜け上手', '💨', '10%で攻撃を回避（最大40%）'],
+  ['push', '押しの強さ', '🦵', '通常攻撃のダメージ+15%、ふっとばし強化'],
+]);
+defItems('stat', [
+  ['hp', '特盛弁当', '🍱', '最大体力+25'],
+  ['atk', 'プロテイン', '🥤', '攻撃力+2'],
+  ['def', '厚手のダウン', '🧥', '防御力+1.5'],
+  ['spd', 'ランニングシューズ', '👟', '移動速度+8%'],
+  ['aspd', 'エナジードリンク', '⚡', '通常攻撃の速さ+12%'],
+]);
+defItems('queue', [
+  ['cut', '割り込み', '🙋', '並んでいる列で3人抜かす'],
+  ['banana', 'バナナの皮', '🍌', '前の人を1人（ライバル優先）最後尾へ転ばせる'],
+  ['chat', '井戸端会議', '🗣️', 'ライバルが並ぶ他の列のレジを7秒止める'],
+  ['selfreg', 'セルフレジ', '🏃', '自分の列のレジが8秒間3倍速'],
+  ['bell', '入荷ベル', '🔔', '自分の列の在庫+2'],
+  ['hoard', '買い占め', '🛍️', '次の買い物で2個もらえる'],
+]);
+defItems('bag', [['lucky', '福袋', '🎁', 'ランダムな商品が3個入っている（★なら5個）']]);
+const IDS = { active: [], passive: [], stat: [], queue: [], bag: [] };
+for (const k in ITEMS) IDS[ITEMS[k].cat].push(k);
+const CAT_WEIGHT = [['active', 30], ['passive', 22], ['stat', 26], ['queue', 17], ['bag', 5]];
+const NPC_EMO = ['🧑', '👱', '🧔', '👴', '👩‍🦳', '🧓', '👨‍🦰', '👩‍🦰', '🧑‍🦱', '👲', '🧕', '👷', '🧑‍🍳', '👨‍🦲', '🧑‍🦯', '👩‍🍼'];
+const DIFF = [
+  { name: 'やさしい', think: 2.2, qskill: 0.25, smart: 0.45, react: 1.6, aggro: 0.6, dmg: 0.85 },
+  { name: 'ふつう', think: 1.3, qskill: 0.5, smart: 0.75, react: 1.0, aggro: 0.85, dmg: 1.0 },
+  { name: '激戦', think: 0.7, qskill: 0.85, smart: 1.0, react: 0.6, aggro: 1.0, dmg: 1.12 },
+];
+
+function wpick(pairs) { let s = 0; for (const p of pairs) s += p[1]; let r = Math.random() * s; for (const p of pairs) { r -= p[1]; if (r <= 0) return p[0]; } return pairs[0][0]; }
+function genItem(forceRare) {
+  const cat = wpick(CAT_WEIGHT);
+  const id = pick(IDS[cat]);
+  const rare = forceRare || cat === 'bag' ? Math.random() < 0.35 || !!forceRare : Math.random() < 0.13;
+  return { id, rare };
+}
+function itemLabel(it) { return (it.rare ? '★' : '') + ITEMS[it.id].name; }
+
+// =====================================================================
+//  ゲーム全体の状態
+// =====================================================================
+const G = { charIdx: 0, diff: 1, actors: [], screen: 'title' };
+
+function newInv() { return { active: {}, passive: {}, stat: {}, queue: {}, count: 0 }; }
+function makeActors(playerIdx) {
+  return CHARS.map((c, i) => {
+    const inv = newInv();
+    for (const k of ['active', 'queue', 'passive']) Object.assign(inv[k], JSON.parse(JSON.stringify(c.start[k] || {})));
+    return { id: i, char: c, name: c.name, emoji: c.emoji, color: c.color, isPlayer: i === playerIdx, inv,
+      lane: null, walkTo: null, walkT: 0, hoard: 0, think: rnd(0.3, 1.2), qThink: rnd(1, 2), loadout: [], log: [],
+      // ライバルの好み (性格)
+      pref: { active: rnd(0.8, 1.3), passive: rnd(0.8, 1.3), stat: rnd(0.8, 1.3), queue: rnd(0.7, 1.2), bag: 1.1 } };
+  });
+}
+// 商品を受け取る
+function giveItem(actor, it, mult = 1) {
+  const def = ITEMS[it.id], m = (it.rare ? 2 : 1) * mult;
+  const inv = actor.inv; inv.count += mult;
+  if (def.cat === 'bag') {
+    const got = [];
+    const n = (it.rare ? 5 : 3) * mult;
+    for (let i = 0; i < n; i++) {
+      let sub; do { sub = genItem(); } while (sub.id === 'lucky');
+      sub.rare = false; giveItem(actor, sub, 1); got.push(ITEMS[sub.id].icon);
+    }
+    inv.count -= n;
+    return got;
+  }
+  inv[def.cat][it.id] = (inv[def.cat][it.id] || 0) + m;
+  return null;
+}
+
+// =====================================================================
+//  画面切り替え
+// =====================================================================
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.hidden = s.id !== id);
+  G.screen = id;
+}
+function toast(html, cls = '', ms = 1600) {
+  const el = document.createElement('div'); el.className = 'toast ' + cls; el.innerHTML = html;
+  const box = $('#toast'); box.appendChild(el);
+  while (box.children.length > 3) box.firstChild.remove();
+  setTimeout(() => el.remove(), ms);
+}
+function openModal(html) { const m = $('#modal'); m.innerHTML = `<div class="sheet">${html}</div>`; m.hidden = false; }
+function closeModal() { $('#modal').hidden = true; $('#modal').innerHTML = ''; }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
+
+// =====================================================================
+//  タイトル・キャラ選択
+// =====================================================================
+(function initTitle() {
+  const p = $('#parade'), emos = ['🛒', '👩', '🧔', '👧', '👵', '👨', '🛍️', '🧑‍🦱', '👴', '🛒'];
+  emos.forEach((e, i) => { const s = document.createElement('span'); s.textContent = e; s.style.animationDelay = (-i * 0.9) + 's'; p.appendChild(s); });
+})();
+$('#startBtn').onclick = () => { Snd.init(); Snd.se('tap'); Snd.bgm('title'); renderSelect(); show('scr-select'); };
+$('#howBtn').onclick = () => { Snd.init(); Snd.se('tap'); showHowTo(); };
+function showHowTo() {
+  openModal(`<div class="howto"><h3>あそびかた</h3>
+  <p><b>① 買い物フェーズ（2分）</b></p>
+  <ol><li>店には<b>10本のレジ列</b>。横にスクロールして商品を見よう。</li>
+  <li>「ここに並ぶ」で最後尾へ。先頭まで進むと商品をゲット！</li>
+  <li>一般のお客さんも商品を買っていく。<b>在庫が0になると別の商品に入れ替わる</b>。</li>
+  <li>ライバル3人も同じ商品を狙っている。<b>並びスキル</b>（割り込み・バナナの皮など）で出し抜こう。</li>
+  <li>ときどき<b>タイムセール</b>！ その列のレジが速くなり★レア商品に。</li></ol>
+  <p><b>② バトルフェーズ（4人乱戦）</b></p>
+  <ol><li>買ったスキルから3つ選んで戦う。同じスキルを重ねるとレベルアップ。</li>
+  <li>左のスティックで移動、👊で攻撃、右のボタンでスキル。</li>
+  <li>パッシブと基礎強化は全部効く。時間が経つと閉店シャッターで場外が狭くなる。</li>
+  <li>最後まで残った人が優勝！</li></ol>
+  <p class="small-note">PC：WASD/矢印で移動、J/スペースで攻撃、K・L・;（または1・2・3）でスキル</p>
+  <div class="row"><button class="btn" data-close>わかった</button></div></div>`);
+}
+function statBar(v, max) { return `<i style="width:${clamp(v / max, 0.05, 1) * 100}%"></i>`; }
+function renderSelect() {
+  $('#chars').innerHTML = CHARS.map((c, i) => {
+    const st = Object.keys(c.start.active).map(k => ITEMS[k].icon).join('') + Object.keys(c.start.queue).map(k => ITEMS[k].icon).join('');
+    return `<button class="char ${i === G.charIdx ? 'sel' : ''}" data-i="${i}" style="--c:${c.color}">
+      <div style="display:flex;gap:8px;align-items:center"><div class="face">${c.emoji}</div><div><div class="nm">${c.name}</div><div class="role">${c.role}</div></div></div>
+      <div class="bars"><span>体力</span>${statBar(c.hp, 170)}<span>攻撃</span>${statBar(c.atk, 10.5)}<span>速さ</span>${statBar(c.spd, 145)}</div>
+      <div class="trait">${c.trait}</div><div class="trait">初期: <span class="emo">${st}</span></div></button>`;
+  }).join('');
+  document.querySelectorAll('#chars .char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); });
+}
+document.querySelectorAll('#diff button').forEach(b => b.onclick = () => {
+  G.diff = +b.dataset.d; Snd.se('tap');
+  document.querySelectorAll('#diff button').forEach(x => x.classList.toggle('sel', x === b));
+});
+$('#selBack').onclick = () => { Snd.se('tap'); show('scr-title'); };
+$('#selGo').onclick = () => { Snd.se('tap'); startShop(); };
+
+// =====================================================================
+//  買い物フェーズ
+// =====================================================================
+const SHOP_TIME = FAST ? 25 : 120;
+let S = null; // shop state
+let pid = 0;
+
+function newLane(i) {
+  const l = { i, item: genItem(), stock: 0, speed: rnd(1.9, 3.3), progress: 0, queue: [], stopT: 0, fastT: 0, saleT: 0, flash: 0, ver: 0 };
+  l.stock = stockFor(l.item);
+  return l;
+}
+function stockFor(it) { return it.rare ? ri(1, 2) : ri(2, 5); }
+function npc() { return { id: ++pid, emoji: pick(NPC_EMO), actor: null }; }
+function laneRate(l) { return (1 / l.speed) * (l.fastT > 0 ? 3 : 1) * (l.saleT > 0 ? 2 : 1); }
+
+function startShop() {
+  G.actors = makeActors(G.charIdx);
+  const lanes = [];
+  for (let i = 0; i < 10; i++) { const l = newLane(i); const n = ri(2, 7); for (let k = 0; k < n; k++) l.queue.push(npc()); lanes.push(l); }
+  S = { t: SHOP_TIME, lanes, spawnT: 0, saleT: rnd(14, 20), leaveT: 1, feed: [], ended: false, renderT: 0, sig: [], cardSig: [], started: false, viewLane: 0, maxV: 9 };
+  show('scr-shop');
+  buildLanes();
+  measureQueue();
+  renderShop(true);
+  Snd.bgm('shop');
+  banner('開店！', '並ぶ列を選ぼう', 1300);
+  Snd.se('open');
+  S.started = true;
+  lastT = performance.now();
+}
+function banner(txt, sub, ms = 1500) {
+  const host = G.screen === 'scr-battle' ? $('#scr-battle') : $('#app');
+  const b = document.createElement('div'); b.className = 'banner'; b.innerHTML = txt + (sub ? `<small>${sub}</small>` : '');
+  host.appendChild(b); setTimeout(() => b.remove(), ms);
+}
+function addFeed(msg) { if (!S) return; S.feed.unshift(msg); S.feed.length = 4; $('#feed').innerHTML = S.feed[0] || ''; }
+
+function buildLanes() {
+  const box = $('#lanes'); box.innerHTML = '';
+  S.lanes.forEach((l, i) => {
+    const el = document.createElement('div'); el.className = 'lane'; el.dataset.i = i;
+    el.innerHTML = `<div class="card"></div><div class="reg"><span class="emo">🧾</span><span class="lbl">レジ</span><span class="tg"></span><div class="bar"></div></div><div class="q"></div><button class="join"></button>`;
+    el.querySelector('.card').onclick = () => { Snd.se('tap'); showItemDetail(i); };
+    el.querySelector('.join').onclick = () => playerJoin(i);
+    box.appendChild(el);
+  });
+  const mm = $('#minimap'); mm.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const b = document.createElement('button'); b.className = 'mm'; b.dataset.i = i;
+    b.onclick = () => scrollToLane(i);
+    mm.appendChild(b);
+  }
+  box.onscroll = () => { const w = 158; S.viewLane = clamp(Math.round(box.scrollLeft / w), 0, 9); };
+}
+function scrollToLane(i) { const box = $('#lanes'); box.scrollTo({ left: Math.max(0, i * 158 - 10), behavior: 'smooth' }); Snd.se('tap'); }
+function measureQueue() {
+  const q = document.querySelector('.lane .q');
+  if (q) S.maxV = Math.max(4, Math.floor((q.clientHeight - 10) / 36));
+}
+window.addEventListener('resize', () => { if (S && G.screen === 'scr-shop') { measureQueue(); renderShop(true); } if (B) layoutBattle(); });
+
+function player() { return G.actors.find(a => a.isPlayer); }
+function posInLane(a) { if (a.lane === null) return -1; return S.lanes[a.lane].queue.findIndex(p => p.actor === a); }
+function removeFromLane(a) {
+  if (a.lane !== null) { const q = S.lanes[a.lane].queue; const k = q.findIndex(p => p.actor === a); if (k >= 0) q.splice(k, 1); if (k === 0) S.lanes[a.lane].progress = 0; }
+  a.lane = null;
+}
+function joinLane(a, i) {
+  if (a.lane === i || a.walkTo === i) return;
+  removeFromLane(a); a.walkTo = i; a.walkT = a.char.walk;
+}
+function playerJoin(i) {
+  if (!S || S.ended) return;
+  const p = player();
+  if (p.lane === i || p.walkTo === i) return;
+  Snd.se('walk'); joinLane(p, i);
+}
+
+function shopUpdate(dt) {
+  if (!S || S.ended) return;
+  const prevSec = Math.ceil(S.t);
+  S.t -= dt;
+  if (S.t <= 10 && Math.ceil(S.t) !== prevSec && S.t > 0) Snd.se('tick');
+  if (S.t <= 0) { S.t = 0; endShop(); return; }
+  // 一般客の来店
+  S.spawnT -= dt;
+  const total = S.lanes.reduce((s, l) => s + l.queue.length, 0);
+  if (S.spawnT <= 0) {
+    S.spawnT = rnd(0.25, 0.55);
+    if (total < 78) {
+      const l = wpick(S.lanes.map(l => [l, (l.item.rare ? 3 : 1) * (l.saleT > 0 ? 3 : 1) / (1 + l.queue.length * 0.22)]));
+      l.queue.push(npc());
+    }
+  }
+  // 長すぎる列から一般客が帰る
+  S.leaveT -= dt;
+  if (S.leaveT <= 0) {
+    S.leaveT = 1;
+    for (const l of S.lanes) if (l.queue.length > 11 && Math.random() < 0.3) {
+      for (let k = l.queue.length - 1; k > l.queue.length - 4 && k > 0; k--) if (!l.queue[k].actor) { l.queue.splice(k, 1); break; }
+    }
+  }
+  // タイムセール
+  S.saleT -= dt;
+  if (S.saleT <= 0) {
+    S.saleT = rnd(20, 28);
+    const cand = S.lanes.filter(l => l.saleT <= 0);
+    const l = pick(cand);
+    l.saleT = 12; l.item = { id: l.item.id === 'lucky' ? 'lucky' : l.item.id, rare: true }; l.stock = Math.max(l.stock, 2); l.flash = 1;
+    addFeed(`📣 タイムセール！レジ${l.i + 1}で ${itemLabel(l.item)}`);
+    toast(`📣 タイムセール！<br>レジ${l.i + 1}：${ITEMS[l.item.id].icon} ${itemLabel(l.item)}`, 'bad', 2200);
+    Snd.se('bell');
+  }
+  // 移動中の人
+  for (const a of G.actors) {
+    if (a.walkTo !== null) {
+      a.walkT -= dt;
+      if (a.walkT <= 0) { const l = S.lanes[a.walkTo]; l.queue.push({ id: ++pid, emoji: a.emoji, actor: a }); a.lane = a.walkTo; a.walkTo = null; }
+    }
+  }
+  // レジ処理
+  for (const l of S.lanes) {
+    if (l.saleT > 0) l.saleT -= dt;
+    if (l.fastT > 0) l.fastT -= dt;
+    if (l.stopT > 0) { l.stopT -= dt; continue; }
+    if (!l.queue.length) { l.progress = 0; continue; }
+    l.progress += dt * laneRate(l);
+    if (l.progress >= 1) { l.progress = 0; serve(l); }
+  }
+  // ライバルAI
+  for (const a of G.actors) if (!a.isPlayer) rivalShopAI(a, dt);
+}
+function serve(l) {
+  const p = l.queue.shift(); if (!p) return;
+  if (!p.actor) {
+    if (Math.random() < 0.6) { l.stock--; if (G.screen === 'scr-shop' && l.i === S.viewLane) Snd.se('beep'); }
+  } else {
+    const a = p.actor; a.lane = null;
+    let mult = 1;
+    if (a.hoard > 0 && l.stock >= 2) { mult = 2; a.hoard--; }
+    const it = l.item, got = giveItem(a, it, mult);
+    l.stock -= mult;
+    a.log.push(it);
+    const name = `${ITEMS[it.id].icon} ${itemLabel(it)}${mult > 1 ? ' ×2' : ''}`;
+    if (a.isPlayer) {
+      Snd.se(it.rare ? 'rare' : 'buy');
+      toast(`ゲット！ ${name}${got ? `<br><span class="emo">${got.join(' ')}</span>` : ''}`, 'get', 2000);
+      addFeed(`🧺 あなたが ${name} を買った`);
+    } else {
+      addFeed(`${a.emoji} ${a.name}が ${name} を買った`);
+    }
+  }
+  if (l.stock <= 0) restock(l);
+}
+function restock(l) {
+  l.item = genItem(l.saleT > 0); l.stock = stockFor(l.item); l.flash = 1;
+}
+
+// ---- 並びスキル ----
+function useQueueSkill(a, id) {
+  const inv = a.inv.queue;
+  if (!inv[id]) return false;
+  const l = a.lane !== null ? S.lanes[a.lane] : null;
+  const pos = posInLane(a);
+  const me = a.isPlayer;
+  const fail = msg => { if (me) { toast(msg, 'bad'); Snd.se('bad'); } return false; };
+  const needLane = () => { if (!l || pos < 0) return fail('列に並んでいる時だけ使える'); return true; };
+  switch (id) {
+    case 'cut': {
+      if (!needLane()) return false;
+      if (pos === 0) return fail('もう先頭だよ');
+      const n = a.char.cut, np = Math.max(0, pos - n);
+      const [me2] = l.queue.splice(pos, 1); l.queue.splice(np, 0, me2);
+      if (np === 0) l.progress = 0;
+      Snd.se('cut'); addFeed(`🙋 ${me ? 'あなた' : a.name}がレジ${l.i + 1}で割り込み！`);
+      if (!me) notifyVictim(l, np, pos, a);
+      break;
+    }
+    case 'banana': {
+      if (!needLane()) return false;
+      if (pos === 0) return fail('前に誰もいない');
+      let k = -1;
+      for (let j = pos - 1; j >= 0; j--) if (l.queue[j].actor) { k = j; break; }
+      if (k < 0) k = pos - 1;
+      const [v] = l.queue.splice(k, 1); l.queue.push(v);
+      if (k === 0) l.progress = 0;
+      Snd.se('banana');
+      const vn = v.actor ? (v.actor.isPlayer ? 'あなた' : v.actor.name) : 'お客さん';
+      addFeed(`🍌 ${me ? 'あなた' : a.name}のバナナで${vn}が最後尾へ！`);
+      if (v.actor && v.actor.isPlayer) toast(`🍌 ${a.name}にバナナで転ばされた！最後尾へ…`, 'bad', 2200);
+      else if (me) toast(`🍌 ${vn}を転ばせた！`);
+      break;
+    }
+    case 'chat': {
+      let n = 0;
+      for (const ol of S.lanes) {
+        if (ol === l) continue;
+        if (ol.queue.some(p => p.actor && p.actor !== a)) { ol.stopT = Math.max(ol.stopT, a.char.chat); n++; }
+      }
+      if (!n) return fail('ライバルが他の列にいない');
+      Snd.se('stop'); addFeed(`🗣️ ${me ? 'あなた' : a.name}の井戸端会議！${n}列のレジが止まった`);
+      const p = player();
+      if (!me && p.lane !== null && S.lanes[p.lane].stopT > 0 && p.lane !== a.lane) toast(`🗣️ ${a.name}の井戸端会議でレジが止まった！`, 'bad', 2000);
+      else if (me) toast(`🗣️ ${n}列のレジを止めた！`);
+      break;
+    }
+    case 'selfreg': {
+      if (!needLane()) return false;
+      l.fastT = 8; Snd.se('fast'); addFeed(`🏃 レジ${l.i + 1}がセルフレジで3倍速！`);
+      if (me) toast('🏃 レジが3倍速！');
+      break;
+    }
+    case 'bell': {
+      if (!needLane()) return false;
+      l.stock += 2; Snd.se('bell'); addFeed(`🔔 レジ${l.i + 1}に追加入荷！`);
+      if (me) toast('🔔 在庫+2！');
+      break;
+    }
+    case 'hoard': {
+      a.hoard++; Snd.se('skill');
+      if (me) toast('🛍️ 次の買い物は2個！');
+      break;
+    }
+  }
+  inv[id]--; if (!inv[id]) delete inv[id];
+  return true;
+}
+function notifyVictim(l, np, oldPos, a) {
+  const p = player();
+  if (p.lane === l.i) { const pp = posInLane(p); if (pp > np && pp <= oldPos) toast(`🙋 ${a.name}に割り込まれた！`, 'bad'); }
+}
+
+// ---- ライバルの買い物AI ----
+function itemValue(a, it) {
+  const def = ITEMS[it.id], inv = a.inv, pref = a.pref[def.cat] || 1;
+  let v = 6;
+  if (def.cat === 'active') {
+    const owned = Object.keys(inv.active).length;
+    v = inv.active[it.id] ? 8.5 : owned < 3 ? 10 : 4.5;
+  } else if (def.cat === 'passive') v = 7;
+  else if (def.cat === 'stat') v = 6;
+  else if (def.cat === 'queue') v = 3 + 3 * (S.t / SHOP_TIME);
+  else v = 9;
+  return v * pref * (it.rare ? 1.9 : 1);
+}
+function laneScore(a, l, ahead, npcAhead, actorsAhead) {
+  const consume = 0.6 * npcAhead + actorsAhead;
+  const ok = l.stock - consume >= 0.8 ? 1 : 0.45;
+  const eta = (ahead + (1 - l.progress)) / laneRate(l) + l.stopT;
+  if (eta > S.t) return 0;
+  return itemValue(a, l.item) * ok / (eta + 0.8);
+}
+function scoreForJoin(a, l) {
+  const npcs = l.queue.filter(p => !p.actor).length, acts = l.queue.length - npcs;
+  return laneScore(a, l, l.queue.length + a.char.walk / l.speed, npcs, acts);
+}
+function rivalShopAI(a, dt) {
+  const D = DIFF[G.diff];
+  if (a.walkTo !== null) return;
+  a.think -= dt;
+  if (a.lane === null) {
+    if (a.think > 0) return;
+    a.think = rnd(0.2, 0.6) * D.think;
+    let best = null, bs = -1;
+    for (const l of S.lanes) {
+      const s = scoreForJoin(a, l) * (Math.random() < D.smart ? 1 : rnd(0.3, 1.7));
+      if (s > bs) { bs = s; best = l; }
+    }
+    if (best) joinLane(a, best.i);
+  } else {
+    if (a.think <= 0) {
+      a.think = rnd(2.5, 4) * D.think;
+      const l = S.lanes[a.lane], pos = posInLane(a);
+      if (pos > 1) {
+        const ahead = l.queue.slice(0, pos), npcs = ahead.filter(p => !p.actor).length;
+        const cur = laneScore(a, l, pos, npcs, pos - npcs);
+        let best = null, bs = cur * 2.3;
+        for (const o of S.lanes) if (o !== l) { const s = scoreForJoin(a, o); if (s > bs) { bs = s; best = o; } }
+        if (best && Math.random() < D.smart) joinLane(a, best.i);
+      }
+    }
+    a.qThink -= dt;
+    if (a.qThink <= 0) { a.qThink = rnd(0.8, 1.6); if (Math.random() < D.qskill) rivalQueueSkill(a); }
+  }
+}
+function rivalQueueSkill(a) {
+  const q = a.inv.queue, l = a.lane !== null ? S.lanes[a.lane] : null; if (!l) return;
+  const pos = posInLane(a); if (pos < 0) return;
+  const v = itemValue(a, l.item);
+  if (q.banana && pos > 0 && l.queue.slice(Math.max(0, pos - 4), pos).some(p => p.actor)) return useQueueSkill(a, 'banana');
+  if (q.cut && pos >= 3 && v > 5) return useQueueSkill(a, 'cut');
+  if (q.chat) { const p = player(); const pp = posInLane(p); if (p.lane !== null && p.lane !== a.lane && pp >= 0 && pp <= 3) return useQueueSkill(a, 'chat'); }
+  if (q.selfreg && pos >= 2) return useQueueSkill(a, 'selfreg');
+  if (q.bell && l.stock <= 1 && pos <= 4) return useQueueSkill(a, 'bell');
+  if (q.hoard && pos <= 2 && !a.hoard && l.stock >= 2) return useQueueSkill(a, 'hoard');
+}
+
+// ---- 買い物の描画 ----
+function personHTML(p, idx) {
+  if (!p.actor) return `<div class="p${idx === 0 ? ' front' : ''}">${p.emoji}</div>`;
+  const a = p.actor;
+  return `<div class="p actor${a.isPlayer ? ' me' : ''}${idx === 0 ? ' front' : ''}" style="--c:${a.color}">${a.emoji}<i>${a.isPlayer ? 'YOU ' + (idx + 1) + '番' : a.name}</i></div>`;
+}
+function queueHTML(l) {
+  const q = l.queue, maxV = S.maxV;
+  const pIdx = q.findIndex(p => p.actor && p.actor.isPlayer);
+  let html = '';
+  if (q.length <= maxV) html = q.map(personHTML).join('');
+  else if (pIdx >= maxV - 1) {
+    const head = maxV - 3;
+    html = q.slice(0, head).map(personHTML).join('') + `<div class="more">…${pIdx - head}人…</div>` + personHTML(q[pIdx], pIdx) + (q.length - 1 > pIdx ? `<div class="more">+${q.length - 1 - pIdx}人</div>` : '');
+  } else html = q.slice(0, maxV - 1).map(personHTML).join('') + `<div class="more">+${q.length - maxV + 1}人</div>`;
+  for (const a of G.actors) if (a.walkTo === l.i) html += `<div class="p actor walking${a.isPlayer ? ' me' : ''}" style="--c:${a.color}">${a.emoji}<i>${a.isPlayer ? '移動中' : a.name}</i></div>`;
+  return html;
+}
+function stockDots(n) { return n > 6 ? '●×' + n : '●'.repeat(n); }
+function speedLabel(l) { return l.speed < 2.3 ? '🐇速い' : l.speed < 2.8 ? '🚶ふつう' : '🐢遅い'; }
+function renderShop(force) {
+  const p = player(), lanesEl = $('#lanes').children, mm = $('#minimap').children;
+  S.lanes.forEach((l, i) => {
+    const el = lanesEl[i]; if (!el) return;
+    const def = ITEMS[l.item.id];
+    const csig = l.item.id + l.item.rare + l.stock + l.speed.toFixed(1) + l.flash;
+    if (force || S.cardSig[i] !== csig) {
+      S.cardSig[i] = csig;
+      const c = el.querySelector('.card');
+      c.className = 'card' + (l.item.rare ? ' rare' : '') + (l.flash ? ' flash' : '');
+      c.style.setProperty('--cc', CAT[def.cat].color);
+      c.innerHTML = `<span class="lno">レジ${i + 1}</span><span class="info">?</span><div class="ic">${def.icon}</div><div class="nm">${def.name}</div><span class="badge">${CAT[def.cat].label}</span><div class="meta"><span class="stock">在庫${stockDots(l.stock)}</span></div><div class="meta">${speedLabel(l)}</div>`;
+      if (l.flash) { l.flash = 0; setTimeout(() => c.classList.remove('flash'), 700); }
+    }
+    const qsig = l.queue.map(x => x.id).join(',') + '|' + G.actors.map(a => a.walkTo).join(',') + S.maxV;
+    if (force || S.sig[i] !== qsig) { S.sig[i] = qsig; el.querySelector('.q').innerHTML = queueHTML(l); }
+    const tg = l.stopT > 0 ? `<span class="tagx stop">💬停止${Math.ceil(l.stopT)}</span>` : l.saleT > 0 ? `<span class="tagx sale">タイムセール</span>` : l.fastT > 0 ? `<span class="tagx fast">⚡3倍速</span>` : '';
+    const tgEl = el.querySelector('.tg'); if (tgEl.innerHTML !== tg) tgEl.innerHTML = tg;
+    const mine = p.lane === i, walking = p.walkTo === i;
+    el.classList.toggle('mine', mine || walking);
+    const jb = el.querySelector('.join');
+    const jt = mine ? `並んでいる（${posInLane(p) + 1}番目）` : walking ? '移動中…' : 'ここに並ぶ';
+    if (jb.textContent !== jt) jb.textContent = jt;
+    jb.classList.toggle('here', mine || walking);
+    // ミニマップ
+    const m = mm[i];
+    const dots = G.actors.filter(a => a.lane === i || a.walkTo === i).map(a => `<i style="--c:${a.color}"></i>`).join('');
+    const mh = `<span>${i + 1}</span><span class="ic">${def.icon}</span><span>${l.queue.length}人</span><div class="dots">${dots}</div>`;
+    if (m.innerHTML !== mh) m.innerHTML = mh;
+    m.className = 'mm' + (l.item.rare ? ' rare' : '') + (mine || walking ? ' me' : '') + (i === S.viewLane ? ' view' : '');
+  });
+  // ステータス
+  const pos = posInLane(p);
+  let st;
+  if (p.walkTo !== null) st = `🚶 レジ${p.walkTo + 1}へ移動中…`;
+  else if (p.lane !== null) {
+    const l = S.lanes[p.lane], eta = Math.ceil((pos + (1 - l.progress)) / laneRate(l) + l.stopT);
+    st = pos === 0 ? `🧾 レジ${l.i + 1}：お会計中！` : `🧍 レジ${l.i + 1}：あと${pos}人（約${eta}秒）`;
+    if (p.hoard) st += ' 🛍️×2';
+  } else st = '👆 並ぶ列を選ぼう！（商品カードをタップで詳細）';
+  const ps = $('#pstatus'); if (ps.textContent !== st) ps.textContent = st;
+  // 並びスキル
+  const qs = p.inv.queue, keys = IDS.queue.filter(k => qs[k]);
+  const qsig = keys.map(k => k + qs[k]).join(',') || 'none';
+  if (force || S.qsSig !== qsig) {
+    S.qsSig = qsig;
+    $('#qskills').innerHTML = keys.length ? keys.map(k => `<button class="qs" data-q="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="nm">${ITEMS[k].name}</span><span class="n">${qs[k]}</span></button>`).join('')
+      : '<div class="qs-empty">並びスキルなし（列で買えるよ）</div>';
+    document.querySelectorAll('#qskills .qs').forEach(b => b.onclick = () => useQueueSkill(player(), b.dataset.q));
+  }
+  $('#invCount').textContent = p.inv.count;
+  const m = Math.floor(S.t / 60), s = Math.floor(S.t % 60);
+  const ck = $('#shopTime'); ck.textContent = `${m}:${String(s).padStart(2, '0')}`; ck.classList.toggle('hurry', S.t <= 15);
+}
+function renderBars() {
+  const lanesEl = $('#lanes').children;
+  S.lanes.forEach((l, i) => { const b = lanesEl[i] && lanesEl[i].querySelector('.bar'); if (b) b.style.width = (l.queue.length ? l.progress * 100 : 0) + '%'; });
+}
+function showItemDetail(i) {
+  const l = S.lanes[i], def = ITEMS[l.item.id], p = player();
+  const npcs = l.queue.filter(x => !x.actor).length;
+  const rivals = l.queue.filter(x => x.actor && !x.actor.isPlayer).map(x => x.actor.emoji + x.actor.name).join('、') || 'なし';
+  const eta = Math.ceil((l.queue.length + 1) / laneRate(l) + l.stopT);
+  let own = '';
+  if (def.cat === 'active') { const lv = p.inv.active[l.item.id]; own = lv ? `持っている（Lv${lv}）→ Lv${lv + (l.item.rare ? 2 : 1)}に` : '新しいスキル'; }
+  else if (def.cat !== 'bag') { const n = p.inv[def.cat][l.item.id]; own = n ? `${n}個持っている` : 'まだ持っていない'; }
+  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div><span class="badge" style="background:${CAT[def.cat].color};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${CAT[def.cat].label}</span>
+    <h3 style="margin:4px 0 0">${l.item.rare ? '★' : ''}${def.name}</h3></div></div>
+    <p>${def.desc}${l.item.rare ? '<br><b style="color:var(--sale)">★レア：効果2倍（スキルは2レベル上がる）</b>' : ''}</p>
+    <div class="kv"><b>在庫</b><span>${l.stock}個（一般客も60%の確率で買っていく）</span><b>並んでいる</b><span>${l.queue.length}人（ライバル：${rivals}）</span>
+    <b>レジ</b><span>${speedLabel(l)}・今並ぶと約${eta}秒</span><b>あなた</b><span>${own || '-'}</span></div>
+    <div class="row"><button class="btn sub" data-close>とじる</button><button class="btn" id="mdJoin">この列に並ぶ</button></div>`);
+  $('#mdJoin').onclick = () => { closeModal(); playerJoin(i); };
+}
+function invHTML(a) {
+  const inv = a.inv, g = [];
+  for (const cat of ['active', 'passive', 'stat', 'queue']) {
+    const keys = Object.keys(inv[cat]); if (!keys.length) continue;
+    g.push(`<div class="inv-group" style="--cc:${CAT[cat].color}"><h4>${CAT[cat].label}</h4><div class="inv-list">${keys.map(k => `<span class="chip"><span class="emo">${ITEMS[k].icon}</span>${ITEMS[k].name} ${cat === 'active' ? 'Lv' : '×'}${inv[cat][k]}</span>`).join('')}</div></div>`);
+  }
+  return g.join('') || '<p>まだ何も持っていない</p>';
+}
+$('#invBtn').onclick = () => { Snd.se('tap'); openModal(`<h3>🧺 買ったもの</h3>${invHTML(player())}<div class="row"><button class="btn" data-close>とじる</button></div>`); };
+
+function endShop() {
+  S.ended = true; closeModal();
+  Snd.stopBgm(); Snd.se('close');
+  banner('閉店ガラガラ〜', 'バトルの時間だ！', 2200);
+  setTimeout(() => { if (G.screen === 'scr-shop') startLoadout(); }, 2300);
+}
+
+// =====================================================================
+//  準備画面
+// =====================================================================
+function autoLoadout(a) {
+  return Object.keys(a.inv.active).sort((x, y) => a.inv.active[y] - a.inv.active[x] || Math.random() - 0.5).slice(0, 3);
+}
+function startLoadout() {
+  for (const a of G.actors) { a.lane = null; a.walkTo = null; a.loadout = autoLoadout(a); }
+  show('scr-loadout'); Snd.bgm('title');
+  renderLoadout();
+}
+function renderLoadout() {
+  const p = player(), keys = Object.keys(p.inv.active).sort((x, y) => p.inv.active[y] - p.inv.active[x]);
+  $('#pickCount').textContent = `（${p.loadout.length}/3）`;
+  $('#skillPick').innerHTML = keys.map(k => `<button class="sp ${p.loadout.includes(k) ? 'sel' : ''}" data-k="${k}"><span class="lv">Lv${p.inv.active[k]}</span><div class="ic">${ITEMS[k].icon}</div><div class="nm">${ITEMS[k].name}</div></button>`).join('');
+  document.querySelectorAll('#skillPick .sp').forEach(b => b.onclick = () => {
+    const k = b.dataset.k, i = p.loadout.indexOf(k);
+    if (i >= 0) p.loadout.splice(i, 1); else if (p.loadout.length < 3) p.loadout.push(k); else { toast('3つまで！外してから選んでね', 'bad'); return; }
+    Snd.se('tap'); renderLoadout();
+  });
+  const f = buildFighter(p, 0, true);
+  $('#myStats').innerHTML = `<span>体力 <b>${Math.round(f.maxHp)}</b></span><span>攻撃 <b>${f.atk.toFixed(1)}</b></span><span>防御 <b>${f.def.toFixed(1)}</b></span>
+    <span>速さ <b>${Math.round(f.spd)}</b></span><span>攻速 <b>${f.aspd.toFixed(2)}</b></span><span>会心 <b>${Math.round(f.crit * 100)}%</b></span>`;
+  const pas = Object.keys(p.inv.passive);
+  $('#myPassives').innerHTML = pas.map(k => `<span class="chip"><span class="emo">${ITEMS[k].icon}</span>${ITEMS[k].name}×${p.inv.passive[k]}</span>`).join('') || '<span class="small-note">パッシブなし</span>';
+  $('#rivalList').innerHTML = G.actors.filter(a => !a.isPlayer).map(a => {
+    const rf = buildFighter(a, 0, true);
+    return `<div class="rv"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}・買い物${a.inv.count}個<br>
+      <span class="sk">${a.loadout.map(k => ITEMS[k].icon + '<small>Lv' + a.inv.active[k] + '</small>').join(' ')}</span> <span class="sk">${Object.keys(a.inv.passive).map(k => ITEMS[k].icon).join('')}</span></div></div>`;
+  }).join('');
+}
+$('#fightBtn').onclick = () => { Snd.se('tap'); startBattle(); };
+
+// =====================================================================
+//  バトル
+// =====================================================================
+const AW = 360, AH = 560;
+const SHELVES = [{ x: 50, y: 150, w: 90, h: 26 }, { x: 220, y: 150, w: 90, h: 26 }, { x: 50, y: 384, w: 90, h: 26 }, { x: 220, y: 384, w: 90, h: 26 }, { x: 150, y: 268, w: 60, h: 24 }];
+SHELVES.forEach(s => { s.goods = Array.from({ length: Math.floor(s.w / 12) }, () => pick(['#ff6b6b', '#ffd43b', '#4dabf7', '#69db7c', '#f783ac', '#ffa94d'])); });
+const SPAWNS = [[50, 60], [310, 60], [50, 500], [310, 500]];
+let B = null;
+const cv = $('#cv'), cx = cv.getContext('2d');
+
+function buildFighter(actor, i, preview) {
+  const c = actor.char, inv = actor.inv, n = k => inv.passive[k] || 0, s = k => inv.stat[k] || 0;
+  const maxHp = c.hp + 25 * s('hp');
+  const cdr = Math.min(0.5, 0.1 * n('cdr'));
+  const f = {
+    actor, name: actor.name, emoji: c.emoji, color: c.color, isPlayer: actor.isPlayer,
+    x: SPAWNS[i][0], y: SPAWNS[i][1], r: 16, kx: 0, ky: 0,
+    maxHp, hp: maxHp, atk: c.atk + 2 * s('atk'), def: c.def + 1.5 * s('def'),
+    spd: c.spd * (1 + 0.08 * s('spd')), aspd: c.aspd * (1 + 0.12 * s('aspd')),
+    lifesteal: 0.08 * n('lifesteal'), thorns: 0.2 * n('thorns'), cdr, berserk: 0.3 * n('berserk'), skilldmg: 0.2 * n('skilldmg'),
+    guts: n('guts'), regen: 0.012 * n('regen'), crit: 0.05 + 0.12 * n('crit'), dodge: Math.min(0.4, 0.1 * n('dodge')), push: n('push'),
+    dmgMul: actor.isPlayer ? 1 : DIFF[G.diff].dmg,
+    skills: [], dir: { x: i % 2 ? -1 : 1, y: i < 2 ? 1 : -1 }, atkCd: 0.5, shield: 0, shieldT: 0, hasteT: 0, markT: 0, slowT: 0, stunT: 0,
+    dashT: 0, dashX: 0, dashY: 0, dashHit: null, dashDmg: 0, swingT: 0, hitT: 0, alive: true, deadAt: 0,
+    ai: { think: 0, target: null, strafe: 1, mode: 'fight', skillDelay: 1 + Math.random(), stuck: 0, lx: 0, ly: 0, ax: 0, ay: 0 },
+  };
+  const dl = Math.hypot(f.dir.x, f.dir.y); f.dir.x /= dl; f.dir.y /= dl;
+  if (!preview) f.skills = actor.loadout.map(id => { const lv = inv.active[id]; return { id, lv, cd: 1.5, max: ITEMS[id].cd * Math.max(0.45, 1 - 0.08 * (lv - 1)) * (1 - cdr) }; });
+  return f;
+}
+
+function startBattle() {
+  show('scr-battle');
+  const fs = G.actors.map((a, i) => buildFighter(a, i));
+  B = { fs, t: 0, proj: [], fx: [], parts: [], texts: [], over: false, speed: 1, deaths: [], start: 2.2, zone: { x0: 0, y0: 0, x1: AW, y1: AH }, me: fs.find(f => f.isPlayer), shake: 0, endT: 0 };
+  layoutBattle();
+  buildBattleUI();
+  Snd.bgm('battle');
+  $('#bover').hidden = true;
+  lastT = performance.now();
+}
+function layoutBattle() {
+  if (!B) return;
+  const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  const top = 66, bottom = 196;
+  const availH = Math.max(200, r.height - top - bottom), availW = r.width - 16;
+  const sc = Math.min(availW / AW, availH / AH);
+  B.view = { dpr, sc, ox: (r.width - AW * sc) / 2, oy: top + (availH - AH * sc) / 2 };
+}
+function buildBattleUI() {
+  $('#bhud').innerHTML = B.fs.map((f, i) => `<div class="hp-chip ${f.isPlayer ? 'me' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('');
+  const me = B.me, wrap = $('#sbtns');
+  const pos = [[118, 22], [96, 104], [22, 132]]; // right, bottom offsets
+  wrap.innerHTML = me.skills.map((s, i) => `<button class="abtn sbtn" data-s="${i}" style="right:calc(max(16px,env(safe-area-inset-right,0px)) + ${pos[i][0]}px);bottom:calc(env(safe-area-inset-bottom,0px) + ${pos[i][1]}px)">${ITEMS[s.id].icon}<span class="cdv"></span><span class="lvb">Lv${s.lv}</span></button>`).join('');
+  wrap.querySelectorAll('.sbtn').forEach(b => {
+    b.addEventListener('pointerdown', e => { e.preventDefault(); Snd.init(); useSkill(B.me, +b.dataset.s); });
+  });
+}
+
+// ---- 入力 ----
+const input = { jx: 0, jy: 0, atk: false, keys: {}, joyId: null, jcx: 0, jcy: 0 };
+const joyzone = $('#joyzone'), joy = $('#joy'), knob = $('#knob');
+joyzone.addEventListener('pointerdown', e => {
+  e.preventDefault(); Snd.init();
+  input.joyId = e.pointerId; joyzone.setPointerCapture(e.pointerId);
+  const r = $('#controls').getBoundingClientRect();
+  joy.style.left = (e.clientX - r.left - 60) + 'px'; joy.style.top = (e.clientY - r.top - 60) + 'px'; joy.style.bottom = 'auto';
+  input.jcx = e.clientX; input.jcy = e.clientY; moveJoy(e);
+});
+joyzone.addEventListener('pointermove', e => { if (e.pointerId === input.joyId) moveJoy(e); });
+const endJoy = e => { if (e.pointerId !== input.joyId) return; input.joyId = null; input.jx = input.jy = 0; knob.style.transform = ''; };
+joyzone.addEventListener('pointerup', endJoy); joyzone.addEventListener('pointercancel', endJoy);
+function moveJoy(e) {
+  let dx = e.clientX - input.jcx, dy = e.clientY - input.jcy; const d = Math.hypot(dx, dy), m = 46;
+  if (d > m) { dx = dx / d * m; dy = dy / d * m; }
+  knob.style.transform = `translate(${dx}px,${dy}px)`;
+  input.jx = dx / m; input.jy = dy / m;
+}
+const atkBtn = $('#atkBtn');
+atkBtn.addEventListener('pointerdown', e => { e.preventDefault(); Snd.init(); input.atk = true; });
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => atkBtn.addEventListener(ev, () => input.atk = false));
+window.addEventListener('keydown', e => {
+  input.keys[e.key.toLowerCase()] = true;
+  if (G.screen !== 'scr-battle' || !B) return;
+  const k = e.key.toLowerCase();
+  const map = { k: 0, '1': 0, l: 1, '2': 1, ';': 2, '3': 2 };
+  if (k in map) useSkill(B.me, map[k]);
+  if (k === ' ') e.preventDefault();
+});
+window.addEventListener('keyup', e => { input.keys[e.key.toLowerCase()] = false; });
+function playerMoveVec() {
+  let x = input.jx, y = input.jy; const K = input.keys;
+  if (K.a || K.arrowleft) x -= 1; if (K.d || K.arrowright) x += 1; if (K.w || K.arrowup) y -= 1; if (K.s || K.arrowdown) y += 1;
+  const d = Math.hypot(x, y); if (d > 1) { x /= d; y /= d; }
+  return { x, y };
+}
+
+// ---- 戦闘ロジック ----
+const enemies = f => B.fs.filter(o => o !== f && o.alive);
+function nearest(f, maxD = 1e9) {
+  let best = null, bd = maxD;
+  for (const o of enemies(f)) { const d = Math.hypot(o.x - f.x, o.y - f.y) - o.r; if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+function aimAt(f, t) { if (!t) return { ...f.dir }; const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1; return { x: dx / d, y: dy / d }; }
+function addText(x, y, txt, color = '#fff', size = 16) { B.texts.push({ x, y, txt, color, size, t: 0.9 }); }
+function burst(x, y, color, n = 8, sp = 140) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, v = rnd(sp * 0.4, sp); B.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, t: rnd(0.3, 0.6), color, r: rnd(2, 4) }); } }
+
+function damage(src, tgt, base, o = {}) {
+  if (!tgt.alive || B.over) return 0;
+  if (!o.reflect && !o.zone && Math.random() < tgt.dodge) { addText(tgt.x, tgt.y - 24, 'MISS', '#cbd5e1', 13); return 0; }
+  let amt = base;
+  if (src && !o.zone) {
+    amt *= src.dmgMul;
+    if (src.berserk && src.hp < src.maxHp * 0.5) amt *= 1 + src.berserk;
+    if (o.skill) amt *= 1 + src.skilldmg;
+  }
+  if (tgt.markT > 0) amt *= 1.3;
+  let crit = false;
+  if (src && !o.reflect && !o.zone && Math.random() < src.crit) { amt *= 1.8; crit = true; }
+  if (!o.zone) amt = Math.max(1, amt - tgt.def);
+  if (tgt.shield > 0 && !o.zone) { const a = Math.min(tgt.shield, amt); tgt.shield -= a; amt -= a; if (amt <= 0) { addText(tgt.x, tgt.y - 24, 'ガード', '#93c5fd', 13); return 0; } }
+  tgt.hp -= amt; tgt.hitT = 0.15;
+  if (!o.zone) addText(tgt.x + rnd(-8, 8), tgt.y - 26, (crit ? '会心 ' : '') + Math.round(amt), crit ? '#ffd43b' : '#fff', crit ? 19 : 15);
+  if (src && src.alive && src.lifesteal && !o.reflect) src.hp = Math.min(src.maxHp, src.hp + amt * src.lifesteal);
+  if (src && src.alive && tgt.thorns && !o.reflect && !o.zone && src !== tgt) damage(tgt, src, amt * tgt.thorns, { reflect: true });
+  if (o.knock && src) { const d = aimAt(src, tgt); tgt.kx += d.x * o.knock; tgt.ky += d.y * o.knock; }
+  if (o.stun) tgt.stunT = Math.max(tgt.stunT, o.stun);
+  if (o.slow) tgt.slowT = Math.max(tgt.slowT, o.slow);
+  if (o.mark) tgt.markT = Math.max(tgt.markT, o.mark);
+  if (!o.zone) { burst(tgt.x, tgt.y, crit ? '#ffd43b' : '#fff', crit ? 10 : 5); if (tgt.isPlayer || (src && src.isPlayer)) Snd.se('hit'); }
+  if (tgt.isPlayer && !o.zone) B.shake = Math.max(B.shake, 0.15);
+  if (tgt.hp <= 0) {
+    if (tgt.guts > 0) { tgt.guts--; tgt.hp = 1; addText(tgt.x, tgt.y - 40, '根性！', '#ff6b6b', 18); }
+    else kill(tgt, src);
+  }
+  return amt;
+}
+function kill(f, src) {
+  f.alive = false; f.hp = 0; f.deadAt = B.t; B.deaths.push(f);
+  burst(f.x, f.y, f.color, 24, 220); Snd.se('ko');
+  const who = src && src !== f ? (src.isPlayer ? 'あなた' : src.name) : '閉店シャッター';
+  banner(`${f.isPlayer ? 'あなた' : f.name} ダウン！`, `${who}の勝ち`, 1200);
+  if (f.isPlayer) {
+    const bo = $('#bover'); bo.hidden = false;
+    bo.innerHTML = `<div class="big">やられた…</div><button class="btn" id="ffBtn">早送りで結果へ</button>`;
+    $('#ffBtn').onclick = () => { B.speed = 5; bo.hidden = true; };
+  }
+}
+
+function basicAttack(f) {
+  if (f.atkCd > 0 || f.stunT > 0 || f.dashT > 0) return;
+  const haste = f.hasteT > 0 ? 1.6 : 1;
+  f.atkCd = 0.62 / (f.aspd * haste);
+  const t = nearest(f, 70); if (t) f.dir = aimAt(f, t);
+  f.swingT = 0.18;
+  if (f.isPlayer) Snd.se('swing');
+  for (const o of enemies(f)) {
+    const dx = o.x - f.x, dy = o.y - f.y, d = Math.hypot(dx, dy);
+    if (d - o.r > 40) continue;
+    if (d > 4 && (dx * f.dir.x + dy * f.dir.y) / d < 0.35) continue;
+    damage(f, o, f.atk * (1 + 0.15 * f.push), { knock: 120 + 70 * f.push });
+  }
+}
+function useSkill(f, i) {
+  if (!B || B.over || B.start > 0 || !f.alive) return false;
+  const s = f.skills[i]; if (!s || s.cd > 0 || f.stunT > 0) return false;
+  const M = 1 + 0.3 * (s.lv - 1), atk = f.atk, t = nearest(f, 340);
+  const aim = aimAt(f, t); f.dir = aim;
+  s.cd = s.max;
+  if (f.isPlayer || Math.random() < 0.5) Snd.se('skill');
+  switch (s.id) {
+    case 'bag':
+      B.fx.push({ kind: 'ring', x: f.x, y: f.y, r: 72, t: 0.3, max: 0.3, color: '#ffd43b' });
+      for (const o of enemies(f)) if (Math.hypot(o.x - f.x, o.y - f.y) < 72 + o.r) damage(f, o, (1.3 * atk + 6) * M, { skill: 1, knock: 260 });
+      f.spinT = 0.35; break;
+    case 'cart':
+      f.dashT = 0.3; f.dashX = aim.x * 640; f.dashY = aim.y * 640; f.dashHit = new Set(); f.dashDmg = (1.5 * atk + 8) * M; break;
+    case 'flyer':
+      for (let k = -2; k <= 2; k++) { const a = Math.atan2(aim.y, aim.x) + k * 0.22; B.proj.push({ kind: 'line', x: f.x, y: f.y, vx: Math.cos(a) * 390, vy: Math.sin(a) * 390, r: 10, owner: f, dmg: (0.6 * atk + 3) * M, life: 0.75, icon: '📰', hit: new Set(), rot: 0 }); }
+      break;
+    case 'tuna': {
+      B.fx.push({ kind: 'arc', x: f.x, y: f.y, a: Math.atan2(aim.y, aim.x), r: 90, t: 0.25, max: 0.25, color: '#93c5fd' });
+      for (const o of enemies(f)) {
+        const dx = o.x - f.x, dy = o.y - f.y, d = Math.hypot(dx, dy);
+        if (d - o.r < 90 && (d < 6 || (dx * aim.x + dy * aim.y) / d > 0.45)) damage(f, o, (2.3 * atk + 10) * M, { skill: 1, stun: 0.7, knock: 200 });
+      }
+      B.shake = Math.max(B.shake, f.isPlayer ? 0.2 : 0.08); break;
+    }
+    case 'egg': {
+      const tx = t ? t.x : f.x + aim.x * 160, ty = t ? t.y : f.y + aim.y * 160;
+      B.proj.push({ kind: 'lob', sx: f.x, sy: f.y, tx, ty, x: f.x, y: f.y, t: 0, dur: 0.55, owner: f, dmg: (1.5 * atk + 8) * M, icon: '🥚', r: 62, hit: new Set() });
+      break;
+    }
+    case 'bread':
+      B.proj.push({ kind: 'boom', x: f.x, y: f.y, vx: aim.x * 520, vy: aim.y * 520, r: 13, owner: f, dmg: (1.0 * atk + 5) * M, life: 1.6, t: 0, icon: '🥖', hit: new Set(), back: false, rot: 0 });
+      break;
+    case 'sample': {
+      const h = f.maxHp * (0.25 + 0.05 * (s.lv - 1)); f.hp = Math.min(f.maxHp, f.hp + h);
+      addText(f.x, f.y - 30, '+' + Math.round(h), '#4ade80', 18); burst(f.x, f.y, '#4ade80', 12); Snd.se('heal'); break;
+    }
+    case 'timesale':
+      f.hasteT = 5 + 0.5 * (s.lv - 1); addText(f.x, f.y - 30, 'タイムセール！', '#ffd43b', 15); break;
+    case 'point':
+      f.shield = f.maxHp * (0.3 + 0.06 * (s.lv - 1)); f.shieldT = 5; addText(f.x, f.y - 30, 'バリア', '#93c5fd', 15); break;
+    case 'seal':
+      B.proj.push({ kind: 'home', x: f.x, y: f.y, vx: aim.x * 300, vy: aim.y * 300, r: 11, owner: f, target: t, dmg: (1.1 * atk + 6) * M, life: 2.2, icon: '🏷️', hit: new Set(), rot: 0 });
+      break;
+  }
+  return true;
+}
+
+function collideCircleRect(f, s) {
+  const nx = clamp(f.x, s.x, s.x + s.w), ny = clamp(f.y, s.y, s.y + s.h);
+  const dx = f.x - nx, dy = f.y - ny, d = Math.hypot(dx, dy);
+  if (d < f.r) {
+    if (d > 0.01) { f.x = nx + dx / d * f.r; f.y = ny + dy / d * f.r; }
+    else { // 中心が棚の中
+      const l = f.x - s.x, r = s.x + s.w - f.x, t = f.y - s.y, b = s.y + s.h - f.y, m = Math.min(l, r, t, b);
+      if (m === l) f.x = s.x - f.r; else if (m === r) f.x = s.x + s.w + f.r; else if (m === t) f.y = s.y - f.r; else f.y = s.y + s.h + f.r;
+    }
+    return true;
+  }
+  return false;
+}
+function inZone(x, y) { const z = B.zone; return x > z.x0 && x < z.x1 && y > z.y0 && y < z.y1; }
+
+function battleUpdate(dt) {
+  if (!B) return;
+  if (B.start > 0) {
+    const prev = Math.ceil(B.start); B.start -= dt;
+    if (Math.ceil(B.start) !== prev) { if (B.start > 0) { banner(String(Math.ceil(B.start)), '', 600); Snd.se('tick'); } else { banner('ファイト！', '', 800); Snd.se('fight'); } }
+    return;
+  }
+  if (B.over) { B.endT -= dt; return; }
+  B.t += dt;
+  // 閉店シャッター (場外縮小)
+  const k = clamp((B.t - 35) / 40, 0, 1);
+  const fw = 150, fh = 220;
+  B.zone = { x0: k * (AW - fw) / 2, x1: AW - k * (AW - fw) / 2, y0: k * (AH - fh) / 2, y1: AH - k * (AH - fh) / 2 };
+  if (B.t > 35 && B.t - dt <= 35) { banner('閉店シャッター！', '外側にいるとダメージ', 1500); Snd.se('stop'); }
+
+  for (const f of B.fs) {
+    if (!f.alive) continue;
+    // タイマー類
+    f.atkCd -= dt; f.swingT -= dt; f.hitT -= dt; f.spinT = (f.spinT || 0) - dt;
+    if (f.hasteT > 0) f.hasteT -= dt; if (f.markT > 0) f.markT -= dt; if (f.slowT > 0) f.slowT -= dt; if (f.stunT > 0) f.stunT -= dt;
+    if (f.shieldT > 0) { f.shieldT -= dt; if (f.shieldT <= 0) f.shield = 0; }
+    for (const s of f.skills) if (s.cd > 0) s.cd -= dt;
+    if (f.regen) f.hp = Math.min(f.maxHp, f.hp + f.maxHp * f.regen * dt);
+    if (!inZone(f.x, f.y)) { f.zoneTick = (f.zoneTick || 0) + dt; if (f.zoneTick > 0.5) { f.zoneTick = 0; damage(null, f, f.maxHp * 0.05, { zone: 1 }); addText(f.x, f.y - 26, '場外', '#ff6b6b', 13); } }
+    if (!f.alive) continue;
+    // 移動
+    let mv = { x: 0, y: 0 };
+    if (f.isPlayer) { mv = playerMoveVec(); if (input.atk || input.keys[' '] || input.keys.j) basicAttack(f); }
+    else mv = aiUpdate(f, dt);
+    const sp = f.spd * (f.hasteT > 0 ? 1.4 : 1) * (f.slowT > 0 ? 0.55 : 1);
+    if (f.stunT > 0) mv = { x: 0, y: 0 };
+    const ox = f.x, oy = f.y;
+    if (f.dashT > 0) {
+      f.dashT -= dt; f.x += f.dashX * dt; f.y += f.dashY * dt;
+      for (const o of enemies(f)) if (!f.dashHit.has(o) && Math.hypot(o.x - f.x, o.y - f.y) < f.r + o.r + 6) { f.dashHit.add(o); damage(f, o, f.dashDmg, { skill: 1, knock: 280 }); }
+      if (Math.random() < 0.6) B.parts.push({ x: f.x, y: f.y, vx: 0, vy: 0, t: 0.3, color: f.color, r: 6 });
+    } else {
+      f.x += mv.x * sp * dt; f.y += mv.y * sp * dt;
+      if (Math.hypot(mv.x, mv.y) > 0.2) { const d = Math.hypot(mv.x, mv.y); if (f.swingT <= 0) f.dir = { x: mv.x / d, y: mv.y / d }; }
+    }
+    // ノックバック
+    f.x += f.kx * dt; f.y += f.ky * dt; f.kx *= Math.pow(0.002, dt); f.ky *= Math.pow(0.002, dt);
+    // 壁・棚
+    for (const s of SHELVES) collideCircleRect(f, s);
+    f.x = clamp(f.x, f.r, AW - f.r); f.y = clamp(f.y, f.r, AH - f.r);
+    f.ai.moved = Math.hypot(f.x - ox, f.y - oy);
+  }
+  // 体同士の押し合い
+  for (let i = 0; i < B.fs.length; i++) for (let j = i + 1; j < B.fs.length; j++) {
+    const a = B.fs[i], b = B.fs[j]; if (!a.alive || !b.alive) continue;
+    const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy), m = a.r + b.r;
+    if (d < m && d > 0.01) { const p = (m - d) / 2; a.x -= dx / d * p; a.y -= dy / d * p; b.x += dx / d * p; b.y += dy / d * p; }
+  }
+  // 飛び道具
+  for (const p of B.proj) {
+    if (p.kind === 'lob') {
+      p.t += dt; const u = Math.min(1, p.t / p.dur);
+      p.x = p.sx + (p.tx - p.sx) * u; p.y = p.sy + (p.ty - p.sy) * u; p.z = Math.sin(u * Math.PI) * 60;
+      if (u >= 1) {
+        p.dead = true; B.fx.push({ kind: 'ring', x: p.x, y: p.y, r: p.r, t: 0.35, max: 0.35, color: '#fde68a' }); burst(p.x, p.y, '#fde68a', 16, 200);
+        Snd.se('boom');
+        for (const o of enemies(p.owner)) if (Math.hypot(o.x - p.x, o.y - p.y) < p.r + o.r) damage(p.owner, o, p.dmg, { skill: 1, slow: 2, knock: 150 });
+      }
+      continue;
+    }
+    p.life -= dt; p.rot += dt * 12;
+    if (p.kind === 'home' && p.target && p.target.alive) {
+      const dx = p.target.x - p.x, dy = p.target.y - p.y, d = Math.hypot(dx, dy) || 1, sp = 300;
+      p.vx += (dx / d * sp - p.vx) * Math.min(1, dt * 4); p.vy += (dy / d * sp - p.vy) * Math.min(1, dt * 4);
+    }
+    if (p.kind === 'boom') {
+      p.t += dt;
+      if (!p.back && p.t > 0.42) { p.back = true; p.hit = new Set(); }
+      if (p.back) {
+        const o = p.owner, dx = o.x - p.x, dy = o.y - p.y, d = Math.hypot(dx, dy) || 1;
+        p.vx = dx / d * 560; p.vy = dy / d * 560;
+        if (d < 20 || !o.alive) p.dead = true;
+      }
+    }
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    if (p.life <= 0 || p.x < -30 || p.x > AW + 30 || p.y < -30 || p.y > AH + 30) p.dead = true;
+    for (const o of enemies(p.owner)) {
+      if (p.hit.has(o)) continue;
+      if (Math.hypot(o.x - p.x, o.y - p.y) < p.r + o.r) {
+        p.hit.add(o);
+        damage(p.owner, o, p.dmg, { skill: 1, knock: 90, mark: p.kind === 'home' ? 4 : 0 });
+        if (p.kind === 'line' || p.kind === 'home') { p.dead = true; break; }
+      }
+    }
+  }
+  B.proj = B.proj.filter(p => !p.dead);
+  for (const e of B.fx) e.t -= dt; B.fx = B.fx.filter(e => e.t > 0);
+  for (const p of B.parts) { p.t -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.9; p.vy *= 0.9; } B.parts = B.parts.filter(p => p.t > 0);
+  for (const t of B.texts) { t.t -= dt; t.y -= 40 * dt; } B.texts = B.texts.filter(t => t.t > 0);
+  if (B.shake > 0) B.shake -= dt;
+  // 決着
+  const alive = B.fs.filter(f => f.alive);
+  if (alive.length <= 1 && !B.over) {
+    B.over = true; B.endT = 2.2; B.speed = 1;
+    const w = alive[0];
+    banner(w ? (w.isPlayer ? '優勝！！' : `${w.name}の優勝`) : '引き分け', '', 2000);
+    Snd.stopBgm(); Snd.se(w && w.isPlayer ? 'win' : 'lose');
+    setTimeout(showResult, 2300);
+  }
+}
+
+// ---- CPUのバトルAI ----
+function aiUpdate(f, dt) {
+  const a = f.ai, D = DIFF[G.diff];
+  a.think -= dt; a.skillDelay -= dt;
+  if (a.think <= 0 || !a.target || !a.target.alive) {
+    a.think = rnd(0.5, 1.1) * D.react;
+    let best = null, bs = 1e9;
+    for (const o of enemies(f)) {
+      const d = Math.hypot(o.x - f.x, o.y - f.y);
+      const s = d * (0.55 + 0.9 * o.hp / o.maxHp) * (o === a.target ? 0.8 : 1);
+      if (s < bs) { bs = s; best = o; }
+    }
+    a.target = best;
+    if (Math.random() < 0.3) a.strafe *= -1;
+    a.mode = f.hp < f.maxHp * 0.3 && Math.random() < 0.45 ? 'flee' : 'fight';
+  }
+  const t = a.target; if (!t) return { x: 0, y: 0 };
+  const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d;
+  let mx = 0, my = 0;
+  if (a.mode === 'flee') { mx = -ux + -uy * a.strafe * 0.5; my = -uy + ux * a.strafe * 0.5; }
+  else if (d > 46) { mx = ux - uy * a.strafe * 0.35; my = uy + ux * a.strafe * 0.35; }
+  else { mx = -uy * a.strafe * 0.6; my = ux * a.strafe * 0.6; }
+  // 場外を避ける
+  const z = B.zone, cxz = (z.x0 + z.x1) / 2, cyz = (z.y0 + z.y1) / 2;
+  if (!inZone(f.x, f.y) || f.x - z.x0 < 24 || z.x1 - f.x < 24 || f.y - z.y0 < 24 || z.y1 - f.y < 24) {
+    const ex = cxz - f.x, ey = cyz - f.y, ed = Math.hypot(ex, ey) || 1; mx += ex / ed * 1.5; my += ey / ed * 1.5;
+  }
+  // 引っかかり対策
+  const want = Math.hypot(mx, my);
+  if (want > 0.3 && f.ai.moved !== undefined && f.ai.moved < f.spd * dt * 0.25) a.stuck += dt; else a.stuck = Math.max(0, a.stuck - dt);
+  if (a.stuck > 0.25) { a.ax = -my * a.strafe; a.ay = mx * a.strafe; a.stuckT = 0.5; a.stuck = 0; }
+  if (a.stuckT > 0) { a.stuckT -= dt; mx = a.ax * 1.2 + mx * 0.3; my = a.ay * 1.2 + my * 0.3; }
+  const ml = Math.hypot(mx, my); if (ml > 1) { mx /= ml; my /= ml; }
+  mx *= D.aggro + 0.15; my *= D.aggro + 0.15;
+  // 攻撃
+  if (d - t.r < 42 && Math.random() < D.aggro + 0.1) basicAttack(f);
+  // スキル
+  if (a.skillDelay <= 0) {
+    for (let i = 0; i < f.skills.length; i++) {
+      const s = f.skills[i]; if (s.cd > 0) continue;
+      const hpF = f.hp / f.maxHp; let use = false;
+      switch (s.id) {
+        case 'bag': use = enemies(f).some(o => Math.hypot(o.x - f.x, o.y - f.y) < 80); break;
+        case 'tuna': use = d < 95; break;
+        case 'cart': use = d < 230 && d > 40; break;
+        case 'flyer': case 'seal': case 'bread': use = d < 260; break;
+        case 'egg': use = d < 300; break;
+        case 'sample': use = hpF < 0.55; break;
+        case 'timesale': use = d < 160; break;
+        case 'point': use = hpF < 0.75 && d < 120; break;
+      }
+      if (use) { useSkill(f, i); a.skillDelay = rnd(0.4, 1.2) * D.react; break; }
+    }
+  }
+  return { x: mx, y: my };
+}
+
+// ---- バトル描画 ----
+function drawBattle() {
+  if (!B || !B.view) return;
+  const { dpr, sc, ox, oy } = B.view;
+  cx.setTransform(1, 0, 0, 1, 0, 0);
+  cx.fillStyle = '#2a2f4f'; cx.fillRect(0, 0, cv.width, cv.height);
+  let sx = 0, sy = 0; if (B.shake > 0) { sx = rnd(-4, 4); sy = rnd(-4, 4); }
+  cx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * (ox + sx), dpr * (oy + sy));
+  // 床
+  for (let y = 0; y < AH; y += 40) for (let x = 0; x < AW; x += 40) { cx.fillStyle = ((x + y) / 40) % 2 ? '#e6f4ee' : '#d4ece2'; cx.fillRect(x, y, 40, 40); }
+  cx.strokeStyle = '#1d2340'; cx.lineWidth = 4; cx.strokeRect(0, 0, AW, AH);
+  // 棚
+  for (const s of SHELVES) {
+    cx.fillStyle = 'rgba(0,0,0,.15)'; cx.fillRect(s.x + 3, s.y + 5, s.w, s.h);
+    cx.fillStyle = '#8d6e63'; cx.fillRect(s.x, s.y, s.w, s.h);
+    cx.fillStyle = '#a1887f'; cx.fillRect(s.x, s.y, s.w, 6);
+    s.goods.forEach((c, i) => { cx.fillStyle = c; cx.fillRect(s.x + 3 + i * 12, s.y + 9, 9, s.h - 13); });
+  }
+  // 場外
+  const z = B.zone;
+  if (z.x0 > 0.5) {
+    cx.fillStyle = 'rgba(255,59,59,.22)';
+    cx.beginPath(); cx.rect(0, 0, AW, AH); cx.rect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.fill('evenodd');
+    cx.setLineDash([8, 6]); cx.strokeStyle = '#ff3b3b'; cx.lineWidth = 3; cx.strokeRect(z.x0, z.y0, z.x1 - z.x0, z.y1 - z.y0); cx.setLineDash([]);
+  }
+  // エフェクト
+  for (const e of B.fx) {
+    const u = 1 - e.t / e.max;
+    cx.globalAlpha = 1 - u;
+    cx.strokeStyle = e.color; cx.lineWidth = 6;
+    if (e.kind === 'ring') { cx.beginPath(); cx.arc(e.x, e.y, e.r * (0.4 + 0.6 * u), 0, 6.28); cx.stroke(); }
+    if (e.kind === 'arc') { cx.fillStyle = e.color; cx.beginPath(); cx.moveTo(e.x, e.y); cx.arc(e.x, e.y, e.r, e.a - 1.1, e.a + 1.1); cx.closePath(); cx.fill(); }
+    cx.globalAlpha = 1;
+  }
+  const EF = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
+  cx.textAlign = 'center'; cx.textBaseline = 'middle';
+  // キャラ
+  const order = [...B.fs].sort((a, b) => a.y - b.y);
+  for (const f of order) {
+    if (!f.alive) { cx.globalAlpha = 0.35; cx.font = `20px ${EF}`; cx.fillText('💫', f.x, f.y); cx.globalAlpha = 1; continue; }
+    cx.fillStyle = 'rgba(0,0,0,.2)'; cx.beginPath(); cx.ellipse(f.x, f.y + 14, 15, 6, 0, 0, 6.28); cx.fill();
+    if (f.hasteT > 0) { cx.strokeStyle = '#ffd43b'; cx.lineWidth = 2; for (let k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(f.x - f.dir.x * (20 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (20 + k * 5) + f.dir.x * (k - 1) * 8); cx.lineTo(f.x - f.dir.x * (32 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (32 + k * 5) + f.dir.x * (k - 1) * 8); cx.stroke(); } }
+    // 通常攻撃の振り
+    if (f.swingT > 0) {
+      const a = Math.atan2(f.dir.y, f.dir.x);
+      cx.fillStyle = 'rgba(255,255,255,.55)'; cx.beginPath(); cx.moveTo(f.x, f.y); cx.arc(f.x, f.y, f.r + 36, a - 0.9, a + 0.9); cx.closePath(); cx.fill();
+    }
+    cx.fillStyle = f.hitT > 0 ? '#fff' : f.color;
+    cx.beginPath(); cx.arc(f.x, f.y, f.r, 0, 6.28); cx.fill();
+    cx.lineWidth = 3; cx.strokeStyle = '#1d2340'; cx.stroke();
+    cx.save(); cx.translate(f.x, f.y); if (f.spinT > 0) cx.rotate(f.spinT * 30);
+    cx.font = `21px ${EF}`; cx.fillText(f.emoji, 0, 1); cx.restore();
+    // 向きの手 (エコバッグ)
+    cx.font = `13px ${EF}`; cx.fillText(f.dashT > 0 ? '🛒' : '👜', f.x + f.dir.x * 20, f.y + f.dir.y * 20);
+    if (f.shield > 0) { cx.strokeStyle = 'rgba(147,197,253,.9)'; cx.lineWidth = 3; cx.beginPath(); cx.arc(f.x, f.y, f.r + 7, 0, 6.28); cx.stroke(); }
+    if (f.stunT > 0) { cx.font = `12px ${EF}`; cx.fillText('💫', f.x, f.y - 22); }
+    if (f.markT > 0) { cx.font = `11px ${EF}`; cx.fillText('🏷️', f.x + 14, f.y - 12); }
+    if (f.slowT > 0) { cx.font = `11px ${EF}`; cx.fillText('🍳', f.x - 14, f.y - 12); }
+    // HPバー
+    const w = 34, hpu = f.hp / f.maxHp;
+    cx.fillStyle = '#1d2340'; cx.fillRect(f.x - w / 2 - 1, f.y - 31, w + 2, 7);
+    cx.fillStyle = hpu > 0.5 ? '#22c55e' : hpu > 0.25 ? '#facc15' : '#ef4444'; cx.fillRect(f.x - w / 2, f.y - 30, w * hpu, 5);
+    if (f.shield > 0) { cx.fillStyle = '#93c5fd'; cx.fillRect(f.x - w / 2, f.y - 30, w * Math.min(1, f.shield / f.maxHp), 2); }
+    cx.font = 'bold 9px "M PLUS Rounded 1c",sans-serif'; cx.fillStyle = f.isPlayer ? '#b45309' : '#1d2340';
+    cx.fillText(f.isPlayer ? '▼YOU' : f.name, f.x, f.y - 38);
+  }
+  // 飛び道具
+  for (const p of B.proj) {
+    cx.save(); cx.translate(p.x, p.y - (p.z || 0));
+    if (p.kind === 'lob') { cx.fillStyle = 'rgba(0,0,0,.18)'; cx.beginPath(); cx.ellipse(0, p.z || 0, 8, 3, 0, 0, 6.28); cx.fill(); }
+    cx.rotate(p.rot || 0); cx.font = `${p.kind === 'lob' ? 20 : 18}px ${EF}`; cx.fillText(p.icon, 0, 0); cx.restore();
+  }
+  for (const p of B.parts) { cx.globalAlpha = Math.min(1, p.t * 3); cx.fillStyle = p.color; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 6.28); cx.fill(); }
+  cx.globalAlpha = 1;
+  for (const t of B.texts) {
+    cx.globalAlpha = Math.min(1, t.t * 2.5); cx.font = `800 ${t.size}px "M PLUS Rounded 1c",sans-serif`;
+    cx.lineWidth = 3; cx.strokeStyle = '#1d2340'; cx.strokeText(t.txt, t.x, t.y); cx.fillStyle = t.color; cx.fillText(t.txt, t.x, t.y);
+  }
+  cx.globalAlpha = 1;
+}
+function updateBattleHUD() {
+  const chips = $('#bhud').children;
+  B.fs.forEach((f, i) => { const c = chips[i]; if (!c) return; c.querySelector('.hb i').style.width = Math.max(0, f.hp / f.maxHp * 100) + '%'; c.classList.toggle('dead', !f.alive); });
+  const me = B.me;
+  document.querySelectorAll('#sbtns .sbtn').forEach(b => {
+    const s = me.skills[+b.dataset.s]; const p = s.cd > 0 ? (s.cd / s.max) * 100 : 0;
+    b.querySelector('.cdv').style.setProperty('--p', p + '%'); b.classList.toggle('ready', s.cd <= 0 && me.alive);
+  });
+  const z = B.t < 35 ? `閉店シャッターまで ${Math.ceil(35 - B.t)}秒` : '閉店シャッター 作動中！';
+  const el = $('#btime'); const txt = B.start > 0 ? '' : z; if (el.textContent !== txt) el.textContent = txt;
+}
+
+// =====================================================================
+//  結果
+// =====================================================================
+function showResult() {
+  if (!B) return;
+  const alive = B.fs.filter(f => f.alive);
+  const ranking = [...alive, ...[...B.deaths].reverse()];
+  const myRank = ranking.findIndex(f => f.isPlayer) + 1;
+  const msgs = { 1: '本日のお買い得王！', 2: 'おしい！あと一歩', 3: 'まずまずの戦果', 4: 'また明日の特売で…' };
+  const p = player();
+  $('#scr-result').innerHTML = `<div class="rank-hero"><div class="emo">${myRank === 1 ? '👑' : myRank === 4 ? '😵' : '🛍️'}</div><div class="r">${myRank}位</div><div style="font-weight:800">${msgs[myRank]}</div></div>
+    <div class="rank-list">${ranking.map((f, i) => `<div class="rank-row ${f.isPlayer ? 'me' : ''}"><span class="no">${i + 1}位</span><span class="emo" style="font-size:24px">${f.emoji}</span><span style="flex:1">${f.isPlayer ? 'あなた（' + f.name + '）' : f.name}</span><span style="font-size:12px;opacity:.7">買い物${f.actor.inv.count}個</span></div>`).join('')}</div>
+    <div class="panel"><h4>あなたの買い物</h4>${invHTML(p)}</div>
+    <div class="row" style="display:flex;gap:10px"><button class="btn sub" id="toTitle" style="flex:1">タイトルへ</button><button class="btn" id="again" style="flex:1">もう一度！</button></div>`;
+  show('scr-result'); B = null;
+  Snd.bgm('title');
+  $('#again').onclick = () => { Snd.se('tap'); startShop(); };
+  $('#toTitle').onclick = () => { Snd.se('tap'); show('scr-title'); };
+}
+
+// =====================================================================
+//  メインループ
+// =====================================================================
+let lastT = performance.now();
+function loop(now) {
+  let dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+  if (G.screen === 'scr-shop' && S && !S.ended) {
+    shopUpdate(dt);
+    S.renderT -= dt;
+    if (S.renderT <= 0) { S.renderT = 0.1; renderShop(false); }
+    renderBars();
+  } else if (G.screen === 'scr-battle' && B) {
+    const steps = B.speed;
+    for (let i = 0; i < steps && B; i++) battleUpdate(dt);
+    if (B) { drawBattle(); updateBattleHUD(); }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
+window.__game = { G, get S() { return S; }, get B() { return B; }, shopUpdate, startShop, endShop, startBattle, useQueueSkill, playerJoin };
+</script>
+</body>
+</html>

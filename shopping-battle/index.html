@@ -986,12 +986,16 @@ function shopUpdate(dt) {
   const lg = S.lanes[LEGEND_LANE];
   if (!lg.closed) { lg.openT -= dt; if (lg.openT <= 0) closeLegend('✨ 伝説のレジは閉まった…'); }
   // 一般客の来店
+  // 店内の一般客を「開いている列×6人」くらいに保つ。少ないほど来店が速くなる
   S.spawnT -= dt;
-  const total = S.lanes.reduce((s, l) => s + l.queue.length, 0);
   if (S.spawnT <= 0) {
-    S.spawnT = rnd(0.25, 0.55);
-    if (total < 84) {
-      const l = wpick(S.lanes.filter(l => !l.closed).map(l => [l, (l.item.rare ? 3 : 1) * (l.saleT > 0 ? 3 : 1) * (l.kind === 'legend' ? 4 : l.kind === 'gacha' ? 1.2 : 1) / (1 + l.queue.length * 0.22)]));
+    const open = S.lanes.filter(l => !l.closed);
+    const npcs = open.reduce((s, l) => s + l.queue.filter(q => !q.actor).length, 0);
+    const target = open.length * 6;
+    const short = npcs / target;
+    S.spawnT = short < 0.7 ? rnd(0.05, 0.1) : short < 1 ? rnd(0.15, 0.3) : rnd(0.5, 0.9);
+    if (npcs < target * 1.4) {
+      const l = wpick(open.map(l => [l, (l.item.rare ? 3 : 1) * (l.saleT > 0 ? 3 : 1) * (l.kind === 'legend' ? 4 : l.kind === 'gacha' ? 1.2 : 1) * (l.queue.length < 2 ? 3 : 1) / (1 + l.queue.length * 0.22)]));
       l.queue.push(npc());
     }
   }

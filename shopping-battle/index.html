@@ -249,6 +249,10 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .rv.boss b{color:#dc2626}
 .panel.unlock{background:#fff1c2;box-shadow:0 0 0 3px #f59e0b}
 .sbtn.lg{background:#fde68a}
+.btn.queen{background:#facc15;color:var(--ink);box-shadow:0 5px 0 #a16207}
+.btn.queen:active{box-shadow:0 1px 0 #a16207}
+.hp-chip.queen{flex:2.4;box-shadow:0 0 0 3px #facc15}
+.queen-title{font-family:var(--display);font-size:13px;background:var(--ink);color:#facc15;border-radius:999px;padding:3px 12px;display:inline-block}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -268,6 +272,7 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
   <div class="parade" id="parade"></div>
   <div class="title-btns">
     <button class="btn" id="startBtn">開店へ行く！</button>
+    <button class="btn queen" id="bossBtn">👑 ラスボス戦</button>
     <button class="btn sub" id="howBtn">あそびかた</button>
   </div>
   <div class="small-note" id="record"></div>
@@ -276,9 +281,9 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
 <!-- キャラ選択 -->
 <section id="scr-select" class="screen" hidden>
-  <h3 class="sec-h">だれで並ぶ？</h3>
+  <h3 class="sec-h" id="selTitle">だれで並ぶ？</h3>
   <div class="chars" id="chars"></div>
-  <h3 class="sec-h" style="font-size:16px">ライバルの強さ</h3>
+  <h3 class="sec-h" style="font-size:16px" id="diffTitle">ライバルの強さ</h3>
   <div class="diff" id="diff">
     <button data-d="0">やさしい</button><button data-d="1" class="sel">ふつう</button><button data-d="2">激戦</button>
   </div>
@@ -319,7 +324,7 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <div class="skill-pick" id="skillPick"></div>
   </div>
   <div class="panel"><h4>あなたの能力</h4><div class="stats" id="myStats"></div><div class="inv-list" id="myPassives" style="margin-top:8px"></div></div>
-  <div class="panel"><h4>ライバルの戦力</h4><div class="rivals" id="rivalList"></div></div>
+  <div class="panel"><h4 id="rivalHead">ライバルの戦力</h4><div class="rivals" id="rivalList"></div></div>
   <button class="btn" id="fightBtn" style="margin-top:4px">バトル開始！</button>
 </section>
 
@@ -502,6 +507,10 @@ const CHARS = [
     how: '？？？（タイトル画面のどこかに秘密が…）',
     start: { active: { arrest: 1, stealth: 1 }, queue: {} } },
 ];
+// ラスボス「セールクイーン」(ラスボス戦モード専用)
+const QUEEN = { id: 'queen', name: 'セールクイーン', role: '伝説の主婦・最強戦士', emoji: '🦸‍♀️', color: '#facc15', hp: 1900, atk: 13, def: 3, spd: 104, aspd: 1.0, walk: 1, cut: 3, chat: 7,
+  start: { active: { tuna: 1, egg: 1, flyer: 1, bag: 1, seal: 1 }, queue: {} } };
+const QUEEN_HP = [800, 1100, 1500], QUEEN_ATK = [6, 7.5, 9];
 const BUTLER = { id: 'butler', name: 'セバス', role: 'マダムの執事', emoji: '🤵', color: '#f472b6', hp: 85, atk: 7, def: 1, spd: 130, aspd: 1.05, walk: 0.6, cut: 3, chat: 7, start: { active: {}, queue: {} } };
 const CAT = {
   active: { label: 'スキル', color: 'var(--c-active)' },
@@ -690,7 +699,7 @@ document.addEventListener('click', e => {
 // =====================================================================
 //  ゲーム全体の状態
 // =====================================================================
-const G = { charIdx: 0, diff: 1, actors: [], screen: 'title' };
+const G = { charIdx: 0, diff: 1, actors: [], screen: 'title', mode: 'normal' };
 let S = null; // 買い物の状態
 let FORCE_BOSS = false;
 try { FORCE_BOSS = new URLSearchParams(location.search).has('boss'); } catch (e) {}
@@ -711,6 +720,11 @@ function makeActor(c, isPlayer, opt = {}) {
 function makeActors() {
   const pc = CHARS[G.charIdx];
   const pool = CHARS.filter(c => c !== pc && isUnlocked(c)).sort(() => Math.random() - 0.5);
+  if (G.mode === 'boss') {
+    const solo = [makeActor(pc, true)];
+    if (pc.butler) solo.push(makeActor(BUTLER, false, { owner: solo[0], inv: solo[0].inv }));
+    return solo;
+  }
   const list = [makeActor(pc, true), ...pool.slice(0, 3).map(c => makeActor(c, false))];
   // 10%で「本気の店長」が5人目として乱入
   const tencho = CHARS.find(c => c.id === 'tencho');
@@ -778,7 +792,8 @@ $('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.ta
 function renderTitle() {
   $('#flyerBox').innerHTML = `<span class="emo">${FLYER.icon}</span><span><b>本日のチラシ：${FLYER.name}</b><br>${FLYER.desc}</span>`;
   const n = CHARS.filter(c => c.hidden && SAVE.unlocked[c.id]).length;
-  $('#record').textContent = `優勝 ${SAVE.wins}回 ／ 隠しキャラ ${n}/4`;
+  const q = SAVE.queen;
+  $('#record').innerHTML = `優勝 ${SAVE.wins}回 ／ 隠しキャラ ${n}/4` + (q && q.wins ? `<br><span class="queen-title">👑 ${queenTitle()}</span> 撃破${q.wins}回・最速${q.best.toFixed(1)}秒` : '');
 }
 (function initTitle() {
   const p = $('#parade'), emos = ['🛒', '👩', '🧔', '👧', '👵', '👨', '🛍️', '🧑‍🦱', '👴', '🛒'];
@@ -791,7 +806,26 @@ $('#secretBtn').onclick = () => {
   if (!unlock('gmen')) toast('🕵️ ……もう見つかっている', '', 1400);
   renderTitle();
 };
-$('#startBtn').onclick = () => { Snd.init(); Snd.se('tap'); Snd.bgm('title'); if (!isUnlocked(CHARS[G.charIdx])) G.charIdx = 0; renderSelect(); show('scr-select'); };
+function openSelect(mode) {
+  G.mode = mode; Snd.init(); Snd.se('tap'); Snd.bgm('title');
+  if (!isUnlocked(CHARS[G.charIdx])) G.charIdx = 0;
+  $('#selTitle').textContent = mode === 'boss' ? '👑 ラスボス戦：だれで挑む？' : 'だれで並ぶ？';
+  $('#diffTitle').textContent = mode === 'boss' ? 'セールクイーンの強さ' : 'ライバルの強さ';
+  renderSelect(); show('scr-select');
+}
+function queenTitle() { const q = SAVE.queen || {}; return q.hard ? 'セールクイーンを超えし者' : '最強戦士を倒した者'; }
+$('#startBtn').onclick = () => openSelect('normal');
+$('#bossBtn').onclick = () => {
+  openSelect('boss');
+  openModal(`<h3>👑 ラスボス戦</h3><p>伝説の主婦<b>「セールクイーン」</b>との1対1。</p>
+    <ol style="padding-left:20px;line-height:1.7;font-size:14px;margin:6px 0"><li>まずは買い物（ライバルはいない。好きなだけ買える）</li>
+    <li>集めた力でセールクイーンと一騎打ち</li>
+    <li>赤い円・赤い帯は大技の予告。よけよう！</li>
+    <li>体力が半分になると本気モード（第2形態）</li>
+    <li>店員を呼ぶので倒すと回復アイテムを落とす</li></ol>
+    <p class="hint">倒すと称号と撃破タイムが記録される</p>
+    <div class="row"><button class="btn" data-close>挑む！</button></div>`);
+};
 $('#howBtn').onclick = () => { Snd.init(); Snd.se('tap'); showHowTo(); };
 function showHowTo() {
   openModal(`<div class="howto"><h3>あそびかた</h3>
@@ -889,7 +923,7 @@ function startShop() {
   $('#paceTag').textContent = G.pace === 0.6 ? '（ゆっくり）' : G.pace === 0.4 ? '（のんびり）' : '';
   buildLanes(); measureQueue(); renderShop(true);
   Snd.bgm('shop'); Snd.se('open');
-  banner('開店！', `本日のチラシ：${FLYER.name}`, 1500);
+  banner('開店！', G.mode === 'boss' ? 'ラスボス戦：力をたくわえろ！' : `本日のチラシ：${FLYER.name}`, 1500);
   const me = player();
   if (me.conneItems) setTimeout(() => toast(`🧑‍💼 店長のコネで入手：<span class="emo">${me.conneItems.map(id => ITEMS[id].icon).join(' ')}</span><br><small>この商品は売り場に出ない</small>`, 'get', 3200), 900);
   const boss = G.actors.find(a => a.boss);
@@ -1435,8 +1469,10 @@ function autoLoadout(a) {
 }
 function startLoadout() {
   for (const a of G.actors) { a.lane = null; a.walkTo = null; a.loadout = a.isButler ? [] : autoLoadout(a); }
-  G.stage = pick(STAGES);
+  G.stage = G.mode === 'boss' ? QUEEN_STAGE : pick(STAGES);
+  if (G.mode === 'boss' && !G.actors.some(a => a.queen)) { const q = makeActor(QUEEN, false, { name: 'セールクイーン' }); q.queen = true; q.loadout = []; G.actors.push(q); }
   show('scr-loadout'); Snd.bgm('title');
+  $('#rivalHead').textContent = G.mode === 'boss' ? '相手：ラスボス' : 'ライバルの戦力';
   renderLoadout();
 }
 function renderLoadout() {
@@ -1465,6 +1501,7 @@ function renderLoadout() {
   $('#rivalList').innerHTML = G.actors.filter(a => !a.isPlayer).map(a => {
     const rf = buildFighter(a, true);
     if (a.isButler) return `<div class="rv"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>（${a.owner.isPlayer ? 'あなた' : a.owner.name}の執事・味方）　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}</div></div>`;
+    if (a.queen) return `<div class="rv boss"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b> <span class="hid">ラスボス</span>　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}<br>${rf.skills.map(s => infoBadge(s.id, s.lv, rf.atk)).join('')}<br><span class="hint">予告つき大技・弾幕・手下呼び・第2形態あり</span></div></div>`;
     return `<div class="rv${a.boss ? ' boss' : ''}"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>${a.boss ? ' <span class="hid">乱入</span>' : ''}　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}・買い物${a.inv.count}個<br>
       ${[...sigsOf(a), ...a.loadout].map(k => infoBadge(k, a.inv.active[k] || 1, rf.atk)).join('')}${Object.keys(a.inv.passive).map(k => infoBadge(k, a.inv.passive[k])).join('')}</div></div>`;
   }).join('') + '<p class="hint" style="margin:0">アイコンをタップで効果を確認</p>';
@@ -1480,11 +1517,14 @@ const STAGES = [
   { id: 'street', name: 'ならぶ商店街', icon: '🏮', W: 700, H: 1080, floor: ['#dcdee5', '#d0d3db'], pickupT: 5, desc: '無人カートが暴走して横切る（赤い帯に注意）' },
   { id: 'conveni', name: '深夜のコンビニ', icon: '🌙', W: 680, H: 960, floor: ['#3b4263', '#333a58'], pickupT: 5, dark: true, desc: '暗くて遠くが見えない。棚が倒れてくる（赤い所に注意）' },
 ];
+const QUEEN_STAGE = { id: 'queen', name: '特売会場・最上階', icon: '👑', W: 760, H: 900, floor: ['#fef3c7', '#fde68a'], pickupT: 4, desc: 'セールクイーンとの一騎打ち。赤い予告をよけて、床のアイテムを活用しよう' };
 const GOODS = ['#ff6b6b', '#ffd43b', '#4dabf7', '#69db7c', '#f783ac', '#ffa94d'];
 function stageLayout(st) {
   const walls = [], belts = [];
   const shelf = (x, y, w, h, kind = 'shelf') => walls.push({ x, y, w, h, kind, goods: Array.from({ length: Math.max(1, Math.floor(w / 12)) }, () => pick(GOODS)) });
-  if (st.id === 'super') {
+  if (st.id === 'queen') {
+    for (const [x, y] of [[150, 200], [560, 200], [150, 650], [560, 650]]) shelf(x, y, 50, 50, 'pillar');
+  } else if (st.id === 'super') {
     for (const y of [170, 830]) for (const x of [70, 290, 510]) shelf(x, y, 140, 28);
     for (const y of [400, 600]) for (const x of [70, 510]) shelf(x, y, 140, 28);
   } else if (st.id === 'depart') {
@@ -1513,6 +1553,7 @@ function buildFighter(actor, preview) {
   let maxHp = c.hp + (minion ? 0 : 25 * s('hp') + 60 * n('vip'));
   let atk = c.atk + (minion ? 0.5 * s('atk') : 2 * s('atk')), def = c.def + (minion ? 0 : 1.5 * s('def'));
   if (actor.boss) { maxHp *= 1.25; atk *= 1.3; def = def * 1.3 + 1; }
+  if (actor.queen) { maxHp = QUEEN_HP[G.diff]; atk = QUEEN_ATK[G.diff]; }
   maxHp *= BATTLE_HP;
   const cdr = Math.min(0.65, 0.1 * n('cdr') + 0.35 * n('blackcard'));
   const f = {
@@ -1530,6 +1571,7 @@ function buildFighter(actor, preview) {
     dashT: 0, dashX: 0, dashY: 0, dashHit: null, dashDmg: 0, dashKnock: 280, gold: false, swingT: 0, hitT: 0, alive: true, deadAt: 0,
     ai: { think: 0, target: null, strafe: Math.random() < 0.5 ? 1 : -1, mode: 'fight', skillDelay: 1 + Math.random(), stuck: 0, ax: 0, ay: 0, stuckT: 0 },
   };
+  if (actor.queen) { f.queen = true; f.r = 30; f.skills = Object.keys(c.start.active).map(id => ({ id, lv: 1, cd: 3 + Math.random() * 5, max: skillCT(id, 1) * 1.8 })); f.q = { patT: 3, phase: 1, cast: 0 }; return f; }
   if (!preview && !minion) f.skills = [...sigsOf(actor), ...actor.loadout].slice(0, 3).map(id => { const lv = inv.active[id] || 1; return { id, lv, cd: 1.5, max: skillCT(id, lv, cdr) }; });
   return f;
 }
@@ -1540,7 +1582,7 @@ function startBattle() {
   const fs = G.actors.map(a => buildFighter(a));
   B = { st, W: st.W, H: st.H, walls: lay.walls, belts: lay.belts, fs, t: 0, proj: [], fx: [], parts: [], texts: [], pickups: [], carts: [], falls: [],
     pickT: 2, gimT: 4, over: false, speed: 1, deaths: [], start: 2.2, zone: { x0: 0, y0: 0, x1: st.W, y1: st.H },
-    me: fs.find(f => f.isPlayer), shake: 0, cam: { x: st.W / 2, y: st.H / 2 }, hadBoss: fs.some(f => f.boss) };
+    me: fs.find(f => f.isPlayer), mode: G.mode, warns: [], shake: 0, cam: { x: st.W / 2, y: st.H / 2 }, hadBoss: fs.some(f => f.boss) };
   // 出現位置: 会場の中心を囲む円周上
   const mainsF = fs.filter(f => !f.minion), R = Math.min(st.W, st.H) * 0.36;
   mainsF.forEach((f, i) => {
@@ -1549,13 +1591,19 @@ function startBattle() {
     f.dir = { x: -Math.cos(a), y: -Math.sin(a) };
     for (const w of B.walls) collideCircleRect(f, w);
   });
+  if (G.mode === 'boss') {
+    const me = fs.find(f => f.isPlayer), qf = fs.find(f => f.queen);
+    me.x = st.W / 2; me.y = st.H - 140; me.dir = { x: 0, y: -1 };
+    qf.x = st.W / 2; qf.y = 170; qf.dir = { x: 0, y: 1 };
+  }
   for (const f of fs) if (f.minion) { const o = fs.find(x => x.actor === f.actor.owner); f.x = o.x + 34; f.y = o.y; f.dir = { ...o.dir }; }
   B.cam = { x: B.me.x, y: B.me.y };
   layoutBattle();
   buildBattleUI();
   Snd.bgm('battle');
   $('#bover').hidden = true;
-  banner(`${st.icon} ${st.name}`, st.desc, 1800);
+  if (G.mode === 'boss') banner('セールクイーン 降臨！', '「今日の特売は、ぜんぶわたしのものよ」', 2000);
+  else banner(`${st.icon} ${st.name}`, st.desc, 1800);
   lastT = performance.now();
 }
 function layoutBattle() {
@@ -1581,7 +1629,7 @@ function showPause() {
     <div class="row"><button class="btn" data-close>バトルに戻る</button></div>`);
 }
 function buildBattleUI() {
-  $('#bhud').innerHTML = B.fs.map((f, i) => f.minion ? '' : `<div class="hp-chip ${f.isPlayer ? 'me' : ''}${f.boss ? ' boss' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('') + '<button id="pauseBtn" aria-label="一時停止">⏸</button>';
+  $('#bhud').innerHTML = B.fs.map((f, i) => f.minion ? '' : `<div class="hp-chip ${f.isPlayer ? 'me' : ''}${f.boss ? ' boss' : ''}${f.queen ? ' queen' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('') + '<button id="pauseBtn" aria-label="一時停止">⏸</button>';
   $('#pauseBtn').onclick = () => { Snd.se('tap'); showPause(); };
   const me = B.me, wrap = $('#sbtns');
   const pos = [[118, 22], [96, 104], [22, 132]];
@@ -1679,7 +1727,11 @@ function damage(src, tgt, base, o = {}) {
 function kill(f, src, o = {}) {
   f.alive = false; f.hp = 0; f.deadAt = B.t;
   burst(f.x, f.y, f.color, f.minion ? 12 : 24, 220); Snd.se('ko');
-  if (f.minion) { addText(f.x, f.y - 30, `${f.name}退場`, '#fff', 14); return; }
+  if (f.minion) {
+    if (f.summoned) { B.pickups.push({ x: f.x, y: f.y, kind: 'heal', t: 0 }); addText(f.x, f.y - 30, '回復を落とした！', '#4ade80', 13); }
+    else addText(f.x, f.y - 30, `${f.name}退場`, '#fff', 14);
+    return;
+  }
   B.deaths.push(f);
   // 主がやられたら執事も退場
   for (const m of B.fs) if (m.minion && m.alive && m.actor.owner === f.actor) { m.alive = false; burst(m.x, m.y, m.color, 10, 160); addText(m.x, m.y - 30, 'お嬢様ーっ！', '#fff', 14); }
@@ -1860,10 +1912,11 @@ function battleUpdate(dt) {
   if (B.over) return;
   B.t += dt;
   // 閉店シャッター (場外縮小)
-  const k = clamp((B.t - 35) / 45, 0, 1), fw = 240, fh = 320;
+  const k = B.mode === 'boss' ? 0 : clamp((B.t - 35) / 45, 0, 1), fw = 240, fh = 320;
   B.zone = { x0: k * (B.W - fw) / 2, x1: B.W - k * (B.W - fw) / 2, y0: k * (B.H - fh) / 2, y1: B.H - k * (B.H - fh) / 2 };
-  if (B.t > 35 && B.t - dt <= 35) { banner('閉店シャッター！', '外側にいるとダメージ', 1500); Snd.se('stop'); }
+  if (B.mode !== 'boss' && B.t > 35 && B.t - dt <= 35) { banner('閉店シャッター！', '外側にいるとダメージ', 1500); Snd.se('stop'); }
   gimmickUpdate(dt);
+  warnUpdate(dt);
 
   for (const f of B.fs) {
     if (!f.alive) continue;
@@ -1876,7 +1929,7 @@ function battleUpdate(dt) {
     if (!f.alive) continue;
     let mv = { x: 0, y: 0 };
     if (f.isPlayer) { mv = playerMoveVec(); if (input.atk || input.keys[' '] || input.keys.j) basicAttack(f); }
-    else mv = aiUpdate(f, dt);
+    else mv = f.queen ? queenAI(f, dt) : aiUpdate(f, dt);
     const sp = f.spd * (f.hasteT > 0 ? 1.4 : 1) * (f.spdT > 0 ? 1.35 : 1) * (f.slowT > 0 ? 0.55 : 1);
     if (f.stunT > 0) mv = { x: 0, y: 0 };
     const ox = f.x, oy = f.y;
@@ -1956,7 +2009,7 @@ function battleUpdate(dt) {
 function aiUpdate(f, dt) {
   const a = f.ai, D = DIFF[G.diff];
   a.think -= dt; a.skillDelay -= dt;
-  const owner = f.minion ? B.fs.find(x => x.actor === f.actor.owner) : null;
+  const owner = f.minion && !f.summoned ? B.fs.find(x => x.actor === f.actor.owner) : null;
   if (a.think <= 0 || !a.target || !a.target.alive || hidden(f, a.target)) {
     a.think = rnd(0.5, 1.1) * D.react;
     let best = null, bs = 1e9;
@@ -2070,6 +2123,19 @@ function drawBattle(dt) {
     cx.fillStyle = '#fff'; cx.font = '800 20px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
     cx.fillText(b.vx > 0 ? '▶▶' : b.vx < 0 ? '◀◀' : b.vy > 0 ? '▼' : '▲', b.x + b.w / 2, b.y + b.h / 2);
   }
+  // ラスボスの大技予告
+  for (const w of B.warns) {
+    const u = 1 - w.t / w.max;
+    cx.fillStyle = 'rgba(255,59,59,.18)'; cx.strokeStyle = 'rgba(220,38,38,.9)'; cx.lineWidth = 3;
+    if (w.kind === 'circle') {
+      cx.beginPath(); cx.arc(w.x, w.y, w.r, 0, 6.28); cx.fill(); cx.stroke();
+      cx.fillStyle = 'rgba(255,59,59,.35)'; cx.beginPath(); cx.arc(w.x, w.y, w.r * u, 0, 6.28); cx.fill();
+    } else if (w.kind === 'line') {
+      cx.save(); cx.translate(w.x, w.y); cx.rotate(Math.atan2(w.dy, w.dx));
+      cx.fillRect(0, -w.w / 2, w.len, w.w); cx.strokeRect(0, -w.w / 2, w.len, w.w);
+      cx.fillStyle = 'rgba(255,59,59,.35)'; cx.fillRect(0, -w.w / 2, w.len * u, w.w); cx.restore();
+    }
+  }
   // 倒れる棚の警告
   for (const fl of B.falls) {
     cx.fillStyle = fl.done ? 'rgba(161,136,127,.7)' : `rgba(255,59,59,${0.25 + 0.25 * Math.sin(B.t * 20)})`;
@@ -2086,6 +2152,7 @@ function drawBattle(dt) {
       cx.font = `22px ${EF}`; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(pick(['🏮']), s.x + s.w / 2, s.y + 30);
       continue;
     }
+    if (s.kind === 'pillar') { cx.fillStyle = '#b45309'; cx.fillRect(s.x, s.y, s.w, s.h); cx.fillStyle = '#facc15'; cx.fillRect(s.x, s.y, s.w, 8); continue; }
     cx.fillStyle = s.kind === 'island' ? '#d6b88d' : s.kind === 'bench' ? '#78716c' : '#8d6e63'; cx.fillRect(s.x, s.y, s.w, s.h);
     cx.fillStyle = s.kind === 'island' ? '#ead2ac' : '#a1887f'; cx.fillRect(s.x, s.y, s.w, 6);
     if (s.kind !== 'bench') s.goods.forEach((c, i) => { cx.fillStyle = c; cx.fillRect(s.x + 3 + i * 12, s.y + 9, 9, Math.min(s.h - 13, 20)); });
@@ -2120,6 +2187,7 @@ function drawBattle(dt) {
     cx.globalAlpha = stealthA;
     cx.fillStyle = 'rgba(0,0,0,.2)'; cx.beginPath(); cx.ellipse(f.x, f.y + f.r - 2, f.r, 6, 0, 0, 6.28); cx.fill();
     if (f.hasteT > 0 || f.spdT > 0) { cx.strokeStyle = '#ffd43b'; cx.lineWidth = 2; for (let k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(f.x - f.dir.x * (20 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (20 + k * 5) + f.dir.x * (k - 1) * 8); cx.lineTo(f.x - f.dir.x * (32 + k * 5) - f.dir.y * (k - 1) * 8, f.y - f.dir.y * (32 + k * 5) + f.dir.x * (k - 1) * 8); cx.stroke(); } }
+    if (f.queen && f.q.phase === 2) { cx.fillStyle = `rgba(239,68,68,${0.25 + 0.12 * Math.sin(B.t * 8)})`; cx.beginPath(); cx.arc(f.x, f.y, f.r + 14, 0, 6.28); cx.fill(); }
     if (f.powT > 0) { cx.fillStyle = 'rgba(255,107,107,.3)'; cx.beginPath(); cx.arc(f.x, f.y, f.r + 9, 0, 6.28); cx.fill(); }
     if (f.swingT > 0) {
       const a = Math.atan2(f.dir.y, f.dir.x);
@@ -2188,8 +2256,121 @@ function updateBattleHUD() {
     const s = me.skills[+b.dataset.s]; const p = s.cd > 0 ? (s.cd / s.max) * 100 : 0;
     b.querySelector('.cdv').style.setProperty('--p', p + '%'); b.classList.toggle('ready', s.cd <= 0 && me.alive);
   });
-  const z = B.t < 35 ? `閉店シャッターまで ${Math.ceil(35 - B.t)}秒` : '閉店シャッター 作動中！';
+  const qf = B.fs.find(f => f.queen);
+  const z = qf ? `経過 ${B.t.toFixed(0)}秒 ／ ${qf.q.phase === 2 ? '本気モード！' : '第1形態'}` : B.t < 35 ? `閉店シャッターまで ${Math.ceil(35 - B.t)}秒` : '閉店シャッター 作動中！';
   const el = $('#btime'); const txt = B.start > 0 ? '' : `${B.st.icon} ${z}`; if (el.textContent !== txt) el.textContent = txt;
+}
+
+// ---- ラスボス「セールクイーン」 ----
+const QUEEN_FOODS = ['🥫', '🍅', '🥕', '🧅', '🍋', '🥚', '🍞'];
+function queenAI(f, dt) {
+  const q = f.q, t = B.me.alive ? B.me : nearest(f);
+  if (!t) return { x: 0, y: 0 };
+  if (q.phase === 1 && f.hp < f.maxHp * 0.5) {
+    q.phase = 2; f.spd *= 1.25; f.aspd *= 1.3; f.shield = f.maxHp * 0.12; f.shieldT = 6;
+    for (const s of f.skills) s.max *= 0.7;
+    banner('本気モード！', '「閉店間際の大安売りよ！」', 2200); Snd.se('stop'); B.shake = 0.4;
+    burst(f.x, f.y, '#ef4444', 30, 260); q.patT = 1.2;
+  }
+  const dx = t.x - f.x, dy = t.y - f.y, d = Math.hypot(dx, dy) || 1;
+  if (q.cast > 0) { q.cast -= dt; return { x: 0, y: 0 }; }
+  q.patT -= dt;
+  if (q.patT <= 0) {
+    q.patT = (q.phase === 2 ? rnd(1.5, 2.2) : rnd(2.4, 3.2)) * (G.diff === 0 ? 1.3 : G.diff === 2 ? 0.85 : 1);
+    queenPattern(f, t);
+  }
+  for (let i = 0; i < f.skills.length; i++) {
+    const s = f.skills[i]; if (s.cd > 0) continue;
+    const use = { tuna: d < 110, bag: d < 100, egg: d < 320, flyer: d < 280, seal: d < 300 }[s.id];
+    if (use) { useSkill(f, i); break; }
+  }
+  if (d - t.r < 54) basicAttack(f);
+  return d > 70 ? { x: dx / d, y: dy / d } : { x: -dy / d * 0.6, y: dx / d * 0.6 };
+}
+function queenSay(f, txt) { addText(f.x, f.y - 52, txt, '#facc15', 17); }
+function queenPattern(f, t) {
+  const q = f.q, clerks = B.fs.filter(o => o.summoned && o.alive).length;
+  const pats = ['slam', 'slam', 'charge', 'barrage'];
+  if (clerks < 2) pats.push('summon');
+  if (q.phase === 2) pats.push('rain', 'rain', 'barrage');
+  const p = pick(pats), fast = q.phase === 2 ? 0.75 : 1;
+  if (p === 'slam') {
+    queenSay(f, '特売ドーン！');
+    B.warns.push({ kind: 'circle', x: t.x, y: t.y, r: 95, t: 1.2 * fast, max: 1.2 * fast, owner: f, dmg: f.atk * 3, stun: 0.6 });
+  } else if (p === 'rain') {
+    queenSay(f, 'タイムセールの雨よ！');
+    for (let i = 0; i < 6; i++) { const x = clamp(t.x + rnd(-230, 230), 40, B.W - 40), y = clamp(t.y + rnd(-230, 230), 40, B.H - 40); B.warns.push({ kind: 'circle', x, y, r: 70, t: 1.3 + i * 0.12, max: 1.3 + i * 0.12, owner: f, dmg: f.atk * 2 }); }
+    if (Math.random() < 0.5) B.warns.push({ kind: 'circle', x: t.x, y: t.y, r: 70, t: 1.4, max: 1.4, owner: f, dmg: f.atk * 2 });
+  } else if (p === 'charge') {
+    queenSay(f, 'カート大暴走！');
+    const a = aimAt(f, t);
+    B.warns.push({ kind: 'line', x: f.x, y: f.y, dx: a.x, dy: a.y, len: 560, w: 70, t: 1.0 * fast, max: 1.0 * fast, owner: f });
+    q.cast = 1.0 * fast;
+  } else if (p === 'barrage') {
+    queenSay(f, '全品投げ売り！');
+    const rings = q.phase === 2 ? 2 : 1;
+    for (let r = 0; r < rings; r++) B.warns.push({ kind: 'ring', t: 0.35 + r * 0.45, max: 0.35 + r * 0.45, owner: f, off: r * 0.2, n: q.phase === 2 ? 20 : 16 });
+    q.cast = 0.35;
+  } else if (p === 'summon') {
+    queenSay(f, '店員さん、手伝って！');
+    for (let i = 0; i < 3; i++) summonClerk(f, f.x + Math.cos(i * 2.1) * 60, f.y + Math.sin(i * 2.1) * 60);
+    Snd.se('bell');
+  }
+}
+function summonClerk(boss, x, y) {
+  const ch = { id: 'clerk', name: '店員', emoji: pick(['🧑‍🔧', '👩‍🔧', '🧑‍🍳', '👨‍💼']), color: '#fde68a', hp: 55, atk: 6, def: 0.5, spd: 118, aspd: 0.9, walk: 1, cut: 3, chat: 7, start: { active: {}, queue: {} } };
+  const a = makeActor(ch, false, { owner: boss.actor, inv: newInv() });
+  const f = buildFighter(a);
+  f.summoned = true; f.x = clamp(x, 30, B.W - 30); f.y = clamp(y, 30, B.H - 30);
+  for (const w of B.walls) collideCircleRect(f, w);
+  B.fs.push(f); burst(f.x, f.y, '#fde68a', 10);
+}
+function warnUpdate(dt) {
+  for (const w of B.warns) {
+    w.t -= dt;
+    if (w.t > 0 || w.done) continue;
+    w.done = true;
+    const f = w.owner; if (!f.alive) continue;
+    if (w.kind === 'circle') {
+      B.fx.push({ kind: 'ring', x: w.x, y: w.y, r: w.r, t: 0.35, max: 0.35, color: '#ef4444' }); burst(w.x, w.y, '#fca5a5', 14, 200); Snd.se('boom');
+      B.shake = Math.max(B.shake, 0.15);
+      for (const o of enemies(f)) if (Math.hypot(o.x - w.x, o.y - w.y) < w.r + o.r * 0.5) {
+        const k = aimAt({ x: w.x, y: w.y, dir: { x: 0, y: 1 } }, o); o.kx += k.x * 260; o.ky += k.y * 260;
+        damage(f, o, w.dmg, { stun: w.stun || 0 });
+      }
+    } else if (w.kind === 'line') {
+      startDash(f, { x: w.dx, y: w.dy }, 980, 0.56, f.atk * 2.6, 420, true);
+      Snd.se('skill');
+    } else if (w.kind === 'ring') {
+      for (let i = 0; i < w.n; i++) {
+        const a = (i / w.n + w.off) * Math.PI * 2;
+        B.proj.push({ kind: 'line', x: f.x, y: f.y, vx: Math.cos(a) * 215, vy: Math.sin(a) * 215, r: 11, owner: f, dmg: f.atk * 0.8, life: 2.8, icon: pick(QUEEN_FOODS), hit: new Set(), rot: 0 });
+      }
+      Snd.se('swing');
+    }
+  }
+  B.warns = B.warns.filter(w => !w.done);
+}
+function showQueenResult() {
+  const qf = B.fs.find(f => f.queen), win = !qf.alive, time = B.t;
+  let newBest = false;
+  if (win) {
+    const q = SAVE.queen || (SAVE.queen = { wins: 0, best: 9999, hard: false });
+    q.wins++; if (time < q.best) { q.best = time; newBest = true; }
+    if (G.diff === 2) q.hard = true;
+    writeSave();
+  }
+  const q = SAVE.queen;
+  $('#scr-result').innerHTML = `<div class="rank-hero"><div class="emo">${win ? '👑' : '😵'}</div><div class="r" style="font-size:44px">${win ? '撃破！' : '敗北…'}</div>
+    <div style="font-weight:800">${win ? '伝説の主婦セールクイーンを倒した！' : '「出直しておいで。特売は逃げないわ」'}</div>
+    <div class="hint">${win ? `撃破タイム ${time.toFixed(1)}秒${newBest ? '（自己ベスト！）' : ''}` : `セールクイーン 残り体力 ${Math.ceil(qf.hp)}/${Math.round(qf.maxHp)}`}</div></div>
+    ${q && q.wins ? `<div class="panel" style="text-align:center"><span class="queen-title">👑 ${queenTitle()}</span><p class="hint" style="margin:6px 0 0">撃破 ${q.wins}回 ／ 最速 ${q.best.toFixed(1)}秒${q.hard ? '' : ' ／ 「激戦」で倒すと称号が進化する'}</p></div>` : ''}
+    <div class="panel"><h4>あなたの買い物</h4>${invHTML(player())}</div>
+    <div class="row" style="display:flex;gap:10px"><button class="btn sub" id="toTitle" style="flex:1">タイトルへ</button><button class="btn" id="again" style="flex:1">再挑戦！</button></div>`;
+  show('scr-result'); B = null;
+  Snd.bgm('title');
+  $('#again').onclick = () => { Snd.se('tap'); startShop(); };
+  $('#toTitle').onclick = () => { Snd.se('tap'); renderTitle(); show('scr-title'); };
 }
 
 // =====================================================================
@@ -2197,6 +2378,7 @@ function updateBattleHUD() {
 // =====================================================================
 function showResult() {
   if (!B) return;
+  if (B.mode === 'boss') return showQueenResult();
   const mainsF = B.fs.filter(f => !f.minion);
   const ranking = [...mainsF.filter(f => f.alive), ...[...B.deaths].reverse()];
   const myRank = ranking.findIndex(f => f.isPlayer) + 1, N = ranking.length;

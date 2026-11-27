@@ -281,6 +281,11 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
   <div class="diff" id="diff">
     <button data-d="0">やさしい</button><button data-d="1" class="sel">ふつう</button><button data-d="2">激戦</button>
   </div>
+  <h3 class="sec-h" style="font-size:16px">買い物フェーズの速さ</h3>
+  <div class="diff" id="pace">
+    <button data-p="1">ふつう</button><button data-p="0.6">ゆっくり</button><button data-p="0.4">のんびり</button>
+  </div>
+  <div class="hint" id="paceNote"></div>
   <div class="select-foot">
     <button class="btn sub" id="selBack">もどる</button>
     <button class="btn" id="selGo">開店！</button>
@@ -291,7 +296,7 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 <section id="scr-shop" class="screen" hidden>
   <header class="shop-top">
     <div class="clock" id="shopTime">2:00</div>
-    <div class="stitle">スーパー<b>ならぶ屋 大特売</b></div>
+    <div class="stitle">スーパー<span id="paceTag"></span><b>ならぶ屋 大特売</b></div>
     <button class="inv-btn" id="invBtn"><span class="emo">🧺</span> <span id="invCount">0</span></button>
     <button class="mute" data-mute>🔊</button>
   </header>
@@ -826,6 +831,17 @@ document.querySelectorAll('#diff button').forEach(b => b.onclick = () => {
   G.diff = +b.dataset.d; Snd.se('tap');
   document.querySelectorAll('#diff button').forEach(x => x.classList.toggle('sel', x === b));
 });
+// 買い物の速さ (レジ・お客さん・ライバル・制限時間がまとめてゆっくり進む)
+const PACE_NOTE = { 1: '買い物は約2分', 0.6: 'すべてが0.6倍の速さ。買い物は約3分20秒', 0.4: 'すべてが0.4倍の速さ。買い物は約5分' };
+function renderPace() {
+  document.querySelectorAll('#pace button').forEach(x => x.classList.toggle('sel', +x.dataset.p === G.pace));
+  $('#paceNote').textContent = PACE_NOTE[G.pace];
+}
+document.querySelectorAll('#pace button').forEach(b => b.onclick = () => {
+  G.pace = +b.dataset.p; SAVE.pace = G.pace; writeSave(); Snd.se('tap'); renderPace();
+});
+G.pace = [1, 0.6, 0.4].includes(SAVE.pace) ? SAVE.pace : 1;
+renderPace();
 $('#selBack').onclick = () => { Snd.se('tap'); renderTitle(); show('scr-title'); };
 $('#selGo').onclick = () => { Snd.se('tap'); startShop(); };
 
@@ -869,6 +885,7 @@ function startShop() {
   const g = newLane(GACHA_LANE, 'gacha'); for (let k = 0; k < 4; k++) g.queue.push(npc()); S.lanes.push(g);
   S.lanes.push(newLane(LEGEND_LANE, 'legend'));
   show('scr-shop');
+  $('#paceTag').textContent = G.pace === 0.6 ? '（ゆっくり）' : G.pace === 0.4 ? '（のんびり）' : '';
   buildLanes(); measureQueue(); renderShop(true);
   Snd.bgm('shop'); Snd.se('open');
   banner('開店！', `本日のチラシ：${FLYER.name}`, 1500);
@@ -2206,7 +2223,7 @@ let lastT = performance.now();
 function loop(now) {
   let dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
   if (G.screen === 'scr-shop' && S && !S.ended) {
-    shopUpdate(dt);
+    shopUpdate(dt * (G.pace || 1));
     S.renderT -= dt;
     if (S.renderT <= 0) { S.renderT = 0.1; renderShop(false); }
     renderBars();

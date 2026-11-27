@@ -499,8 +499,8 @@ const CHARS = [
     how: '10%で乱入する「本気の店長」を差し置いて1位になる',
     start: { active: { shutter: 1 }, queue: {} } },
   { id: 'tenbai', name: 'テンバイ', role: '転売ヤー', emoji: '🕴️', color: '#a78bfa', hidden: true,
-    hp: 95, atk: 9, def: 1, spd: 122, aspd: 1.05, walk: 1.5, cut: 3, chat: 7, hoarder: true,
-    trait: '買い占めの鬼：いつも2個買う。そのかわり列の移動が遅く、一般客によく割り込まれる。体力は低め',
+    hp: 120, atk: 10, def: 1, spd: 122, aspd: 1.05, walk: 1.0, cut: 3, chat: 7, hoarder: true,
+    trait: '買い占めの鬼：いつも2個買う。そのかわり列の移動が少し遅く、一般客にときどき割り込まれる',
     how: '累計3回 1位になる', winsNeed: 3,
     start: { active: { seal: 1 }, queue: {} } },
   { id: 'madam', name: 'マダム', role: '大富豪マダム', emoji: '👸', color: '#f472b6', hidden: true,
@@ -1066,7 +1066,7 @@ function shopUpdate(dt) {
     for (const l of S.lanes) if (l.queue.length > 11 && Math.random() < 0.3) {
       for (let k = l.queue.length - 1; k > l.queue.length - 4 && k > 0; k--) if (!l.queue[k].actor) { l.queue.splice(k, 1); break; }
     }
-    for (const a of G.actors) if (a.char.hoarder && a.lane !== null && Math.random() < 0.22) {
+    for (const a of G.actors) if (a.char.hoarder && a.lane !== null && Math.random() < 0.1) {
       const l = S.lanes[a.lane], pos = posInLane(a);
       const k = l.queue.findIndex((p, j) => j > pos && !p.actor);
       if (pos >= 0 && k > pos) {
@@ -2448,7 +2448,7 @@ function loop(now) {
 }
 requestAnimationFrame(loop);
 document.addEventListener('visibilitychange', () => { lastT = performance.now(); });
-window.__game = { G, SAVE, get S() { return S; }, get B() { return B; }, shopUpdate, battleUpdate, startShop, endShop, startLoadout, startBattle, useQueueSkill, playerJoin, useSkill, unlock, openLegend, STAGES };
+window.__game = { rivalShopAI, G, SAVE, get S() { return S; }, get B() { return B; }, shopUpdate, battleUpdate, startShop, endShop, startLoadout, startBattle, useQueueSkill, playerJoin, useSkill, unlock, openLegend, STAGES };
 </script>
 </body>
 </html>

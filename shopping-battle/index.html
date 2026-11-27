@@ -127,6 +127,7 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .qs .nm{font-size:10px;font-weight:800;white-space:nowrap}
 .qs .n{position:absolute;right:-3px;top:-4px;background:var(--sale);color:#fff;border-radius:999px;font-size:11px;font-weight:800;min-width:20px;height:20px;line-height:20px}
 .qs:active{transform:translateY(3px);box-shadow:none}
+.qs.help{min-width:44px;background:var(--ink);color:#fff;justify-content:center;font-weight:800;font-size:12px}
 .qs-empty{font-size:11px;opacity:.6;padding:8px 0}
 .banner{position:absolute;left:0;right:0;top:38%;text-align:center;font-family:var(--display);font-size:44px;color:var(--sale);-webkit-text-stroke:2px var(--ink);text-shadow:4px 4px 0 var(--ink);pointer-events:none;z-index:40;animation:pop .5s}
 .banner small{display:block;font-size:18px;color:var(--ink);-webkit-text-stroke:0;text-shadow:none}
@@ -159,12 +160,27 @@ button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 #scr-loadout{padding:12px max(16px,env(safe-area-inset-left,0px)) 12px max(16px,env(safe-area-inset-right,0px));gap:8px;overflow-y:auto}
 .panel{background:var(--paper);border-radius:14px;padding:10px 12px;box-shadow:0 3px 0 var(--shade)}
 .panel h4{margin:0 0 6px;font-size:14px}
-.skill-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sp{background:var(--floor);border-radius:12px;padding:8px 4px;text-align:center;border:3px solid transparent;position:relative}
+.skill-pick{display:flex;flex-direction:column;gap:6px}
+.sp{background:var(--floor);border-radius:12px;padding:8px 10px;border:3px solid transparent;display:flex;align-items:center;gap:10px;text-align:left;width:100%}
 .sp.sel{border-color:var(--c-active);background:#ffe4ea}
-.sp .ic{font-family:var(--emoji);font-size:30px}
-.sp .nm{font-size:10px;font-weight:800;line-height:1.25}
-.sp .lv{position:absolute;left:4px;top:3px;font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;padding:0 4px}
+.sp .ic{font-family:var(--emoji);font-size:30px;flex:0 0 auto}
+.sp .txt{flex:1;min-width:0}
+.sp .nm{font-size:13px;font-weight:800}
+.sp .lv{font-size:10px;font-weight:800;background:var(--ink);color:#fff;border-radius:6px;padding:0 5px;margin-left:4px}
+.sp .chk{flex:0 0 auto;width:28px;height:28px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:14px;background:#fff}
+.sp.sel .chk{background:var(--c-active);color:#fff;border-color:var(--c-active)}
+.d{font-size:11px;line-height:1.45;opacity:.85}
+.fx{font-size:11px;font-weight:800;color:#be123c;line-height:1.4}
+.irow{display:flex;gap:8px;align-items:center;background:var(--floor);border-radius:10px;padding:6px 8px;text-align:left;width:100%}
+.irow .ic{font-family:var(--emoji);font-size:22px;flex:0 0 auto;width:30px;text-align:center}
+.irow .txt{flex:1;min-width:0}
+.irow .nm{font-size:12px;font-weight:800}
+.irows{display:flex;flex-direction:column;gap:5px}
+[data-info]{cursor:pointer}
+.ib{display:inline-flex;align-items:center;gap:1px;background:var(--floor);border-radius:8px;padding:1px 5px;margin:1px 2px 1px 0;font-size:11px;font-weight:800}
+.ib .emo{font-size:15px}
+.hint{font-size:10px;opacity:.6}
+#pauseBtn{flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.95);font-size:16px;font-weight:800}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;font-size:12px}
 .stats b{font-variant-numeric:tabular-nums}
 .rivals{display:flex;flex-direction:column;gap:6px}
@@ -498,6 +514,65 @@ function genItem(forceRare) {
 }
 function itemLabel(it) { return (it.rare ? '★' : '') + ITEMS[it.id].name; }
 
+// ---- 効果の説明 (数値つき) ----
+function skillCT(id, lv, cdr = 0) { return ITEMS[id].cd * Math.max(0.45, 1 - 0.08 * (lv - 1)) * (1 - cdr); }
+// n: スキルはLv、それ以外は個数。atk/cdr はスキルのダメージ・CT計算用
+function effectText(id, n = 1, atk = 9, cdr = 0, ch) {
+  const def = ITEMS[id]; n = Math.max(1, n);
+  if (def.cat === 'active') {
+    const M = 1 + 0.3 * (n - 1), d = (k, b) => Math.round((k * atk + b) * M);
+    const t = {
+      bag: `ダメージ${d(1.3, 6)}・周囲を全員攻撃`,
+      cart: `ダメージ${d(1.5, 8)}・ぶつかった全員`,
+      flyer: `1枚${d(0.6, 3)}ダメージ×5枚`,
+      tuna: `ダメージ${d(2.3, 10)}・気絶0.7秒`,
+      egg: `ダメージ${d(1.5, 8)}・爆発範囲・2秒足が遅くなる`,
+      bread: `1回${d(1.0, 5)}ダメージ（往復で最大2回）`,
+      sample: `体力を最大の${25 + 5 * (n - 1)}%回復`,
+      timesale: `${(5 + 0.5 * (n - 1)).toFixed(1)}秒間 移動+40%・攻撃速度+60%`,
+      point: `最大体力の${30 + 6 * (n - 1)}%のバリア（5秒）`,
+      seal: `ダメージ${d(1.1, 6)}・4秒間受けるダメージ+30%`,
+    }[id];
+    return `${t} ／ CT ${skillCT(id, n, cdr).toFixed(1)}秒`;
+  }
+  if (def.cat === 'passive') return {
+    lifesteal: `与えたダメージの${8 * n}%回復`, thorns: `受けたダメージの${20 * n}%を返す`, cdr: `スキルCT -${Math.min(50, 10 * n)}%`,
+    berserk: `体力50%以下で与ダメージ+${30 * n}%`, skilldmg: `スキルダメージ+${20 * n}%`, guts: `${n}回まで体力1で耐える`,
+    regen: `毎秒 最大体力の${(1.2 * n).toFixed(1)}%回復`, crit: `会心率+${12 * n}%（会心は1.8倍）`, dodge: `回避率${Math.min(40, 10 * n)}%`,
+    push: `通常攻撃ダメージ+${15 * n}%・ふっとばし強化`,
+  }[id];
+  if (def.cat === 'stat') return { hp: `最大体力+${25 * n}`, atk: `攻撃力+${2 * n}`, def: `防御力+${(1.5 * n).toFixed(1)}`, spd: `移動速度+${8 * n}%`, aspd: `通常攻撃の速さ+${12 * n}%` }[id];
+  if (def.cat === 'queue') {
+    ch = ch || CHARS[G.charIdx];
+    if (id === 'cut') return `並んでいる列で${ch.cut}人抜かす`;
+    if (id === 'chat') return `ライバルが並ぶ他の列のレジを${ch.chat}秒止める`;
+    return def.desc;
+  }
+  return def.desc;
+}
+function myAtk() { try { const p = G.actors.find(a => a.isPlayer); if (p) return buildFighter(p, 0, true); } catch (e) {} return null; }
+function infoRow(id, n, opt = {}) {
+  const def = ITEMS[id], lab = def.cat === 'active' ? `Lv${n}` : def.cat === 'bag' ? '' : `×${n}`;
+  return `<button class="irow" data-info="${id}" data-n="${n}"${opt.atk ? ` data-atk="${opt.atk}"` : ''}><span class="ic">${def.icon}</span><span class="txt"><span class="nm">${def.name} <small>${lab}</small></span><br><span class="fx">${effectText(id, n, opt.atk || 9, opt.cdr || 0)}</span></span></button>`;
+}
+function infoBadge(id, n, atk) { return `<span class="ib" data-info="${id}" data-n="${n || 1}"${atk ? ` data-atk="${atk}"` : ''}><span class="emo">${ITEMS[id].icon}</span>${ITEMS[id].cat === 'active' ? 'Lv' + (n || 1) : n > 1 ? '×' + n : ''}</span>`; }
+function showInfo(id, n = 1, atk) {
+  const def = ITEMS[id], f = myAtk();
+  const a = atk || (f ? f.atk : 9), cdr = atk ? 0 : (f ? f.cdr : 0);
+  let more = '';
+  if (def.cat === 'active') more = `<div class="kv"><b>今（Lv${n}）</b><span class="fx">${effectText(id, n, a, cdr)}</span><b>次（Lv${n + 1}）</b><span class="fx">${effectText(id, n + 1, a, cdr)}</span></div><p class="hint">ダメージは攻撃力${a.toFixed(1)}で計算。同じスキルを買うとLvアップ（★レアは+2）</p>`;
+  else if (def.cat !== 'bag') more = `<div class="kv"><b>${n}個で</b><span class="fx">${effectText(id, n)}</span><b>もう1個で</b><span class="fx">${effectText(id, n + 1)}</span></div>`;
+  openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div><span class="badge" style="background:${CAT[def.cat].color};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${CAT[def.cat].label}</span>
+    <h3 style="margin:4px 0 0">${def.name}</h3></div></div><p>${def.desc}</p>${more}
+    <div class="row"><button class="btn" data-close>${G.screen === 'scr-battle' ? 'バトルに戻る' : 'とじる'}</button></div>`);
+}
+// data-info をタップすると、どの画面でも説明が開く
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-info]'); if (!el) return;
+  e.stopPropagation(); e.preventDefault();
+  Snd.se('tap'); showInfo(el.dataset.info, +el.dataset.n || 1, el.dataset.atk ? +el.dataset.atk : undefined);
+}, true);
+
 // =====================================================================
 //  ゲーム全体の状態
 // =====================================================================
@@ -570,18 +645,20 @@ function showHowTo() {
   <ol><li>買ったスキルから3つ選んで戦う。同じスキルを重ねるとレベルアップ。</li>
   <li>左のスティックで移動、👊で攻撃、右のボタンでスキル。</li>
   <li>パッシブと基礎強化は全部効く。時間が経つと閉店シャッターで場外が狭くなる。</li>
-  <li>最後まで残った人が優勝！</li></ol>
-  <p class="small-note">PC：WASD/矢印で移動、J/スペースで攻撃、K・L・;（または1・2・3）でスキル</p>
+  <li>最後まで残った人が優勝！</li>
+  <li>⏸ボタンで一時停止して、スキルやライバルの効果を確認できる。</li></ol>
+  <p><b>効果の確認</b>：アイコンや持ち物をタップすると、いつでも効果と次のレベルの数値が見られる。並びスキルは長押しで説明。</p>
+  <p class="small-note">PC：WASD/矢印で移動、J/スペースで攻撃、K・L・;（または1・2・3）でスキル、P/Escで一時停止</p>
   <div class="row"><button class="btn" data-close>わかった</button></div></div>`);
 }
 function statBar(v, max) { return `<i style="width:${clamp(v / max, 0.05, 1) * 100}%"></i>`; }
 function renderSelect() {
   $('#chars').innerHTML = CHARS.map((c, i) => {
-    const st = Object.keys(c.start.active).map(k => ITEMS[k].icon).join('') + Object.keys(c.start.queue).map(k => ITEMS[k].icon).join('');
+    const st = [...Object.entries(c.start.active), ...Object.entries(c.start.queue), ...Object.entries(c.start.passive || {})].map(([k, n]) => infoBadge(k, n, c.atk)).join('');
     return `<button class="char ${i === G.charIdx ? 'sel' : ''}" data-i="${i}" style="--c:${c.color}">
       <div style="display:flex;gap:8px;align-items:center"><div class="face">${c.emoji}</div><div><div class="nm">${c.name}</div><div class="role">${c.role}</div></div></div>
       <div class="bars"><span>体力</span>${statBar(c.hp, 170)}<span>攻撃</span>${statBar(c.atk, 10.5)}<span>速さ</span>${statBar(c.spd, 145)}</div>
-      <div class="trait">${c.trait}</div><div class="trait">初期: <span class="emo">${st}</span></div></button>`;
+      <div class="trait">${c.trait}</div><div class="trait">初期: ${st}</div><div class="hint">アイコンをタップで効果</div></button>`;
   }).join('');
   document.querySelectorAll('#chars .char').forEach(b => b.onclick = () => { G.charIdx = +b.dataset.i; Snd.se('tap'); renderSelect(); });
 }
@@ -956,13 +1033,31 @@ function renderShop(force) {
   const qsig = keys.map(k => k + qs[k]).join(',') || 'none';
   if (force || S.qsSig !== qsig) {
     S.qsSig = qsig;
-    $('#qskills').innerHTML = keys.length ? keys.map(k => `<button class="qs" data-q="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="nm">${ITEMS[k].name}</span><span class="n">${qs[k]}</span></button>`).join('')
-      : '<div class="qs-empty">並びスキルなし（列で買えるよ）</div>';
-    document.querySelectorAll('#qskills .qs').forEach(b => b.onclick = () => useQueueSkill(player(), b.dataset.q));
+    $('#qskills').innerHTML = (keys.length ? keys.map(k => `<button class="qs" data-q="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="nm">${ITEMS[k].name}</span><span class="n">${qs[k]}</span></button>`).join('')
+      : '<div class="qs-empty">並びスキルなし（列で買えるよ）</div>') + `<button class="qs help" id="qsHelp">？<span class="nm">説明</span></button>`;
+    document.querySelectorAll('#qskills .qs[data-q]').forEach(b => longPress(b, () => useQueueSkill(player(), b.dataset.q), () => showInfo(b.dataset.q, qs[b.dataset.q] || 1)));
+    $('#qsHelp').onclick = () => { Snd.se('tap'); showQueueHelp(); };
   }
   $('#invCount').textContent = p.inv.count;
   const m = Math.floor(S.t / 60), s = Math.floor(S.t % 60);
   const ck = $('#shopTime'); ck.textContent = `${m}:${String(s).padStart(2, '0')}`; ck.classList.toggle('hurry', S.t <= 15);
+}
+// タップで tap()、長押しで hold()
+function longPress(el, tap, hold) {
+  let timer = null, held = false;
+  el.addEventListener('pointerdown', () => { held = false; clearTimeout(timer); timer = setTimeout(() => { held = true; Snd.se('tap'); hold(); }, 450); });
+  const cancel = () => clearTimeout(timer);
+  el.addEventListener('pointerleave', cancel); el.addEventListener('pointercancel', cancel);
+  el.addEventListener('pointerup', cancel);
+  el.addEventListener('click', e => { clearTimeout(timer); if (held) { held = false; return; } tap(); });
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+function showQueueHelp() {
+  const p = player(), qs = p.inv.queue;
+  openModal(`<h3>並びスキル</h3><p class="hint">ボタンをタップで使う・長押しで説明。持っていないものは列で買える</p>
+    <div class="irows">${IDS.queue.map(k => `<div class="irow"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].name} <small>${qs[k] ? '残り' + qs[k] + '回' : '未所持'}</small></span><br><span class="fx">${effectText(k, 1, 9, 0, p.char)}</span></span>${qs[k] ? `<button class="btn" style="font-size:13px;padding:8px 12px" data-use="${k}">使う</button>` : ''}</div>`).join('')}</div>
+    <div class="row"><button class="btn sub" data-close>とじる</button></div>`);
+  document.querySelectorAll('#modal [data-use]').forEach(b => b.onclick = () => { const k = b.dataset.use; closeModal(); useQueueSkill(player(), k); });
 }
 function renderBars() {
   const lanesEl = $('#lanes').children;
@@ -973,24 +1068,31 @@ function showItemDetail(i) {
   const npcs = l.queue.filter(x => !x.actor).length;
   const rivals = l.queue.filter(x => x.actor && !x.actor.isPlayer).map(x => x.actor.emoji + x.actor.name).join('、') || 'なし';
   const eta = Math.ceil((l.queue.length + 1) / laneRate(l) + l.stopT);
-  let own = '';
-  if (def.cat === 'active') { const lv = p.inv.active[l.item.id]; own = lv ? `持っている（Lv${lv}）→ Lv${lv + (l.item.rare ? 2 : 1)}に` : '新しいスキル'; }
-  else if (def.cat !== 'bag') { const n = p.inv[def.cat][l.item.id]; own = n ? `${n}個持っている` : 'まだ持っていない'; }
+  let own = '', fxHtml = '';
+  const f = myAtk(), add = l.item.rare ? 2 : 1, id = l.item.id;
+  if (def.cat === 'active') {
+    const lv = p.inv.active[id] || 0; own = lv ? `持っている（Lv${lv}）→ Lv${lv + add}に` : '新しいスキル';
+    fxHtml = `${lv ? `<b>今 Lv${lv}</b><span class="fx">${effectText(id, lv, f.atk, f.cdr)}</span>` : ''}<b>買うと Lv${lv + add}</b><span class="fx">${effectText(id, lv + add, f.atk, f.cdr)}</span>`;
+  } else if (def.cat !== 'bag') {
+    const n = p.inv[def.cat][id] || 0; own = n ? `${n}個持っている` : 'まだ持っていない';
+    fxHtml = `${n ? `<b>今 ×${n}</b><span class="fx">${effectText(id, n, 9, 0, p.char)}</span>` : ''}<b>買うと ×${n + add}</b><span class="fx">${def.cat === 'queue' ? effectText(id, 1, 9, 0, p.char) + `（${n + add}回使える）` : effectText(id, n + add)}</span>`;
+  }
   openModal(`<div class="item-big"><div class="ic">${def.icon}</div><div><span class="badge" style="background:${CAT[def.cat].color};color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:800">${CAT[def.cat].label}</span>
     <h3 style="margin:4px 0 0">${l.item.rare ? '★' : ''}${def.name}</h3></div></div>
     <p>${def.desc}${l.item.rare ? '<br><b style="color:var(--sale)">★レア：効果2倍（スキルは2レベル上がる）</b>' : ''}</p>
     <div class="kv"><b>在庫</b><span>${l.stock}個（一般客も60%の確率で買っていく）</span><b>並んでいる</b><span>${l.queue.length}人（ライバル：${rivals}）</span>
-    <b>レジ</b><span>${speedLabel(l)}・今並ぶと約${eta}秒</span><b>あなた</b><span>${own || '-'}</span></div>
+    <b>レジ</b><span>${speedLabel(l)}・今並ぶと約${eta}秒</span><b>あなた</b><span>${own || '-'}</span>${fxHtml}</div>
     <div class="row"><button class="btn sub" data-close>とじる</button><button class="btn" id="mdJoin">この列に並ぶ</button></div>`);
   $('#mdJoin').onclick = () => { closeModal(); playerJoin(i); };
 }
 function invHTML(a) {
-  const inv = a.inv, g = [];
+  const inv = a.inv, g = [], f = buildFighter(a, 0, true);
   for (const cat of ['active', 'passive', 'stat', 'queue']) {
     const keys = Object.keys(inv[cat]); if (!keys.length) continue;
-    g.push(`<div class="inv-group" style="--cc:${CAT[cat].color}"><h4>${CAT[cat].label}</h4><div class="inv-list">${keys.map(k => `<span class="chip"><span class="emo">${ITEMS[k].icon}</span>${ITEMS[k].name} ${cat === 'active' ? 'Lv' : '×'}${inv[cat][k]}</span>`).join('')}</div></div>`);
+    g.push(`<div class="inv-group" style="--cc:${CAT[cat].color}"><h4>${CAT[cat].label}</h4><div class="irows">${keys.map(k => infoRow(k, inv[cat][k], { atk: f.atk, cdr: f.cdr })).join('')}</div></div>`);
   }
-  return g.join('') || '<p>まだ何も持っていない</p>';
+  if (!g.length) return '<p>まだ何も持っていない</p>';
+  return g.join('') + '<p class="hint">タップすると詳しい説明と次のレベルの効果が見られる</p>';
 }
 $('#invBtn').onclick = () => { Snd.se('tap'); openModal(`<h3>🧺 買ったもの</h3>${invHTML(player())}<div class="row"><button class="btn" data-close>とじる</button></div>`); };
 
@@ -1015,22 +1117,28 @@ function startLoadout() {
 function renderLoadout() {
   const p = player(), keys = Object.keys(p.inv.active).sort((x, y) => p.inv.active[y] - p.inv.active[x]);
   $('#pickCount').textContent = `（${p.loadout.length}/3）`;
-  $('#skillPick').innerHTML = keys.map(k => `<button class="sp ${p.loadout.includes(k) ? 'sel' : ''}" data-k="${k}"><span class="lv">Lv${p.inv.active[k]}</span><div class="ic">${ITEMS[k].icon}</div><div class="nm">${ITEMS[k].name}</div></button>`).join('');
+  const f = buildFighter(p, 0, true);
+  $('#skillPick').innerHTML = keys.map(k => {
+    const lv = p.inv.active[k], on = p.loadout.includes(k);
+    return `<button class="sp ${on ? 'sel' : ''}" data-k="${k}"><span class="ic">${ITEMS[k].icon}</span><span class="txt"><span class="nm">${ITEMS[k].name}<span class="lv">Lv${lv}</span></span><br><span class="d">${ITEMS[k].desc}</span><br><span class="fx">${effectText(k, lv, f.atk, f.cdr)}</span></span><span class="chk">${on ? p.loadout.indexOf(k) + 1 : ''}</span></button>`;
+  }).join('') + '<p class="hint" style="margin:2px 0 0">タップで選ぶ／外す。数字はバトルでのボタンの順番</p>';
   document.querySelectorAll('#skillPick .sp').forEach(b => b.onclick = () => {
     const k = b.dataset.k, i = p.loadout.indexOf(k);
     if (i >= 0) p.loadout.splice(i, 1); else if (p.loadout.length < 3) p.loadout.push(k); else { toast('3つまで！外してから選んでね', 'bad'); return; }
     Snd.se('tap'); renderLoadout();
   });
-  const f = buildFighter(p, 0, true);
   $('#myStats').innerHTML = `<span>体力 <b>${Math.round(f.maxHp)}</b></span><span>攻撃 <b>${f.atk.toFixed(1)}</b></span><span>防御 <b>${f.def.toFixed(1)}</b></span>
     <span>速さ <b>${Math.round(f.spd)}</b></span><span>攻速 <b>${f.aspd.toFixed(2)}</b></span><span>会心 <b>${Math.round(f.crit * 100)}%</b></span>`;
   const pas = Object.keys(p.inv.passive);
-  $('#myPassives').innerHTML = pas.map(k => `<span class="chip"><span class="emo">${ITEMS[k].icon}</span>${ITEMS[k].name}×${p.inv.passive[k]}</span>`).join('') || '<span class="small-note">パッシブなし</span>';
+  const sts = Object.keys(p.inv.stat);
+  $('#myPassives').innerHTML = pas.length || sts.length
+    ? `<div class="irows" style="width:100%">${[...pas.map(k => infoRow(k, p.inv.passive[k])), ...sts.map(k => infoRow(k, p.inv.stat[k]))].join('')}</div>`
+    : '<span class="small-note">パッシブ・基礎強化なし</span>';
   $('#rivalList').innerHTML = G.actors.filter(a => !a.isPlayer).map(a => {
     const rf = buildFighter(a, 0, true);
     return `<div class="rv"><div class="face" style="--c:${a.color}">${a.emoji}</div><div style="flex:1"><b>${a.name}</b>　体力${Math.round(rf.maxHp)}・攻撃${rf.atk.toFixed(0)}・買い物${a.inv.count}個<br>
-      <span class="sk">${a.loadout.map(k => ITEMS[k].icon + '<small>Lv' + a.inv.active[k] + '</small>').join(' ')}</span> <span class="sk">${Object.keys(a.inv.passive).map(k => ITEMS[k].icon).join('')}</span></div></div>`;
-  }).join('');
+      ${a.loadout.map(k => infoBadge(k, a.inv.active[k], rf.atk)).join('')}${Object.keys(a.inv.passive).map(k => infoBadge(k, a.inv.passive[k])).join('')}</div></div>`;
+  }).join('') + '<p class="hint" style="margin:0">アイコンをタップで効果を確認</p>';
 }
 $('#fightBtn').onclick = () => { Snd.se('tap'); startBattle(); };
 
@@ -1084,8 +1192,20 @@ function layoutBattle() {
   const sc = Math.min(availW / AW, availH / AH);
   B.view = { dpr, sc, ox: (r.width - AW * sc) / 2, oy: top + (availH - AH * sc) / 2 };
 }
+function showPause() {
+  if (!B) return;
+  const me = B.me, inv = me.actor.inv;
+  const others = B.fs.filter(f => !f.isPlayer).map(o => `<div class="rv"><div class="face" style="--c:${o.color}">${o.emoji}</div><div style="flex:1"><b>${o.name}</b> ${o.alive ? `体力${Math.ceil(o.hp)}/${Math.round(o.maxHp)}` : 'ダウン'}<br>${o.skills.map(s => infoBadge(s.id, s.lv, o.atk)).join('')}${Object.keys(o.actor.inv.passive).map(k => infoBadge(k, o.actor.inv.passive[k])).join('')}</div></div>`).join('');
+  openModal(`<h3>⏸ 一時停止中</h3>
+    <div class="panel" style="box-shadow:none;padding:0"><h4>あなたのスキル</h4><div class="irows">${me.skills.map((s, i) => infoRow(s.id, s.lv, { atk: me.atk, cdr: me.cdr }).replace('<span class="nm">', `<span class="nm">[${['K/1', 'L/2', ';/3'][i]}] `)).join('') || '<p class="hint">スキルなし</p>'}</div></div>
+    <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>パッシブ・基礎強化</h4><div class="irows">${[...Object.keys(inv.passive).map(k => infoRow(k, inv.passive[k])), ...Object.keys(inv.stat).map(k => infoRow(k, inv.stat[k]))].join('') || '<p class="hint">なし</p>'}</div>
+    <p class="hint">攻撃${me.atk.toFixed(1)}・防御${me.def.toFixed(1)}・会心${Math.round(me.crit * 100)}%・回避${Math.round(me.dodge * 100)}%</p></div>
+    <div class="panel" style="box-shadow:none;padding:0;margin-top:10px"><h4>ライバル</h4><div class="rivals">${others}</div><p class="hint">アイコンをタップで効果</p></div>
+    <div class="row"><button class="btn" data-close>バトルに戻る</button></div>`);
+}
 function buildBattleUI() {
-  $('#bhud').innerHTML = B.fs.map((f, i) => `<div class="hp-chip ${f.isPlayer ? 'me' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('');
+  $('#bhud').innerHTML = B.fs.map((f, i) => `<div class="hp-chip ${f.isPlayer ? 'me' : ''}" data-i="${i}" style="--c:${f.color}"><div class="face">${f.emoji}</div><div class="col"><div class="nm">${f.isPlayer ? 'あなた' : f.name}</div><div class="hb"><i></i></div></div></div>`).join('') + '<button id="pauseBtn" aria-label="一時停止">⏸</button>';
+  $('#pauseBtn').onclick = () => { Snd.se('tap'); showPause(); };
   const me = B.me, wrap = $('#sbtns');
   const pos = [[118, 22], [96, 104], [22, 132]]; // right, bottom offsets
   wrap.innerHTML = me.skills.map((s, i) => `<button class="abtn sbtn" data-s="${i}" style="right:calc(max(16px,env(safe-area-inset-right,0px)) + ${pos[i][0]}px);bottom:calc(env(safe-area-inset-bottom,0px) + ${pos[i][1]}px)">${ITEMS[s.id].icon}<span class="cdv"></span><span class="lvb">Lv${s.lv}</span></button>`).join('');
@@ -1121,6 +1241,7 @@ window.addEventListener('keydown', e => {
   if (G.screen !== 'scr-battle' || !B) return;
   const k = e.key.toLowerCase();
   const map = { k: 0, '1': 0, l: 1, '2': 1, ';': 2, '3': 2 };
+  if (k === 'p' || k === 'escape') { if ($('#modal').hidden) showPause(); else closeModal(); return; }
   if (k in map) useSkill(B.me, map[k]);
   if (k === ' ') e.preventDefault();
 });
@@ -1201,6 +1322,7 @@ function basicAttack(f) {
 }
 function useSkill(f, i) {
   if (!B || B.over || B.start > 0 || !f.alive) return false;
+  if (f.isPlayer && !$('#modal').hidden) return false;
   const s = f.skills[i]; if (!s || s.cd > 0 || f.stunT > 0) return false;
   const M = 1 + 0.3 * (s.lv - 1), atk = f.atk, t = nearest(f, 340);
   const aim = aimAt(f, t); f.dir = aim;
@@ -1549,7 +1671,7 @@ function loop(now) {
     if (S.renderT <= 0) { S.renderT = 0.1; renderShop(false); }
     renderBars();
   } else if (G.screen === 'scr-battle' && B) {
-    const steps = B.speed;
+    const steps = $('#modal').hidden ? B.speed : 0; // 説明を開いている間は一時停止
     for (let i = 0; i < steps && B; i++) battleUpdate(dt);
     if (B) { drawBattle(); updateBattleHUD(); }
   }
